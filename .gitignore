@@ -1,0 +1,7 @@
+.env
+.env.*
+!.env.example
+.venv/
+.ai-team/state/
+__pycache__/
+node_modules/
