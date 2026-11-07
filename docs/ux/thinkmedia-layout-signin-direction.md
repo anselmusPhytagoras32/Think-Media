@@ -1,0 +1,11 @@
+# Responsive shell and illustrated sign-in
+
+Mode: Operate. Preserve the user-approved purple/pastel identity, original discovery graphics, native controls and real FastAPI/PostgreSQL workflows. The user approved the student visual style and requested better layout, responsive behavior and a collapsible sidebar. During that work the user supplied a large-artwork login reference and requested a more welcoming sign-in page. Both changes are within this refinement.
+
+The desktop navigation expands to 238px or collapses to an 84px icon rail; at tablet widths its default is compact, while an explicit user preference wins. The topbar toggle always stays reachable. Icons retain accessible destination names and hover/keyboard labels. Only the nonpersonal expanded/collapsed marker is stored locally; unavailable storage cannot block navigation. Mobile retains a full drawer and bottom task navigation. Escape, focus containment, opener restoration, scroll locking and resize recovery belong to that drawer.
+
+Discovery layout follows available workspace width, not merely window width. At 960px of content, discovery and the application/guidance support column sit side by side from the top; below that, content stacks with readable cards and fields. Search/category widths follow their column. The artwork, palette, actual records, empty/error states and swipeable mobile cards remain.
+
+Sign-in follows the supplied reference's prominent scene/form split. An original full-bleed campus study illustration occupies the left panel with native ThinkMedia branding and readable supporting copy. The right panel holds the real email/password form, working registration mode and password visibility. Mobile uses a compact illustrated header above the form. The reference's decorative brand, character and unsupported identity-provider controls are not product requirements. Do not add fake password recovery or social sign-in actions. Keep native heading, label, error, autocomplete, privacy and actual account behavior.
+
+The fifth artwork is decorative, with exact prompt provenance beside its optimized WebP. It depicts no actual participant and provides no employer or research claim. Scope: FR01–11/W01–W08 and NFR03/05/09/10. No backend, authorization, schema, production resources, deployment or live AI behavior changes.

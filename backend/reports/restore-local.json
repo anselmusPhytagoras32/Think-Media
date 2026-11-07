@@ -1,0 +1,33 @@
+{
+  "backup": "/tmp/thinkmedia-backups/verified-private-bytes-20261106.dump",
+  "bytes": 119963,
+  "sha256": "0e19d08ec29f0c18729839cc4a3f99883b9bc956de8dcf9721b81426973ee23e",
+  "created_at": "2026-11-06T11:39:23.769323+00:00",
+  "restored_database": "tm_restore_352f3e612ae04949",
+  "schema_version": "0006_satisfaction_feedback",
+  "tables": 19,
+  "row_counts": {
+    "alembic_version": 1,
+    "application_status_history": 3,
+    "applications": 1,
+    "audit_events": 2,
+    "company_profiles": 2,
+    "content_events": 4,
+    "content_states": 1,
+    "instructor_profiles": 0,
+    "interactions": 4,
+    "learning_content": 2,
+    "listings": 1,
+    "marketplace_events": 3,
+    "moderation_reports": 1,
+    "quiz_attempts": 1,
+    "quiz_questions": 1,
+    "satisfaction_feedback": 1,
+    "sessions": 68,
+    "student_profiles": 25,
+    "users": 28
+  },
+  "source_counts_match": true,
+  "private_attachment_bytes_match": true,
+  "cleanup": "Fresh database preserved; no existing resource was overwritten or dropped."
+}

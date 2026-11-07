@@ -5,3 +5,19 @@
 .ai-team/state/
 __pycache__/
 node_modules/
+.orchestrator/
+.ai-team/settings.env
+.ai-team/agy-login-check.json
+.ai-team/agy-login-check.err
+
+frontend/dist/
+frontend/test-results/
+frontend/playwright-report/
+*.tsbuildinfo
+
+*.dump
+backend/backups/
+evaluation/data/
+
+# Local runtime configuration, database files and demo credentials.
+.local/

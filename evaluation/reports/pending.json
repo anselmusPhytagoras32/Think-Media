@@ -1,0 +1,22 @@
+{
+  "requirement": "FR12/NFR08",
+  "generated_at": "2026-11-06T11:36:20.540970+00:00",
+  "recommender": {
+    "status": "not_measured",
+    "reason": "No genuine explicit-rating dataset supplied.",
+    "sample_count": null,
+    "metrics": null
+  },
+  "csat": {
+    "status": "not_measured",
+    "reason": "No genuine CSAT responses supplied; proposed 4.0/5 target is not a result.",
+    "sample_count": null,
+    "metrics": null
+  },
+  "assistant": {
+    "status": "not_measured",
+    "reason": "No fixed candidate/reference answer set supplied.",
+    "sample_count": null,
+    "metrics": null
+  }
+}

@@ -45,3 +45,12 @@ Do not build native mobile apps, payments, full LMS, realtime user chat/video, a
 ## Agent failure/cooldown
 
 If a worker encounters a **temporary provider rate/quota limit**, save session/checkpoints and suspend that worker for the configured five-hour fallback cooldown, allowing unrelated work to continue. API credits exhausted, authentication failures and context overflows are distinct; do not spin indefinitely or imply a five-hour wait fixes them. The persistent supervisor—not the LLM—owns retries.
+
+<!-- THINKMEDIA_TEAM_INSTRUCTIONS_START -->
+# ThinkMedia coding team
+Before planning or modifying this repository, read `.ai-team/AGENT_RULES.md` and
+`.ai-team/spec/THINKMEDIA_AGENT_BRIEF.md` plus the current phase in
+`.ai-team/spec/THINKMEDIA_PHASES.md`.
+Use the SRS acceptance criteria, keep frontend and backend write paths separate,
+and require real tests and evidence. Do not deploy, push, or expose secrets.
+<!-- THINKMEDIA_TEAM_INSTRUCTIONS_END -->

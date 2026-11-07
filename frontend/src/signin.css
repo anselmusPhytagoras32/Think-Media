@@ -1,0 +1,321 @@
+/* FR01–02 / NFR03/05/09: full-scene sign-in with native, live controls. */
+.illustrated-signin.auth-layout {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  height: 100svh;
+  min-height: 100svh;
+  width: 100%;
+  padding: clamp(20px, 3vw, 46px);
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    linear-gradient(90deg, #ffffff00 0%, #f8f0f5a6 55%, #f8f0f5d9 100%),
+    url("/illustrations/thinkmedia-signin-background.webp") center / cover no-repeat;
+  background-attachment: fixed;
+}
+.illustrated-signin.auth-story {
+  position: static;
+}
+.illustrated-signin .auth-story {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  min-height: 100%;
+  padding: 0;
+  overflow: hidden;
+  background: transparent;
+  pointer-events: none;
+}
+.illustrated-signin .auth-illustration {
+  display: none;
+}
+.illustrated-signin .auth-story .brand {
+  position: absolute;
+  top: clamp(24px, 4vh, 46px);
+  left: clamp(22px, 4vw, 60px);
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #fff;
+  font-size: 22px;
+  gap: 9px;
+  text-shadow: 0 2px 12px #24143d80;
+  pointer-events: auto;
+  z-index: 2;
+}
+.illustrated-signin .auth-story .brand-mark {
+  width: 33px;
+  height: 33px;
+}
+.illustrated-signin .auth-story-copy {
+  position: absolute;
+  left: clamp(24px, 4vw, 62px);
+  bottom: clamp(26px, 5vh, 58px);
+  max-width: min(44vw, 550px);
+  padding: 0;
+  color: #fff;
+  text-shadow: 0 2px 18px #24143d, 0 1px 4px #24143dcc;
+  pointer-events: auto;
+  z-index: 2;
+}
+.illustrated-signin .auth-story-copy h2 {
+  margin: 0 0 8px;
+  color: white;
+  font-size: clamp(24px, 2.5vw, 34px);
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+}
+.illustrated-signin .auth-story .auth-story-copy > p {
+  margin: 0;
+  color: #fff;
+  font-size: 14px;
+  line-height: 1.55;
+  max-width: 42ch;
+}
+.illustrated-signin .story-steps,
+.illustrated-signin .auth-story .story-footer {
+  display: none;
+}
+.illustrated-signin .auth-main {
+  position: relative;
+  z-index: 1;
+  justify-content: flex-start;
+  justify-self: end;
+  align-self: center;
+  width: min(100%, 510px);
+  max-height: calc(100svh - clamp(40px, 6vw, 92px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #8a77a755 transparent;
+  margin-right: clamp(8px, 5.5vw, 86px);
+  padding: clamp(26px, 4vh, 44px) clamp(24px, 3.2vw, 46px);
+  border: 1px solid #ffffffc7;
+  border-radius: 28px;
+  background: #fffefaad;
+  box-shadow: 0 24px 70px #402c7524, 0 2px 10px #402c7510;
+  backdrop-filter: blur(22px) saturate(1.18);
+}
+.illustrated-signin .auth-box {
+  width: 100%;
+  max-width: none;
+}
+.illustrated-signin .auth-form-brand {
+  display: none;
+}
+.illustrated-signin .tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 5px;
+  margin: 0 0 25px;
+  border-radius: 15px;
+  background: #efe7f3;
+}
+.illustrated-signin .tabs button {
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 12px;
+  border-radius: 11px;
+  border: 0;
+}
+.illustrated-signin .tabs button[aria-pressed="true"] {
+  border: 0;
+  background: white;
+  color: #402c75;
+  box-shadow: 0 3px 9px #402c7518;
+}
+.illustrated-signin .auth-title {
+  margin: 0 0 10px;
+  color: #402c75;
+  font-size: 34px;
+  line-height: 1.2;
+  letter-spacing: -0.035em;
+  text-align: center;
+}
+.illustrated-signin .auth-box > p.muted {
+  margin-bottom: 26px;
+  font-size: 14px;
+  line-height: 1.65;
+  text-align: center;
+}
+.illustrated-signin .field label {
+  font-size: 14px;
+}
+.illustrated-signin .field input:not([type="file"]),
+.illustrated-signin .field select {
+  min-height: 50px;
+  background-color: #fff;
+}
+.illustrated-signin .primary {
+  min-height: 52px;
+  border-radius: 12px;
+  background: #72c7d0;
+  color: #402c75;
+  font-size: 15px;
+  font-weight: 750;
+}
+.illustrated-signin .primary:hover {
+  background: #94d5dc;
+}
+.illustrated-signin .auth-help,
+.illustrated-signin .auth-foot {
+  text-align: center;
+}
+.illustrated-signin .auth-help {
+  margin-top: 20px;
+}
+.illustrated-signin .intro-replay {
+  margin-top: 16px;
+}
+.illustrated-signin .auth-foot {
+  margin-top: 18px;
+}
+@media (max-width: 800px) {
+  .illustrated-signin.auth-layout {
+    padding: 18px;
+    background-position: 35% center;
+  }
+  .illustrated-signin .auth-main {
+    max-height: calc(100svh - 36px);
+  }
+  .illustrated-signin .auth-story .brand {
+    top: 18px;
+    left: 18px;
+    font-size: 18px;
+    padding: 0;
+    border-radius: 0;
+  }
+  .illustrated-signin .auth-story .brand-mark {
+    width: 28px;
+    height: 28px;
+  }
+  .illustrated-signin .auth-story-copy {
+    left: 18px;
+    bottom: 18px;
+    max-width: min(38vw, 250px);
+    padding: 0;
+    text-shadow: 0 2px 14px #24143d, 0 1px 4px #24143dcc;
+  }
+  .illustrated-signin .auth-story-copy h2 {
+    font-size: 20px;
+  }
+  .illustrated-signin .auth-story .auth-story-copy > p {
+    font-size: 12px;
+  }
+  .illustrated-signin .auth-main {
+    width: min(100%, 460px);
+    margin-right: 0;
+    padding: 28px 25px;
+  }
+}
+@media (max-width: 600px) {
+  .illustrated-signin.auth-layout {
+    height: 100svh;
+    min-height: 100svh;
+    padding: min(40svh, 340px) 15px 28px;
+    background: #f5ebf2;
+    background-attachment: initial;
+  }
+  .illustrated-signin .auth-illustration {
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 0;
+    display: block;
+    width: 100%;
+    height: clamp(250px, 38svh, 340px);
+    max-height: none;
+    min-height: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+  .illustrated-signin .auth-illustration img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 37%;
+  }
+  .illustrated-signin .auth-story::after {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: clamp(250px, 38svh, 340px);
+    z-index: -1;
+    background: linear-gradient(180deg, #402c7510 60%, #f5ebf200 100%);
+    pointer-events: none;
+  }
+  .illustrated-signin.auth-layout {
+    background-color: #f3e9f0;
+  }
+  .illustrated-signin .auth-story .brand {
+    top: 15px;
+    left: 15px;
+  }
+  .illustrated-signin .auth-story-copy {
+    display: none;
+  }
+  .illustrated-signin .auth-main {
+    justify-self: center;
+    align-self: start;
+    min-height: 0;
+    width: min(100%, 430px);
+    max-height: calc(100svh - min(40svh, 340px) - 28px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    margin: 0;
+    padding: 23px 20px 21px;
+    border: 1px solid #ffffffd4;
+    border-radius: 24px;
+    background: #fffefaC7;
+    box-shadow: 0 15px 42px #402c7522;
+    backdrop-filter: blur(20px) saturate(1.16);
+  }
+  .illustrated-signin .tabs {
+    margin-bottom: 19px;
+  }
+  .illustrated-signin .tabs button {
+    min-height: 44px;
+    font-size: 13px;
+  }
+  .illustrated-signin .auth-title {
+    font-size: 28px;
+  }
+  .illustrated-signin .auth-box > p.muted {
+    margin-bottom: 20px;
+    font-size: 13px;
+  }
+  .illustrated-signin .field {
+    margin-bottom: 16px;
+  }
+  .illustrated-signin .field input {
+    font-size: 16px;
+  }
+  .illustrated-signin .auth-help {
+    margin-top: 16px;
+  }
+  .illustrated-signin .auth-foot {
+    margin-top: 14px;
+  }
+  .illustrated-signin .intro-replay {
+    margin-top: 13px;
+  }
+}
+@media (max-width: 360px) {
+  .illustrated-signin.auth-layout {
+    padding-inline: 11px;
+  }
+  .illustrated-signin .auth-main {
+    padding-inline: 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .illustrated-signin * {
+    scroll-behavior: auto !important;
+  }
+}

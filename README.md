@@ -1,3 +1,46 @@
+# ThinkMedia
+
+React + FastAPI + PostgreSQL career and OJT workspace. Product requirements are in [PRODUCT.md](PRODUCT.md); verified progress and remaining work are in [implementation status](docs/IMPLEMENTATION_STATUS.md).
+
+## Run the application directly
+
+Set up a local PostgreSQL database and backend environment using [backend setup](backend/README.md). Apply migrations only to a disposable local/development database:
+
+```bash
+cd backend
+.venv/bin/alembic upgrade head
+APP_ASSISTANT_MODE=retrieval .venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+
+In another terminal:
+
+```bash
+cd frontend
+npm ci
+npm run dev
+```
+
+Open http://127.0.0.1:5173. The React client proxies API requests to FastAPI on port 8000 and uses real PostgreSQL persistence. No frontend mock server is required. Administrator accounts are provisioned separately using the backend CLI.
+
+## Verify
+
+```bash
+cd frontend
+npm run build
+npx playwright install chromium
+npm test
+```
+
+Browser tests require the API, a disposable development database, and the synthetic test administrator described in [frontend setup](frontend/README.md). Backend pytest uses a separate disposable PostgreSQL database; see [audit evidence](backend/reports/codex-audit.md). Never run test cleanup against production.
+
+The legacy orchestration tools below remain as historical repository material. They are not needed for startup or current implementation; do not run `./team`, `orchestrator.py`, or external headless workers for this workflow.
+
+## Current verified scope
+
+Accounts and profiles, company verification, published OJT/job listings, private PDF applications and applicant review, learning resources/quizzes/moderation, real suggestions/ratings and source-backed resource lookup work against FastAPI/PostgreSQL. External AI is off by user choice. Research metrics remain pending genuine datasets. See [verified status](docs/IMPLEMENTATION_STATUS.md), [operations](docs/OPERATIONS.md) and [evaluation](docs/EVALUATION.md).
+
+## Legacy agent-pack instructions
+
 # ThinkMedia — Codex / Antigravity / OpenCode agent pack
 
 This pack **adapts the prior one-repo Codex CLI supervisor to the uploaded ThinkMedia SRS**. It does not create a new repository, make calls to OpenAI APIs, or change your existing application source. It does *not* contain the original full DOCX; the compact agent brief is included.
