@@ -21,3 +21,12 @@ evaluation/data/
 
 # Local runtime configuration, database files and demo credentials.
 .local/
+
+# Local tooling, backups and design-review screenshots (not project source).
+.claude/
+.agents/skills/
+agent/
+.impeccable/
+.monitor-update/
+.ai-team/monitor-backups/
+*.bak

@@ -1,3 +1,4 @@
+# THINKMEDIA_UI_DENIAL_FIX_V2
 #!/usr/bin/env python3
 """One-repository supervisor: Codex CLI (Sol), Antigravity (Gemini), OpenCode (DeepSeek).
 
@@ -18,6 +19,7 @@ import subprocess
 import sys
 import time
 from datetime import datetime, timezone
+from collections import deque
 from typing import Literal
 
 
@@ -59,6 +61,61 @@ REVIEW_SCHEMA = {
     },
     "required": ["approved", "summary", "ui_fixes", "backend_fixes"],
 }
+
+
+
+def brief_event(role: str, event: dict) -> str | None:
+    """Summarize provider events without dumping enormous token streams."""
+    kind = str(event.get("type") or event.get("event") or "")
+    if role == "sol":
+        if kind == "thread.started":
+            return "Codex session started"
+        if kind == "turn.started":
+            return "Analyzing task"
+        if kind in ("item.started", "item.completed", "item.updated"):
+            item = event.get("item") or {}
+            item_type = item.get("type", "item")
+            if item_type == "command_execution":
+                command = str(item.get("command", ""))
+                return f"{kind.split('.')[-1]} command: {command[:105]}"
+            if item_type == "agent_message" and kind == "item.completed":
+                message = " ".join(str(item.get("text", "")).split())
+                return f"Message: {message[:150]}" if message else "Produced plan/review message"
+            if kind != "item.updated":
+                return f"{kind.split('.')[-1]} {item_type}"
+        if kind == "turn.completed":
+            usage = event.get("usage") or {}
+            return f"Codex turn finished; tokens={usage.get('input_tokens', '?')} in / {usage.get('output_tokens', '?')} out"
+        if kind in ("turn.failed", "error"):
+            return f"Codex error: {str(event.get('message') or event.get('error') or kind)[:145]}"
+        return None
+    if role == "ui":
+        if kind in ("init", "start", "session_start"):
+            return "Gemini session started"
+        if kind in ("tool_call", "tool_use", "tool_result"):
+            tool = event.get("tool") or event.get("name") or (event.get("data") or {}).get("name") or "tool"
+            return f"{kind}: {str(tool)[:85]}"
+        if kind in ("step_update", "status", "progress"):
+            part = event.get("step_update") or event.get("data") or {}
+            text = part.get("description") or part.get("message") or part.get("status") or "working"
+            return f"Progress: {str(text)[:125]}"
+        if kind == "result":
+            result = event.get("result") or {}
+            return f"Gemini result: {result.get('status', 'finished')}"
+        return None
+    if role == "backend":
+        if kind in ("step_start", "session_start"):
+            return "DeepSeek step started"
+        if kind in ("tool_use", "tool_result", "tool"):
+            part = event.get("part") or {}
+            tool = part.get("tool") or part.get("name") or "tool"
+            return f"{kind}: {str(tool)[:90]}"
+        if kind == "error":
+            return f"OpenCode error: {str(event.get('error'))[:160]}"
+        if kind in ("step_finish", "step_end"):
+            return "DeepSeek step finished"
+        return None
+    return None
 
 
 def now() -> str:
@@ -162,9 +219,40 @@ async def sol_call(state: dict, stage: str, schema: dict, prompt: str) -> dict:
             )
         except OSError as exc:
             raise RuntimeError(f"Could not launch Codex CLI: {exc}") from exc
-        stdout, stderr = await process.communicate(prompt.encode("utf-8"))
-        log_path.write_bytes(b"[stdout]\n" + stdout + b"\n[stderr]\n" + stderr)
-        diagnostic = (stdout + b"\n" + stderr).decode("utf-8", errors="replace")
+        state["sol_pid"] = process.pid
+        save(state)
+        # Stream outputs immediately. Earlier versions only wrote the log after
+        # communicate() returned, making planning appear frozen for minutes.
+        recent_lines = deque(maxlen=350)
+        last_notice = {"text": "", "at": 0.0}
+        async def drain(reader, source, fp):
+            async for line in reader:
+                decoded = line.decode("utf-8", errors="replace").rstrip("\r\n")
+                fp.write(f"[{source}] {decoded}\n")
+                fp.flush()
+                recent_lines.append(decoded[-3000:])
+                if source == "stdout":
+                    try:
+                        evt = json.loads(decoded)
+                    except ValueError:
+                        continue
+                    message = brief_event("sol", evt)
+                    if message and (message != last_notice["text"] or time.time() - last_notice["at"] > 20):
+                        print(f"[Sol/{stage}] {message}", flush=True)
+                        last_notice.update(text=message, at=time.time())
+                elif re.search(r"(error|failed|429|quota|rate.limit)", decoded, re.I):
+                    print(f"[Sol/{stage}][stderr] {decoded[:180]}", flush=True)
+        try:
+            with log_path.open("w", encoding="utf-8") as fp:
+                process.stdin.write(prompt.encode("utf-8"))
+                await process.stdin.drain()
+                process.stdin.close()
+                await asyncio.gather(drain(process.stdout, "stdout", fp), drain(process.stderr, "stderr", fp))
+                await process.wait()
+        finally:
+            state["sol_pid"] = None
+            save(state)
+        diagnostic = "\n".join(recent_lines)
         if process.returncode == 0 and output_file.exists():
             try:
                 parsed = json.loads(output_file.read_text(encoding="utf-8"))
@@ -254,6 +342,17 @@ def worker_prompt(role: Literal["ui", "backend"], state: dict) -> str:
             "documents. Use Intent for user flows and Impeccable for visual design. "
             "If either skill is missing, report that clearly rather than pretending it was used."
         )
+    if role == "ui":
+        common += (
+            " IMPORTANT: In headless mode, prefer native list_dir, view_file, read_file, "
+            "grep_search, write_to_file and replace_file_content tools for file operations. "
+            "Avoid run_command for listing or reading files (ls, cat, wc, git status, etc.). "
+            "Only use shell commands when a build/test or the Impeccable executable genuinely "
+            "requires them. Avoid shell redirections/pipelines unless permitted. If a command "
+            "is blocked, stop and report the requested command; never claim coding completed. "
+            "For new UI use Impeccable's init workflow and derive any permitted product context "
+            "from the SRS, marking any assumptions; do not write outside assigned paths."
+        )
     return f"{common}\n\nAssigned task:\n{task}\n\nRevision requested:\n{revision or '(initial implementation)'}"
 
 
@@ -273,7 +372,7 @@ async def run_worker(role: Literal["ui", "backend"], state: dict) -> None:
         if worker["session_id"]:
             prompt = "Continue the unfinished assigned task from our earlier session.\n" + prompt
         if role == "ui":
-            cmd = ["agy", "-p", prompt, "--model", UI_MODEL, "--mode=auto", "--output-format", "stream-json"]
+            cmd = ["agy", "-p", prompt, "--model", UI_MODEL, "--mode=accept-edits", "--output-format", "stream-json"]
             if worker["session_id"]:
                 cmd.extend(["--conversation", worker["session_id"]])
         else:
@@ -290,6 +389,8 @@ async def run_worker(role: Literal["ui", "backend"], state: dict) -> None:
         print(f"[{role}] starting attempt {worker['attempt']} ({log_path.relative_to(ROOT)})", flush=True)
         last_error = []
         terminal = {}
+        last_ui_commands = []   # last requested commands; denial may occur on an earlier command
+        ui_permission_errors = []
         try:
             process = await asyncio.create_subprocess_exec(
                 *cmd, cwd=str(ROOT), stdout=asyncio.subprocess.PIPE,
@@ -301,7 +402,11 @@ async def run_worker(role: Literal["ui", "backend"], state: dict) -> None:
             save(state)
             return
 
+        worker["pid"] = process.pid
+        save(state)
         async def consume(reader, label, fp):
+            last_notice = ""
+            last_notice_at = 0.0
             async for line in reader:
                 s = line.decode("utf-8", errors="replace").rstrip("\n")
                 fp.write(f"[{label}] {s}\n")
@@ -309,11 +414,36 @@ async def run_worker(role: Literal["ui", "backend"], state: dict) -> None:
                 if label == "stderr":
                     last_error.append(s[-1500:])
                     del last_error[:-25]
+                    if role == "ui" and any(x in s.lower() for x in (
+                        "headless mode cannot prompt", "auto-denied", "jetski: no output produced"
+                    )):
+                        ui_permission_errors.append(s)
+                        suspect = last_ui_commands[-1] if last_ui_commands else "unknown"
+                        print(f"[ui] SHELL PERMISSION DENIED; last requested command (candidate): {suspect[:220]}", flush=True)
+                        if process.returncode is None:
+                            try:
+                                process.terminate()
+                            except ProcessLookupError:
+                                pass
                     continue
                 try:
                     evt = json.loads(s)
                 except ValueError:
                     continue
+                notice = brief_event(role, evt)
+                if notice and (notice != last_notice or time.time() - last_notice_at > 20):
+                    print(f"[{role}] {notice}", flush=True)
+                    last_notice, last_notice_at = notice, time.time()
+                if role == "ui":
+                    step = evt.get("step_update") or {}
+                    if (step.get("step_type") == "tool" and step.get("tool_name") == "run_command"
+                            and step.get("state") == "ACTIVE"):
+                        params = (step.get("tool_info") or {}).get("parameters") or {}
+                        command = str(params.get("CommandLine") or params.get("command") or "").strip()
+                        if command:
+                            last_ui_commands.append(command)
+                            del last_ui_commands[:-10]
+                            print(f"[ui] requested shell command: {command[:180]}", flush=True)
                 sess = evt.get("conversation_id") if role == "ui" else evt.get("sessionID")
                 if not sess and role == "ui":
                     sess = evt.get("result", {}).get("conversation_id") or evt.get("step_update", {}).get("conversation_id")
@@ -336,16 +466,28 @@ async def run_worker(role: Literal["ui", "backend"], state: dict) -> None:
                 consume(process.stderr, "stderr", fp),
             )
             exit_code = await process.wait()
+        worker["pid"] = None
+        save(state)
 
         details = json.dumps(terminal, ensure_ascii=False) + "\n" + "\n".join(last_error)
         worker["result"] = str(terminal.get("response") or terminal.get("last_text") or "")[-2500:]
-        worker["error"] = details[-2500:] if exit_code != 0 or terminal.get("error") else ""
+        worker["error"] = details[-2500:] if exit_code != 0 or terminal.get("error") or re.search(r"soft.denied|auto.denied|headless mode cannot prompt|jetski: no output produced", details, re.I) else ""
         worker["log"] = str(log_path.relative_to(ROOT))
+        ui_denied = bool(role == "ui" and (ui_permission_errors or terminal.get("denied_actions")))
+        if ui_denied:
+            suspect = last_ui_commands[-1] if last_ui_commands else "unknown"
+            worker["blocked_command_candidate"] = suspect
+            worker["error"] = (f"UI_PERMISSION_DENIED; last requested command (candidate): {suspect}\n" + details)[-2500:]
+            # Retry should start a fresh conversation, not inherit the denied one.
+            worker["session_id"] = ""
+        else:
+            worker["blocked_command_candidate"] = ""
         successful = (
+            not ui_denied and
             exit_code == 0
             and not terminal.get("error")
             and (role != "ui" or terminal.get("status") == "SUCCESS")
-            and not re.search(r"permission.*(denied|approval|required)|soft.denied|soft.denial|tool.*denied", details, re.I)
+            and not re.search(r"permission.*(denied|approval|required)|soft.denied|soft.denial|auto.denied|tool.*denied|headless mode cannot prompt|jetski: no output produced", details, re.I)
         )
         if successful:
             worker["status"] = "done"

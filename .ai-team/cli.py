@@ -113,17 +113,23 @@ def run_command(arguments: list[str]):
   ./team status                  show saved agent progress
   ./team retry ui|backend        retry a failed worker
   ./team doctor                  check local CLI setup
+  ./team model                   change DeepSeek model without reinstalling tools/skills
   ./team logs                    list log files
+  ./team watch                   live read-only dashboard of all 3 agents
 
-Inside ./team interactive mode: /build, /status, /resume, /doctor, /logs, /quit.
+Inside ./team interactive mode: /build, /model, /watch, /status, /resume, /doctor, /logs, /quit.
 Keep WSL running for unattended five-hour retries. Never paste API keys into prompts.''')
         return 0
+    if cmd in ('model','/model'):
+        return subprocess.run([sys.executable, str(ROOT / '.ai-team' / 'model_picker.py')], cwd=ROOT).returncode
     if cmd in ('status','/status'):
         status(); return 0
     if cmd in ('doctor','/doctor'):
         doctor(); return 0
     if cmd in ('logs','/logs'):
         logs(); return 0
+    if cmd in ('watch','/watch'):
+        return subprocess.run([sys.executable, str(ROOT / '.ai-team' / 'monitor.py')], cwd=ROOT).returncode
     if cmd in ('build','/build'):
         p = RUN / 'thinkmedia-progress.json'
         if p.exists():
