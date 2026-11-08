@@ -1,0 +1,46 @@
+{
+  "requirement": "FR05/11; NFR03/04/07/11",
+  "synthetic_only": true,
+  "source_database": "tm_migration_e103a75b5fa2",
+  "retained_files": 1,
+  "expired_files": 1,
+  "dump_bytes": 119869,
+  "dump_sha256": "017d8544be5b141f56445d0c21a75b7c857d3d3d033a28d31981076ec5b00540",
+  "restore": {
+    "restored_database": "tm_migration_a66a69d944a3",
+    "schema_version": "0008_feedback_external_mode",
+    "tables": 20,
+    "row_counts": {
+      "alembic_version": 1,
+      "application_status_history": 3,
+      "applications": 2,
+      "attachment_retention_events": 1,
+      "audit_events": 0,
+      "company_profiles": 2,
+      "content_events": 0,
+      "content_states": 0,
+      "instructor_profiles": 0,
+      "interactions": 0,
+      "learning_content": 0,
+      "listings": 2,
+      "marketplace_events": 5,
+      "moderation_reports": 0,
+      "quiz_attempts": 0,
+      "quiz_questions": 0,
+      "satisfaction_feedback": 0,
+      "sessions": 8,
+      "student_profiles": 2,
+      "users": 5
+    },
+    "source_counts_match": true,
+    "private_attachment_bytes_match": true,
+    "attachment_states_match": true,
+    "attachment_fingerprint_format": "retained-and-expired-v2",
+    "cleanup": "Fresh database preserved; no existing resource was overwritten or dropped."
+  },
+  "limitations": [
+    "New synthetic source and restored databases are preserved for inspection.",
+    "No presentation application or file was expired.",
+    "This verifies attachment state and audit restoration, not legal erasure of old backups."
+  ]
+}

@@ -11,7 +11,7 @@
   isolation: isolate;
   background:
     linear-gradient(90deg, #ffffff00 0%, #f8f0f5a6 55%, #f8f0f5d9 100%),
-    url("/illustrations/thinkmedia-ojt-signin-3d.webp") center / cover no-repeat;
+    url("/illustrations/thinkmedia-ojt-signin-3d.webp") left center / cover no-repeat;
   background-attachment: fixed;
 }
 .illustrated-signin.auth-story {
@@ -179,7 +179,7 @@
 @media (max-width: 800px) {
   .illustrated-signin.auth-layout {
     padding: 18px;
-    background-position: 35% center;
+    background-position: left center;
   }
   .illustrated-signin .auth-main {
     max-height: calc(100svh - 36px);
@@ -239,7 +239,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center 37%;
+    object-position: left center;
   }
   .illustrated-signin .auth-story::after {
     content: "";

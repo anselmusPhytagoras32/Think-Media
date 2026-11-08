@@ -88,3 +88,24 @@ with Gemini selected; production cost/region/retention terms are not approved.
 
 The local demo can be presented using its fictional accounts and resource lookup.
 These remaining dependencies are not silently counted as completed requirements.
+
+## Resumed verification — November 8, 2026
+
+- The web/API processes were stopped. `scripts/present.ps1` restarted them and
+  reported ready; all four fictional presentation roles then logged in through
+  HTTP200 and logged out through HTTP204 with matching role/account identities.
+- An authenticated `/admin/operations` request still reports assistant mode
+  `retrieval`, zero calls and zero budget. A private configuration presence check
+  confirms no application provider key is configured; no credential was printed.
+- Native Chrome rendered the new 3D sign-in artwork at 1440x1000 and 360x800.
+  Both loaded the intended asset with HTTP200 and had no horizontal overflow.
+  Left-aligned framing now preserves the student and task objects on narrow
+  screens (NFR05/09). The resulting TypeScript/Vite production build passed.
+- The local daily backup task reports last-run result zero. The synthetic
+  retention restore report linked above is included in Git so the published
+  audit's evidence link resolves on a fresh checkout.
+
+These are fresh startup/authentication/render/build checks. The full 237/30/8
+test gates above describe the earlier complete runs and were not rerun for this
+CSS framing correction. Genuine research reports remain `not_measured` and the
+three external dependencies listed above still prevent full SRS sign-off.
