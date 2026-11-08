@@ -1,5 +1,6 @@
 import { ThinkIcon } from "./brand";
 import { Artwork } from "./artwork";
+import { ResourceArtwork } from "./resource-artwork";
 // FR03/10/11 / NFR02–03,05,09–11: published resources, moderation and bounded guidance.
 import { FormEvent, useEffect, useRef, useState } from "react";
 import {
@@ -13,6 +14,7 @@ import {
   Plus,
   Send,
   Sparkles,
+  Search,
 } from "lucide-react";
 import { api, manila } from "./api";
 import { SuggestionsPreview } from "./suggestions-preview";
@@ -56,6 +58,300 @@ function Messages({ error, success }: { error: string; success?: string }) {
     </>
   );
 }
+// FR03/08, NFR05/09: the real library leads; suggestions are an optional view.
+function LearningLibrary({
+  items,
+  total,
+  offset,
+  busy,
+  error,
+  filter,
+  topics,
+  personalized,
+  view,
+  onView,
+  onFilter,
+  onOpen,
+  onFeedback,
+  onPage,
+  onRetry,
+}: {
+  items: Content[];
+  total: number;
+  offset: number;
+  busy: boolean;
+  error: string;
+  filter: string;
+  topics: string[];
+  personalized: boolean;
+  view: "all" | "suggested";
+  onView: (view: "all" | "suggested") => void;
+  onFilter: (value: string) => void;
+  onOpen: (item: Pick<Content, "id">) => void;
+  onFeedback: (item: Content, kind: "save" | "react") => void;
+  onPage: (offset: number) => void;
+  onRetry: () => void;
+}) {
+  const params = new URLSearchParams(filter);
+  const activeTopic = params.get("tag") || "";
+  return (
+    <div className="learning-library">
+      <form
+        className="library-search"
+        role="search"
+        aria-label="Learning library"
+        onSubmit={(event) => {
+          event.preventDefault();
+          const search = new URLSearchParams();
+          for (const [key, value] of new FormData(event.currentTarget))
+            if (String(value).trim()) search.set(key, String(value).trim());
+          onView("all");
+          onFilter(search.toString());
+        }}
+      >
+        <div className="field library-keyword">
+          <label htmlFor="resource-search">Search resources</label>
+          <div>
+            <Search size={18} aria-hidden="true" />
+            <input
+              id="resource-search"
+              name="q"
+              defaultValue={params.get("q") || ""}
+              placeholder="What would you like to learn?"
+            />
+          </div>
+        </div>
+        <div className="field library-topic-field">
+          <label htmlFor="resource-tag">Topic</label>
+          <input
+            id="resource-tag"
+            name="tag"
+            defaultValue={activeTopic}
+            placeholder="Any topic"
+          />
+        </div>
+        <button className="primary" disabled={busy}>
+          Search <ArrowRight size={16} />
+        </button>
+      </form>
+      {!!topics.length && (
+        <div
+          className="library-topics"
+          role="group"
+          aria-label="Explore learning topics"
+        >
+          <span>Explore topics</span>
+          {topics.map((topic) => (
+            <button
+              key={topic}
+              type="button"
+              aria-label={`Explore ${topic}`}
+              aria-pressed={
+                activeTopic.toLocaleLowerCase() === topic.toLocaleLowerCase()
+              }
+              disabled={busy}
+              onClick={() => {
+                const next = new URLSearchParams(filter);
+                if (
+                  activeTopic.toLocaleLowerCase() === topic.toLocaleLowerCase()
+                )
+                  next.delete("tag");
+                else next.set("tag", topic);
+                onView("all");
+                onFilter(next.toString());
+              }}
+            >
+              {topic}
+            </button>
+          ))}
+        </div>
+      )}
+      <div className="library-views" role="group" aria-label="Learning views">
+        <button
+          type="button"
+          aria-pressed={view === "all"}
+          onClick={() => onView("all")}
+        >
+          All resources
+        </button>
+        {personalized && (
+          <button
+            type="button"
+            aria-pressed={view === "suggested"}
+            onClick={() => onView("suggested")}
+          >
+            For you <Sparkles size={15} />
+          </button>
+        )}
+      </div>
+      {view === "suggested" ? (
+        <section
+          className="library-suggestions"
+          aria-label="Suggested learning"
+        >
+          <SuggestionsPreview
+            kind="content"
+            onOpen={(id) => onOpen({ id })}
+            browseHint="Choose All resources to keep exploring the library."
+          />
+          <button
+            type="button"
+            className="secondary"
+            onClick={() => onView("all")}
+          >
+            Browse all resources
+          </button>
+        </section>
+      ) : (
+        <>
+          <div className="library-results-heading">
+            <h2>
+              {activeTopic ? `${activeTopic} resources` : "Explore the library"}
+            </h2>
+            <span role="status">
+              {busy
+                ? "Updating resources…"
+                : `${total} ${total === 1 ? "resource" : "resources"}`}
+            </span>
+            {filter && (
+              <button
+                type="button"
+                className="text-button"
+                onClick={() => onFilter("")}
+              >
+                Clear filters
+              </button>
+            )}
+          </div>
+          {error ? (
+            <div className="library-state">
+              <p>
+                Resources could not be loaded. Try again to continue learning.
+              </p>
+              <button type="button" className="secondary" onClick={onRetry}>
+                Retry loading
+              </button>
+            </div>
+          ) : (
+            <>
+              {busy && !items.length && (
+                <p className="library-state" role="status">
+                  Loading resources…
+                </p>
+              )}
+              {!busy && total === 0 && (
+                <div className="empty library-state">
+                  <BookOpen size={32} />
+                  <h3>No resources found</h3>
+                  <p>Try a broader search or choose another topic.</p>
+                  {filter && (
+                    <button
+                      type="button"
+                      className="secondary"
+                      onClick={() => onFilter("")}
+                    >
+                      Browse all resources
+                    </button>
+                  )}
+                </div>
+              )}
+              <div className="library-resource-grid" aria-busy={busy}>
+                {items.map((item) => (
+                  <article
+                    className="resource-row library-resource-card"
+                    key={item.id}
+                  >
+                    <button
+                      type="button"
+                      className="library-resource-visual"
+                      disabled={busy}
+                      onClick={() => onOpen(item)}
+                      aria-label={`${item.has_quiz ? "Guide & quiz" : "Guide"}: Read ${item.title}`}
+                    >
+                      <ResourceArtwork title={item.title} tags={item.tags} />
+                      <span className="library-resource-kind">
+                        <BookOpen size={13} />
+                        {item.has_quiz ? "Guide & quiz" : "Guide"}
+                      </span>
+                    </button>
+                    <div className="library-resource-copy">
+                      <div className="library-resource-topics">
+                        {item.tags.slice(0, 3).map((tag) => (
+                          <span key={tag}>{tag}</span>
+                        ))}
+                      </div>
+                      <h3>
+                        <button
+                          type="button"
+                          disabled={busy}
+                          onClick={() => onOpen(item)}
+                        >
+                          {item.title}
+                        </button>
+                      </h3>
+                      <p>{item.summary}</p>
+                      <div className="feed-actions">
+                        <button
+                          type="button"
+                          className="text-button"
+                          disabled={busy}
+                          onClick={() => onOpen(item)}
+                        >
+                          Read resource <ArrowRight size={15} />
+                        </button>
+                        <button
+                          type="button"
+                          className="secondary library-feedback"
+                          aria-label={`${item.saved ? "Saved; remove saved resource" : "Save"} ${item.title}`}
+                          aria-pressed={item.saved}
+                          disabled={busy}
+                          onClick={() => onFeedback(item, "save")}
+                        >
+                          <Bookmark size={16} />
+                          <span>{item.saved ? "Saved" : "Save"}</span>
+                        </button>
+                        <button
+                          type="button"
+                          className="secondary library-feedback"
+                          aria-label={`${item.reacted ? "Reacted; remove reaction to" : "React to"} ${item.title}`}
+                          aria-pressed={item.reacted}
+                          disabled={busy}
+                          onClick={() => onFeedback(item, "react")}
+                        >
+                          <Heart size={16} />
+                          <span>{item.reacted ? "Reacted" : "React"}</span>
+                        </button>
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
+              <div className="pagination library-pagination">
+                <button
+                  disabled={busy || !offset}
+                  onClick={() => onPage(offset - 20)}
+                >
+                  Previous
+                </button>
+                <span>
+                  {total
+                    ? `${offset + 1}–${Math.min(total, offset + 20)} of ${total}`
+                    : "0 results"}
+                </span>
+                <button
+                  disabled={busy || offset + 20 >= total}
+                  onClick={() => onPage(offset + 20)}
+                >
+                  Next
+                </button>
+              </div>
+            </>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
 export function Learning({
   admin = false,
   reports = false,
@@ -87,6 +383,8 @@ export function Learning({
     [resolving, setResolving] = useState<Report | null>(null),
     [addQuiz, setAddQuiz] = useState(false);
   const [detailRevision, setDetailRevision] = useState(0);
+  const [catalogTopics, setCatalogTopics] = useState<string[]>([]);
+  const [libraryView, setLibraryView] = useState<"all" | "suggested">("all");
   // FR11/W08: publication requires a separate review before the API mutation.
   const [pendingPublication, setPendingPublication] = useState<Record<
     string,
@@ -118,7 +416,16 @@ export function Learning({
       );
       if (current !== sequence.current) return;
       if (reports) setReportItems(d.items as Report[]);
-      else setItems(d.items as Content[]);
+      else {
+        const content = d.items as Content[];
+        setItems(content);
+        if (!admin && !filter && offset === 0)
+          setCatalogTopics(
+            [...new Set(content.flatMap((item) => item.tags))]
+              .sort((a, b) => a.localeCompare(b))
+              .slice(0, 6),
+          );
+      }
       setTotal(d.total);
     } catch (e) {
       if (current === sequence.current) setError((e as Error).message);
@@ -339,7 +646,9 @@ export function Learning({
   }
   return (
     <>
-      <header className="page-heading">
+      <header
+        className={`page-heading ${!admin && !reports && !selected ? "learning-library-hero" : ""}`}
+      >
         <div>
           <h1>
             {reports
@@ -353,9 +662,12 @@ export function Learning({
               ? "Review concerns and record a moderation decision."
               : admin
                 ? "Prepare, review and publish trusted career resources."
-                : "Build workplace confidence with approved preparation resources."}
+                : "Read a guide. Try a skill. Take your next step toward OJT."}
           </p>
         </div>
+        {!admin && !reports && !selected && (
+          <Artwork kind="learning" className="learning-hero-art" priority />
+        )}
         {admin && !reports && (
           <button
             className="primary"
@@ -571,6 +883,14 @@ export function Learning({
             <ArrowLeft size={16} />
             Back to resources
           </button>
+          {!admin && (
+            <ResourceArtwork
+              title={selected.title}
+              tags={selected.tags}
+              className="library-detail-art"
+              priority
+            />
+          )}
           <div className="detail-toolbar">
             <h2>{selected.title}</h2>
             {admin && <span className="badge">{selected.status}</span>}
@@ -674,6 +994,31 @@ export function Learning({
             </>
           )}
         </section>
+      ) : !admin && !reports ? (
+        <LearningLibrary
+          key={filter}
+          items={items}
+          total={total}
+          offset={offset}
+          busy={busy}
+          error={error}
+          filter={filter}
+          topics={catalogTopics}
+          personalized={personalized}
+          view={libraryView}
+          onView={setLibraryView}
+          onFilter={(value) => {
+            setLibraryView("all");
+            setOffset(0);
+            setFilter(value ? "&" + value : "");
+          }}
+          onOpen={(item) => void open(item)}
+          onFeedback={(item, kind) => void feedback(item, kind)}
+          onPage={setOffset}
+          onRetry={() =>
+            initialId ? setDetailRevision((n) => n + 1) : void load()
+          }
+        />
       ) : (
         <>
           {!reports && (
@@ -805,9 +1150,7 @@ export function Learning({
               items.map((item) => (
                 <article className="resource-row" key={item.id}>
                   <div className="resource-artwork-cover" aria-hidden="true">
-                    <Artwork
-                      kind={item.has_quiz ? "applications" : "learning"}
-                    />
+                    <ResourceArtwork title={item.title} tags={item.tags} />
                   </div>
                   <div className="detail-toolbar">
                     <h2>

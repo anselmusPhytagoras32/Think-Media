@@ -4,6 +4,8 @@ import { ArrowRight, MapPin, Search, SlidersHorizontal } from "lucide-react";
 import { api, type Account } from "./api";
 import { href } from "./navigation";
 import { Artwork } from "./artwork";
+import { CompanyCover } from "./company-brand";
+import { ResourceArtwork } from "./resource-artwork";
 import { ThinkIcon } from "./brand";
 import { StatusBadge } from "./status";
 import type { Listing, Application } from "./marketplace";
@@ -157,9 +159,9 @@ export function StudentHome({ account }: { account: Account }) {
                 role="list"
                 aria-label="Recent opportunities"
               >
-                {listings.items.map((listing, index) => (
+                {listings.items.map((listing) => (
                   <article
-                    className={`opportunity-card cover-${index % 3}`}
+                    className="opportunity-card"
                     role="listitem"
                     key={listing.id}
                   >
@@ -168,8 +170,9 @@ export function StudentHome({ account }: { account: Account }) {
                       href={href("opportunities", listing.id)}
                     >
                       <div className="opportunity-cover">
-                        <Artwork
-                          kind={index % 2 ? "applications" : "opportunities"}
+                        <CompanyCover
+                          companyId={listing.company_id}
+                          companyName={listing.company_name}
                         />
                         <span>
                           {listing.type === "ojt"
@@ -227,14 +230,14 @@ export function StudentHome({ account }: { account: Account }) {
               <p role="status">Loading learning resources…</p>
             ) : resources?.items.length ? (
               <div className="learning-discovery">
-                {resources.items.map((item, index) => (
+                {resources.items.map((item) => (
                   <a
-                    className={`learning-discovery-card learning-color-${index % 3}`}
+                    className="learning-discovery-card"
                     key={item.id}
                     href={href("learning", item.id)}
                   >
                     <div className="learning-discovery-art">
-                      <Artwork kind={index % 2 ? "applications" : "learning"} />
+                      <ResourceArtwork title={item.title} tags={item.tags} />
                     </div>
                     <div>
                       <span>

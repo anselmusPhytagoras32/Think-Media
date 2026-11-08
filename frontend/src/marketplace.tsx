@@ -9,6 +9,9 @@ import {
   MapPin,
   Plus,
   Search,
+  ShieldCheck,
+  SlidersHorizontal,
+  UserRound,
 } from "lucide-react";
 import { api, Account, manila } from "./api";
 import { SuggestionsPreview } from "./suggestions-preview";
@@ -16,6 +19,7 @@ import { StatusBadge } from "./status";
 import { ThinkIcon } from "./brand";
 import { Artwork } from "./artwork";
 import { href } from "./navigation";
+import { CompanyLogo, CompanyCover } from "./company-brand";
 export type Listing = {
   id: string;
   company_id: string;
@@ -351,6 +355,374 @@ function Tags({ listing: l }: { listing: Listing }) {
     </div>
   );
 }
+// FR02/04/05/08; NFR05/09: search-first discovery with real filters and a separate suggestion view.
+function OpportunityBrowse({
+  account,
+  items,
+  total,
+  busy,
+  error,
+  filters,
+  offset,
+  onSearch,
+  onReset,
+  onOpen,
+  onPage,
+  view,
+  onView,
+}: {
+  account: Account;
+  items: Listing[];
+  total: number;
+  busy: boolean;
+  error: string;
+  filters: string;
+  offset: number;
+  onSearch: (event: FormEvent<HTMLFormElement>) => void;
+  onReset: () => void;
+  onOpen: (listing: Pick<Listing, "id">) => void;
+  onPage: (offset: number) => void;
+  view: "all" | "suggested";
+  onView: (view: "all" | "suggested") => void;
+}) {
+  const params = new URLSearchParams(filters);
+  const student = account.user.role === "student";
+  const [filtersOpen, setFiltersOpen] = useState(
+    () => window.matchMedia("(min-width:980px)").matches,
+  );
+  useEffect(() => {
+    const media = window.matchMedia("(min-width:980px)");
+    const update = () => setFiltersOpen(media.matches);
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+  return (
+    <div className="opportunity-browser">
+      <form
+        id="opportunity-search"
+        className="opportunity-search"
+        onSubmit={(event) => {
+          onView("all");
+          onSearch(event);
+        }}
+        role="search"
+        aria-label="Find opportunities"
+      >
+        <div className="opportunity-keyword field">
+          <label htmlFor="search-q">Keyword</label>
+          <div className="opportunity-search-input">
+            <Search size={20} aria-hidden="true" />
+            <input
+              id="search-q"
+              name="q"
+              defaultValue={params.get("q") || ""}
+              placeholder="Search by role, title or keyword"
+            />
+          </div>
+        </div>
+        <button className="primary" disabled={busy}>
+          <Search size={17} />
+          Search
+        </button>
+      </form>
+      <div className={`opportunity-grid ${student ? "has-support" : ""}`}>
+        <aside className="opportunity-filters" aria-label="Opportunity filters">
+          <button
+            type="button"
+            className="opportunity-filter-toggle"
+            aria-expanded={filtersOpen}
+            aria-controls="opportunity-filter-fields"
+            onClick={() => setFiltersOpen(!filtersOpen)}
+          >
+            <SlidersHorizontal size={18} /> Filters{" "}
+            <span>{filtersOpen ? "Hide" : "Show"}</span>
+          </button>
+          <div
+            className="opportunity-filter-fields"
+            id="opportunity-filter-fields"
+            hidden={!filtersOpen}
+          >
+            <h2>Filter opportunities</h2>
+            <div className="field">
+              <label htmlFor="search-type">Type</label>
+              <select
+                id="search-type"
+                name="type"
+                form="opportunity-search"
+                defaultValue={params.get("type") || ""}
+              >
+                <option value="">All types</option>
+                <option value="ojt">OJT</option>
+                <option value="job">Job</option>
+              </select>
+            </div>
+            <div className="field">
+              <label htmlFor="search-location">Location</label>
+              <input
+                id="search-location"
+                name="location"
+                form="opportunity-search"
+                defaultValue={params.get("location") || ""}
+                placeholder="City or remote"
+              />
+            </div>
+            <div className="field">
+              <label htmlFor="search-skill">Skill</label>
+              <input
+                id="search-skill"
+                name="skill"
+                form="opportunity-search"
+                defaultValue={params.get("skill") || ""}
+                placeholder="e.g. Python"
+              />
+            </div>
+            <button
+              className="secondary"
+              form="opportunity-search"
+              disabled={busy}
+            >
+              Apply filters
+            </button>
+            <p className="opportunity-filter-note">
+              <ShieldCheck size={16} />
+              Published listings from verified companies.
+            </p>
+          </div>
+        </aside>
+        <section
+          className="opportunity-results"
+          aria-label="Opportunity results"
+          aria-busy={busy}
+        >
+          <div
+            className="opportunity-views"
+            role="group"
+            aria-label="Opportunity views"
+          >
+            <button
+              type="button"
+              aria-pressed={view === "all"}
+              onClick={() => onView("all")}
+            >
+              All opportunities
+            </button>
+            {student && (
+              <button
+                type="button"
+                aria-pressed={view === "suggested"}
+                onClick={() => onView("suggested")}
+              >
+                For you
+              </button>
+            )}
+          </div>
+          {view === "suggested" ? (
+            <div className="opportunity-personalized">
+              <p>
+                Explore suggestions based on your profile and activity.{" "}
+                <a href={href("profile")}>Update your profile</a>
+              </p>
+              <SuggestionsPreview
+                kind="listing"
+                browseHint="Choose Browse all opportunities below to continue searching, or update your profile."
+                onOpen={(id) => onOpen({ id })}
+              />
+              <button
+                type="button"
+                className="secondary"
+                onClick={() => onView("all")}
+              >
+                Browse all opportunities
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className="opportunity-results-heading">
+                <h2>Available opportunities</h2>
+                <span role="status">
+                  {busy
+                    ? "Searching…"
+                    : `${total} ${total === 1 ? "result" : "results"}`}
+                </span>
+                {filters && (
+                  <button
+                    type="button"
+                    className="text-button"
+                    onClick={onReset}
+                  >
+                    Clear filters
+                  </button>
+                )}
+              </div>
+              {filters && (
+                <p className="opportunity-active-filters">
+                  {[
+                    params.get("q") && `Keyword: ${params.get("q")}`,
+                    params.get("type") &&
+                      `Type: ${params.get("type") === "ojt" ? "OJT" : "Job"}`,
+                    params.get("location") &&
+                      `Location: ${params.get("location")}`,
+                    params.get("skill") && `Skill: ${params.get("skill")}`,
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </p>
+              )}
+              {busy ? (
+                <p className="opportunity-result-state" role="status">
+                  Loading opportunities…
+                </p>
+              ) : error ? (
+                <p className="opportunity-result-state">
+                  Results could not be loaded. Use Retry loading above to try
+                  again.
+                </p>
+              ) : total === 0 ? (
+                <div className="empty opportunity-result-state">
+                  <Search size={30} />
+                  <h3>No opportunities found</h3>
+                  <p>Try a broader keyword or adjust your filters.</p>
+                  {filters && (
+                    <button
+                      type="button"
+                      className="secondary"
+                      onClick={onReset}
+                    >
+                      Reset search
+                    </button>
+                  )}
+                </div>
+              ) : (
+                items.map((listing) => (
+                  <article
+                    className="listing-row opportunity-result"
+                    key={listing.id}
+                  >
+                    <div className="opportunity-company">
+                      <CompanyLogo
+                        companyId={listing.company_id}
+                        companyName={listing.company_name}
+                      />
+                      <div>
+                        <p className="company-name">{listing.company_name}</p>
+                        <span className="opportunity-verification">
+                          <ShieldCheck size={13} />
+                          Verified company
+                        </span>
+                      </div>
+                    </div>
+                    <h3>
+                      <button type="button" onClick={() => onOpen(listing)}>
+                        {listing.title}
+                      </button>
+                    </h3>
+                    <div className="opportunity-facts">
+                      <span>
+                        <BriefcaseBusiness size={15} />
+                        {listing.type === "ojt"
+                          ? "OJT placement"
+                          : "Job opportunity"}
+                      </span>
+                      <span>
+                        <MapPin size={15} />
+                        {listing.location}
+                      </span>
+                    </div>
+                    <p className="listing-summary">
+                      {listing.description.slice(0, 240)}
+                      {listing.description.length > 240 ? "…" : ""}
+                    </p>
+                    {!!listing.skills.length && (
+                      <ul
+                        className="opportunity-skills"
+                        aria-label="Required skills"
+                      >
+                        {listing.skills.slice(0, 6).map((skill) => (
+                          <li key={skill}>{skill}</li>
+                        ))}
+                        {listing.skills.length > 6 && (
+                          <li>+{listing.skills.length - 6} more</li>
+                        )}
+                      </ul>
+                    )}
+                    <div className="opportunity-result-footer">
+                      <button
+                        type="button"
+                        className="text-button"
+                        onClick={() => onOpen(listing)}
+                      >
+                        View opportunity <ArrowRight size={16} />
+                      </button>
+                      {Number.isFinite(Date.parse(listing.created_at)) && (
+                        <time
+                          dateTime={listing.created_at}
+                          title={manila(listing.created_at)}
+                        >
+                          Added{" "}
+                          {new Intl.DateTimeFormat("en-PH", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                            timeZone: "Asia/Manila",
+                          }).format(new Date(listing.created_at))}
+                        </time>
+                      )}
+                    </div>
+                  </article>
+                ))
+              )}
+              <Pager
+                total={total}
+                offset={offset}
+                busy={busy}
+                onChange={onPage}
+              />
+            </>
+          )}
+        </section>
+        {student && (
+          <aside
+            className="opportunity-support"
+            aria-label="Application preparation"
+          >
+            <div className="opportunity-profile-icon">
+              <UserRound size={22} />
+            </div>
+            <h2>Get application-ready</h2>
+            <p>Give companies a clear picture of your skills and goals.</p>
+            <ol>
+              <li>
+                <strong>Your profile</strong>
+                <span>
+                  {account.profile.program && account.profile.skills?.length
+                    ? "Your course and skills are included. Keep them up to date."
+                    : "Add your course and skills so suggestions reflect your interests."}
+                </span>
+                <a href={href("profile")}>
+                  Review profile <ArrowRight size={14} />
+                </a>
+              </li>
+              <li>
+                <strong>Your resume</strong>
+                <span>
+                  Prepare a PDF up to 5 MiB. You can review it before
+                  submitting.
+                </span>
+              </li>
+              <li>
+                <strong>Your progress</strong>
+                <span>Keep each application and its status in one place.</span>
+                <a href={href("applications")}>
+                  My applications <ArrowRight size={14} />
+                </a>
+              </li>
+            </ol>
+          </aside>
+        )}
+      </div>
+    </div>
+  );
+}
 export function Marketplace({
   account,
   mode,
@@ -390,6 +762,7 @@ export function Marketplace({
       null,
     );
   const [detailRevision, setDetailRevision] = useState(0);
+  const [browseView, setBrowseView] = useState<"all" | "suggested">("all");
   const [reviewFile, setReviewFile] = useState<File | null>(null),
     [reviewLetter, setReviewLetter] = useState("");
   const loadSequence = useRef(0);
@@ -672,7 +1045,9 @@ export function Marketplace({
           : "My applications";
   return (
     <>
-      <header className="page-heading">
+      <header
+        className={`page-heading ${mode === "browse" ? "opportunity-heading" : ""}`}
+      >
         <div>
           <h1>{title}</h1>
           <p>
@@ -906,8 +1281,11 @@ export function Marketplace({
             </div>
             <StatusBadge status={selected.status} />
           </div>
-          <div className="listing-artwork-cover" aria-hidden="true">
-            <Artwork kind="opportunities" />
+          <div className="company-detail-cover">
+            <CompanyCover
+              companyId={selected.company_id}
+              companyName={selected.company_name}
+            />
           </div>
           <Tags listing={selected} />
           <h3 className="detail-section">About this opportunity</h3>
@@ -1079,78 +1457,29 @@ export function Marketplace({
             <p className="muted">Only students can submit applications.</p>
           )}
         </section>
+      ) : mode === "browse" ? (
+        <OpportunityBrowse
+          view={browseView}
+          onView={setBrowseView}
+          key={filters}
+          account={account}
+          items={items}
+          total={total}
+          busy={busy}
+          error={error}
+          filters={filters}
+          offset={offset}
+          onSearch={search}
+          onReset={() => {
+            setFilters("");
+            onFilters?.("");
+            setOffset(0);
+          }}
+          onOpen={(listing) => void open(listing)}
+          onPage={setOffset}
+        />
       ) : (
         <>
-          {!company && !applicationMode && (
-            <form className="search-bar" key={filters} onSubmit={search}>
-              <div className="field">
-                <label htmlFor="search-q">Keyword</label>
-                <input
-                  id="search-q"
-                  name="q"
-                  defaultValue={new URLSearchParams(filters).get("q") || ""}
-                  placeholder="Role, title or keyword"
-                />
-              </div>
-              <div className="field">
-                <label htmlFor="search-location">Location</label>
-                <input
-                  id="search-location"
-                  name="location"
-                  defaultValue={
-                    new URLSearchParams(filters).get("location") || ""
-                  }
-                  placeholder="City or remote"
-                />
-              </div>
-              <div className="field">
-                <label htmlFor="search-type">Type</label>
-                <select
-                  id="search-type"
-                  name="type"
-                  defaultValue={new URLSearchParams(filters).get("type") || ""}
-                >
-                  <option value="">All types</option>
-                  <option value="ojt">OJT</option>
-                  <option value="job">Job</option>
-                </select>
-              </div>
-              <div className="field">
-                <label htmlFor="search-skill">Skill</label>
-                <input
-                  id="search-skill"
-                  name="skill"
-                  defaultValue={new URLSearchParams(filters).get("skill") || ""}
-                  placeholder="e.g. Python"
-                />
-              </div>
-              <button className="primary" disabled={busy}>
-                <Search size={17} />
-                Search
-              </button>
-              {filters && (
-                <button
-                  type="button"
-                  className="filter-reset"
-                  onClick={(e) => {
-                    const form = e.currentTarget.form;
-                    setFilters("");
-                    onFilters?.("");
-                    setOffset(0);
-                    requestAnimationFrame(() => form?.reset());
-                  }}
-                >
-                  Clear filters
-                </button>
-              )}
-            </form>
-          )}
-          {mode === "browse" && account.user.role === "student" && (
-            <SuggestionsPreview
-              kind="listing"
-              onOpen={(id) => void open({ id })}
-            />
-          )}
           <section className="panel">
             <div className="section-title">
               <h2>

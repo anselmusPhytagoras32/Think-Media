@@ -1,0 +1,438 @@
+/* FR08/09; NFR05/09: optional feedback and scannable profile-based discovery. */
+.suggestions-page {
+  container-type: inline-size;
+  container-name: suggestions;
+}
+.suggestions-page .suggestions-heading {
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+.suggestions-page .suggestions-heading h1 {
+  font-size: clamp(27px, 2.5vw, 34px);
+}
+.suggestions-page .suggestions-heading p {
+  margin-bottom: 0;
+  font-size: 14px;
+}
+.suggestions-page .suggestions-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+.suggestions-page .suggestions-main {
+  min-width: 0;
+}
+.suggestions-page .suggestions-view-switch {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  border-bottom: 1px solid var(--line);
+}
+.suggestions-page .suggestions-view-switch > button {
+  min-height: 48px;
+  padding: 12px 0;
+  border-radius: 0;
+  border-bottom: 2px solid transparent;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--muted);
+  background: transparent;
+}
+.suggestions-page .suggestions-view-switch > button[aria-pressed="true"] {
+  border-bottom-color: var(--purple);
+  color: var(--purple);
+}
+.suggestions-page .suggestion-mode {
+  display: flex;
+  align-items: start;
+  gap: 8px;
+  font-size: 12px;
+  line-height: 1.7;
+  margin: 18px 0 24px;
+  color: var(--muted);
+}
+.suggestions-page .suggestion-mode > svg {
+  margin-top: 2px;
+  flex-shrink: 0;
+  color: var(--purple);
+}
+.suggestions-page .suggestions-section {
+  margin-bottom: 32px;
+}
+.suggestions-page .suggestions-section-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.suggestions-page .suggestions-section-heading h2 {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0;
+  font-size: 19px;
+}
+.suggestions-page .suggestions-section-heading > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 32px;
+  font-size: 12px;
+  text-underline-offset: 3px;
+}
+.suggestions-page .suggestions-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+.suggestions-page .suggestion-card.suggestion-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  overflow: clip;
+  background: white;
+}
+.suggestions-page .suggestion-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 22px 22px 16px;
+}
+.suggestions-page .suggestion-content h3 {
+  margin: 0 0 12px;
+}
+.suggestions-page .suggestion-content h3 > button {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  color: var(--purple);
+}
+.suggestions-page .suggestion-company {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.suggestions-page .suggestion-company > .company-logo {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  object-fit: contain;
+  border-radius: 10px;
+}
+.suggestions-page .suggestion-company > div {
+  min-width: 0;
+}
+.suggestions-page .suggestion-company .company-name {
+  margin: 0 0 3px;
+  font-size: 13px;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.suggestions-page .suggestion-company > div > span {
+  font-size: 11px;
+  color: var(--muted);
+}
+.suggestions-page .suggestion-location {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  margin: 0 0 12px;
+}
+.suggestions-page .suggestion-content > .suggestion-summary {
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 1.75;
+  margin: 0 0 16px;
+  overflow-wrap: anywhere;
+}
+.suggestions-page .suggestion-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0;
+  margin: 0 0 16px;
+  list-style: none;
+}
+.suggestions-page .suggestion-tags > li {
+  border-radius: 7px;
+  padding: 4px 9px;
+  font-size: 11px;
+  background: #f3eef9;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.suggestions-page .suggestion-content > .suggestion-reason {
+  display: flex;
+  align-items: start;
+  gap: 6px;
+  margin: auto 0 8px;
+  font-size: 12px;
+  line-height: 1.65;
+  color: var(--purple);
+  width: fit-content;
+  background: transparent;
+  padding: 0;
+  border: 0;
+}
+.suggestions-page .suggestion-reason > svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.suggestions-page .suggestion-content > .suggestion-open {
+  align-self: start;
+  min-height: 40px;
+  font-size: 13px;
+  margin-top: 4px;
+}
+.suggestions-page .suggestion-card-art {
+  display: block;
+  width: 100%;
+  height: 136px;
+  padding: 10px;
+  border-radius: 0;
+  background: #eee7f5;
+}
+.suggestions-page .suggestion-card-art:hover {
+  filter: brightness(0.98);
+}
+/* Match the actual edge colors of each illustration without cropping its objects. */
+.suggestions-page .suggestion-card-art:has(> [data-artwork-topic="coding-data"]) {
+  background: #e9cded;
+}
+.suggestions-page .suggestion-card-art:has(> [data-artwork-topic="web-portfolio"]) {
+  background: #fdccba;
+}
+.suggestions-page .suggestion-card-art:has(> [data-artwork-topic="application-prep"]) {
+  background: #99d3d2;
+}
+.suggestions-page .suggestion-card-art:focus-visible {
+  outline-offset: -4px;
+}
+.suggestions-page .suggestion-card-art > .resource-artwork {
+  display: block;
+  width: 100%;
+  height: 116px;
+  object-fit: contain;
+}
+.suggestions-page .suggestion-rating {
+  padding: 0 22px 12px;
+  margin-top: auto;
+}
+.suggestions-page .suggestion-rate-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+}
+.suggestions-page .suggestion-rate-toggle:hover {
+  color: var(--purple);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.suggestions-page .suggestion-rate-toggle[aria-expanded="true"] > svg {
+  transform: rotate(180deg);
+}
+.suggestions-page .suggestion-rating > [hidden] {
+  display: none;
+}
+.suggestions-page .rating-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 12px;
+  max-width: none;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.suggestions-page .rating-form .field {
+  min-width: 0;
+  margin: 0;
+}
+.suggestions-page .rating-form label {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 11px;
+}
+.suggestions-page .rating-form select {
+  min-height: 44px;
+  padding: 9px 10px;
+  font-size: 13px;
+  background: white;
+}
+.suggestions-page .rating-form > .secondary {
+  min-height: 44px;
+  width: auto;
+  padding: 10px 12px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.suggestions-page .rating-form > p {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+.suggestions-page .suggestions-profile {
+  padding: 24px;
+  background: #f1edf7;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+}
+.suggestions-page .suggestions-profile-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+  margin-bottom: 16px;
+  background: white;
+  color: var(--purple);
+}
+.suggestions-page .suggestions-profile h2 {
+  margin: 0 0 10px;
+  font-size: 18px;
+  line-height: 1.5;
+}
+.suggestions-page .suggestions-profile > p {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.75;
+}
+.suggestions-page .suggestions-profile-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 16px 0;
+}
+.suggestions-page .suggestions-profile-skills > span {
+  font-size: 11px;
+  color: var(--purple);
+  background: white;
+  border-radius: 7px;
+  padding: 4px 9px;
+}
+.suggestions-page .suggestions-profile > button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.6;
+  text-align: left;
+}
+.suggestions-page .suggestions-profile > .suggestions-note {
+  padding-top: 18px;
+  margin: 18px 0 0;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+}
+.suggestions-page .suggestions-state {
+  padding: 32px 24px;
+  margin: 24px 0;
+  font-size: 14px;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: white;
+}
+.suggestions-page .suggestions-state h2 {
+  font-size: 19px;
+  margin-top: 0;
+}
+.suggestions-page .suggestions-error > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+.suggestions-page .suggestions-empty {
+  padding: 28px 24px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: white;
+}
+.suggestions-page .suggestions-empty h3 {
+  margin-top: 0;
+  font-size: 17px;
+}
+.suggestions-page .suggestions-empty p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+@container suggestions (min-width: 1040px) {
+  .suggestions-page .suggestions-layout {
+    grid-template-columns: minmax(0, 1fr) 240px;
+  }
+}
+@container suggestions (max-width: 680px) {
+  .suggestions-page .suggestions-card-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .suggestions-page .suggestions-view-switch {
+    gap: 20px;
+  }
+  .suggestions-page .suggestions-view-switch > button {
+    font-size: 13px;
+  }
+}
+@media (max-width: 600px) {
+  .suggestions-page .suggestions-heading {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 42px;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .suggestions-page .suggestions-heading h1 {
+    font-size: 27px;
+  }
+  .suggestions-page .suggestions-heading p {
+    font-size: 13px;
+    line-height: 1.65;
+  }
+  .suggestions-page .suggestions-heading > button {
+    width: 42px;
+    height: 42px;
+    min-height: 42px;
+    padding: 0;
+    font-size: 0;
+    gap: 0;
+  }
+  .suggestions-page .suggestion-content {
+    padding: 20px 18px 12px;
+  }
+  .suggestions-page .suggestion-rating {
+    padding-inline: 18px;
+  }
+  .suggestions-page .suggestions-section-heading {
+    gap: 4px;
+  }
+  .suggestions-page .suggestions-section-heading h2 {
+    font-size: 18px;
+  }
+  .suggestions-page .suggestion-mode {
+    margin-block: 16px 20px;
+  }
+  .suggestions-page .suggestions-profile {
+    padding: 22px;
+  }
+  .suggestions-page .rating-form select {
+    font-size: 16px;
+  }
+}

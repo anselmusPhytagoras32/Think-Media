@@ -20,6 +20,10 @@ test("sidebar collapses with keyboard labels, remembers choice and preserves nav
 }) => {
   await signIn(page);
   await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.addInitScript(() => {
+    if (!localStorage.getItem("thinkmedia.sidebar.v2"))
+      localStorage.setItem("thinkmedia.sidebar.v2", "expanded");
+  });
   await openApp(page);
   const sidebar = page.locator("#main-sidebar");
   await page
@@ -127,9 +131,7 @@ test("shell adapts to desktop, tablet and drawer without overlap or trapped scro
   expect(await page.evaluate(() => document.body.style.overflow)).not.toBe(
     "hidden",
   );
-  await expect(
-    page.getByRole("button", { name: "Expand sidebar", exact: true }),
-  ).toBeFocused();
+  await expect(page.locator(".sidebar-toggle")).toBeFocused();
   const axe = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
     .analyze();
@@ -147,12 +149,12 @@ test("blocked sidebar storage does not prevent collapsing or reaching account co
     const get = Storage.prototype.getItem,
       set = Storage.prototype.setItem;
     Storage.prototype.getItem = function (key) {
-      if (key === "thinkmedia.sidebar.v1")
+      if (key === "thinkmedia.sidebar.v2")
         throw new DOMException("Blocked", "SecurityError");
       return get.call(this, key);
     };
     Storage.prototype.setItem = function (key, value) {
-      if (key === "thinkmedia.sidebar.v1")
+      if (key === "thinkmedia.sidebar.v2")
         throw new DOMException("Blocked", "SecurityError");
       return set.call(this, key, value);
     };
@@ -160,6 +162,9 @@ test("blocked sidebar storage does not prevent collapsing or reaching account co
   await signIn(page);
   await page.setViewportSize({ width: 1440, height: 1000 });
   await openApp(page);
+  await page
+    .getByRole("button", { name: "Expand sidebar", exact: true })
+    .click();
   await page
     .getByRole("button", { name: "Collapse sidebar", exact: true })
     .click();
@@ -179,4 +184,52 @@ test("blocked sidebar storage does not prevent collapsing or reaching account co
       .locator("#main-sidebar")
       .getByRole("button", { name: "Sign out", exact: true }),
   ).toBeVisible();
+});
+
+test("automatic sidebar expands for pointer and keyboard, locks its width and persists the choice", async ({
+  page,
+}) => {
+  await signIn(page);
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await openApp(page);
+  const sidebar = page.locator("#main-sidebar");
+  const shell = page.locator(".app-shell");
+  await page.mouse.move(700, 400);
+  await expect(shell).toHaveClass(/sidebar-is-collapsed/);
+  const workspaceX = (await page.locator(".workspace").boundingBox())!.x;
+  await sidebar.hover();
+  await expect(shell).not.toHaveClass(/sidebar-is-collapsed/);
+  await expect(
+    page.getByRole("button", { name: "Lock sidebar", exact: true }),
+  ).toBeVisible();
+  expect((await page.locator(".workspace").boundingBox())!.x).toBe(workspaceX);
+  await page.mouse.move(700, 400);
+  await expect(shell).toHaveClass(/sidebar-is-collapsed/);
+  await sidebar.getByRole("link", { name: "Learning", exact: true }).focus();
+  await expect(shell).not.toHaveClass(/sidebar-is-collapsed/);
+  await page.locator("#main").focus();
+  await expect(shell).toHaveClass(/sidebar-is-collapsed/);
+  await sidebar.hover();
+  await page.getByRole("button", { name: "Lock sidebar", exact: true }).click();
+  await page.mouse.move(700, 400);
+  await expect(shell).toHaveClass(/sidebar-is-locked/);
+  await expect(shell).not.toHaveClass(/sidebar-is-collapsed/);
+  await page.reload();
+  await expect(
+    page.getByRole("button", { name: "Unlock sidebar", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await page
+    .getByRole("button", { name: "Collapse sidebar", exact: true })
+    .click();
+  await sidebar.hover();
+  await expect(shell).toHaveClass(/sidebar-is-collapsed/);
+  await page
+    .getByRole("button", { name: "Unlock sidebar", exact: true })
+    .click();
+  await page.mouse.move(700, 400);
+  await page.locator("#main").focus();
+  await expect(shell).toHaveClass(/sidebar-is-auto/);
+  await expect(shell).toHaveClass(/sidebar-is-collapsed/);
+  await expect(page.locator(".mobile-header")).not.toBeVisible();
+  await expect(page.locator(".workspace-location,.topbar-date")).toHaveCount(0);
 });

@@ -16,6 +16,8 @@ import {
   Menu,
   PanelLeftClose,
   PanelLeftOpen,
+  Pin,
+  PinOff,
   ShieldCheck,
   Sparkles,
   UserRound,
@@ -38,6 +40,11 @@ import "./illustrated.css";
 import "./discovery.css";
 import "./layout.css";
 import "./signin.css";
+import "./workspace-shell.css";
+import "./opportunities.css";
+import "./learning-library.css";
+import "./content-identity.css";
+import "./suggestions.css";
 import {
   readSidebarPreference,
   saveSidebarPreference,
@@ -451,6 +458,14 @@ function Profile({
           <h2>Personal information</h2>
           <p className="muted">Keep your details up to date.</p>
           <Notice error={error} success={success} />
+          {success && p.kind === "student" && (
+            <a
+              className="profile-next-step secondary"
+              href={href("opportunities")}
+            >
+              Continue to opportunities <ArrowRight size={16} />
+            </a>
+          )}
           <form onSubmit={save}>
             <Field
               label="Full name"
@@ -879,9 +894,8 @@ function App() {
   const [sidebarPreference, setSidebarPreference] = useState(
     readSidebarPreference,
   );
-  const [compactViewport, setCompactViewport] = useState(
-    () => window.matchMedia("(max-width:1100px)").matches,
-  );
+  const [sidebarHovered, setSidebarHovered] = useState(false);
+  const [sidebarFocused, setSidebarFocused] = useState(false);
   const [railTooltip, setRailTooltip] = useState<{
     label: string;
     left: number;
@@ -904,12 +918,24 @@ function App() {
     [startupError, setStartupError] = useState(""),
     [menu, setMenu] = useState(false),
     [error, setError] = useState("");
+  const automaticSidebar =
+    sidebarPreference === null || sidebarPreference === "auto";
   const railCollapsed =
     !mobile &&
     (sidebarPreference === "collapsed" ||
-      (sidebarPreference === null && compactViewport));
+      (automaticSidebar && !sidebarHovered && !sidebarFocused));
   function toggleSidebar() {
     const next = railCollapsed ? "expanded" : "collapsed";
+    setSidebarPreference(next);
+    saveSidebarPreference(next);
+    setRailTooltip(null);
+  }
+  function toggleSidebarLock() {
+    const next = automaticSidebar
+      ? railCollapsed
+        ? "collapsed"
+        : "expanded"
+      : "auto";
     setSidebarPreference(next);
     saveSidebarPreference(next);
     setRailTooltip(null);
@@ -942,18 +968,16 @@ function App() {
   }
   useEffect(() => {
     const media = window.matchMedia("(max-width:720px)");
-    const compact = window.matchMedia("(max-width:1100px)");
     const update = () => {
       setMobile(media.matches);
-      setCompactViewport(compact.matches);
+      setSidebarHovered(false);
+      setSidebarFocused(false);
       setRailTooltip(null);
       if (!media.matches) setMenu(false);
     };
     media.addEventListener("change", update);
-    compact.addEventListener("change", update);
     return () => {
       media.removeEventListener("change", update);
-      compact.removeEventListener("change", update);
     };
   }, []);
   async function session() {
@@ -1015,7 +1039,12 @@ function App() {
   }, [menu, mobile]);
   useEffect(() => {
     if (account)
-      requestAnimationFrame(() => document.getElementById("main")?.focus());
+      requestAnimationFrame(() => {
+        if (route.page === "more") window.scrollTo(0, 0);
+        document
+          .getElementById("main")
+          ?.focus({ preventScroll: route.page === "more" });
+      });
   }, [route.page, route.id]);
   if (welcomeOpen)
     return (
@@ -1141,12 +1170,8 @@ function App() {
     { id: "assistant", label: "Guidance", short: "Guidance", icon: BookOpen },
   ];
   const profileLabel = company ? "Company profile" : "My profile";
-  const allowed = [...nav.map((n) => n.id), "profile"];
+  const allowed = [...nav.map((n) => n.id), "profile", "more"];
   const page = allowed.includes(route.page) ? route.page : "overview";
-  const title =
-    page === "profile"
-      ? profileLabel
-      : nav.find((n) => n.id === page)?.label || "Home";
   const quickIds = admin
     ? ["overview", "verification", "content", "reports"]
     : company
@@ -1166,7 +1191,9 @@ function App() {
     }
   }
   return (
-    <div className={`app-shell ${railCollapsed ? "sidebar-is-collapsed" : ""}`}>
+    <div
+      className={`app-shell ${railCollapsed ? "sidebar-is-collapsed" : ""} ${automaticSidebar ? "sidebar-is-auto" : "sidebar-is-locked"}`}
+    >
       <a
         href="#main"
         className="skip"
@@ -1187,10 +1214,23 @@ function App() {
       )}
       <aside
         id="main-sidebar"
+        onPointerEnter={(e) => {
+          if (e.pointerType === "mouse") setSidebarHovered(true);
+        }}
         onMouseOver={describeRailControl}
-        onMouseLeave={() => setRailTooltip(null)}
-        onFocusCapture={describeRailControl}
-        onBlurCapture={() => setRailTooltip(null)}
+        onMouseLeave={() => {
+          setRailTooltip(null);
+          setSidebarHovered(false);
+        }}
+        onFocusCapture={(e) => {
+          setSidebarFocused(e.target.matches(":focus-visible"));
+          describeRailControl(e);
+        }}
+        onBlurCapture={(e) => {
+          setRailTooltip(null);
+          if (!e.currentTarget.contains(e.relatedTarget))
+            setSidebarFocused(false);
+        }}
         onScrollCapture={() => setRailTooltip(null)}
         role={mobile && menu ? "dialog" : undefined}
         aria-modal={mobile && menu ? true : undefined}
@@ -1226,6 +1266,44 @@ function App() {
                 ? "Instructor portal"
                 : "Student portal"}
         </p>
+        <div className="sidebar-controls">
+          <span className="sidebar-mode-label">
+            {automaticSidebar ? "Auto-expand" : "Locked"}
+          </span>
+          <button
+            type="button"
+            className="sidebar-toggle"
+            aria-label={railCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            aria-expanded={!railCollapsed}
+            aria-controls="main-sidebar"
+            title={
+              railCollapsed
+                ? "Expand and lock sidebar"
+                : "Collapse and lock sidebar"
+            }
+            onClick={toggleSidebar}
+          >
+            {railCollapsed ? (
+              <PanelLeftOpen size={19} />
+            ) : (
+              <PanelLeftClose size={19} />
+            )}
+          </button>
+          <button
+            type="button"
+            className="sidebar-lock"
+            aria-label={automaticSidebar ? "Lock sidebar" : "Unlock sidebar"}
+            aria-pressed={!automaticSidebar}
+            title={
+              automaticSidebar
+                ? "Lock the current sidebar width"
+                : "Unlock to expand on hover or keyboard focus"
+            }
+            onClick={toggleSidebarLock}
+          >
+            {automaticSidebar ? <PinOff size={18} /> : <Pin size={18} />}
+          </button>
+        </div>
         <nav aria-label="Main navigation">
           {nav.map((n) => (
             <a
@@ -1295,21 +1373,7 @@ function App() {
         )}
       </aside>
       <div className="workspace" inert={mobile && menu ? true : undefined}>
-        <header className="topbar">
-          <button
-            type="button"
-            className="sidebar-toggle"
-            aria-label={railCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-            aria-expanded={!railCollapsed}
-            aria-controls="main-sidebar"
-            onClick={toggleSidebar}
-          >
-            {railCollapsed ? (
-              <PanelLeftOpen size={21} />
-            ) : (
-              <PanelLeftClose size={21} />
-            )}
-          </button>
+        <header className="topbar mobile-header">
           <button
             className="mobile-toggle"
             aria-label="Open navigation"
@@ -1321,30 +1385,65 @@ function App() {
             <BrandMark size={28} />
             ThinkMedia<span>.</span>
           </a>
-          <div className="workspace-location">
-            <span>
-              {admin
-                ? "Administration"
-                : company
-                  ? "Company portal"
-                  : "ThinkMedia"}
-            </span>
-            <ChevronRight size={14} />
-            <strong>{title}</strong>
-          </div>
-          <span className="topbar-date">
-            {new Intl.DateTimeFormat("en-PH", {
-              month: "short",
-              day: "numeric",
-              year: "numeric",
-              timeZone: "Asia/Manila",
-            }).format(new Date())}
-          </span>
         </header>
         <main id="main" className="main-content" tabIndex={-1}>
           <Notice error={error} />
-          <LocalDemoNotice />
-          {page === "profile" ? (
+          {page === "more" ? (
+            <section className="more-page" aria-labelledby="more-title">
+              <header className="page-heading">
+                <div>
+                  <h1 id="more-title">More</h1>
+                  <p>Your workspace and account, in one place.</p>
+                </div>
+              </header>
+              <a className="more-account" href={href("profile")}>
+                <span className="avatar" aria-hidden="true">
+                  {account.user.display_name.slice(0, 1)}
+                </span>
+                <span>
+                  <strong>{account.user.display_name}</strong>
+                  <small>{profileLabel}</small>
+                </span>
+                <ChevronRight size={20} aria-hidden="true" />
+              </a>
+              <nav
+                className="more-destinations"
+                aria-label="Workspace destinations"
+              >
+                <h2>Your workspace</h2>
+                <div className="more-menu-list">
+                  {nav.map((n) => (
+                    <a href={href(n.id)} key={n.id}>
+                      <ThinkIcon name={navIcon(n.id)} size={24} />
+                      <span>{n.label}</span>
+                      <ChevronRight size={18} aria-hidden="true" />
+                    </a>
+                  ))}
+                </div>
+              </nav>
+              <section
+                className="more-account-actions"
+                aria-labelledby="more-account-title"
+              >
+                <h2 id="more-account-title">Account</h2>
+                <div className="more-menu-list">
+                  <button type="button" onClick={replayWelcome}>
+                    <ThinkIcon name="guidance" size={24} />
+                    <span>Getting started</span>
+                    <ChevronRight size={18} aria-hidden="true" />
+                  </button>
+                  <button
+                    type="button"
+                    className="more-sign-out"
+                    onClick={logout}
+                  >
+                    <LogOut size={23} aria-hidden="true" />
+                    <span>Sign out</span>
+                  </button>
+                </div>
+              </section>
+            </section>
+          ) : page === "profile" ? (
             <Profile account={account} onSave={setAccount} />
           ) : page === "verification" ? (
             <Admin />
@@ -1403,6 +1502,9 @@ function App() {
           ) : (
             <Home account={account} />
           )}
+          <div className="workspace-demo-note">
+            <LocalDemoNotice />
+          </div>
         </main>
         <nav className="mobile-task-nav" aria-label="Quick navigation">
           {quick.map((n) => (
@@ -1421,10 +1523,15 @@ function App() {
               <span>{n.short}</span>
             </a>
           ))}
-          <button aria-label="More navigation" onClick={openMenu}>
+          <a
+            href={href("more")}
+            aria-label="More navigation"
+            aria-current={page === "more" ? "page" : undefined}
+            className={page === "more" ? "active" : ""}
+          >
             <Menu size={21} />
             <span>More</span>
-          </button>
+          </a>
         </nav>
       </div>
     </div>

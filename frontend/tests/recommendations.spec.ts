@@ -74,6 +74,15 @@ test("profile suggestions expose real resources and save optional ratings", asyn
   ).toBeTruthy();
   expect(recommendations.alpha).toBe(1);
   const page = await context.newPage();
+  let ratingRequests = 0;
+  page.on("request", (request) => {
+    if (
+      request.method() === "POST" &&
+      new URL(request.url()).pathname === "/api/v1/interactions" &&
+      request.postDataJSON()?.event_type === "rating"
+    )
+      ratingRequests++;
+  });
   await openApp(page, "/");
   await page.getByRole("button", { name: "Open navigation" }).click();
   await page
@@ -85,9 +94,15 @@ test("profile suggestions expose real resources and save optional ratings", asyn
   ).toBeVisible();
   const row = page.locator("article").filter({ hasText: title });
   await expect(row).toBeVisible();
+  expect(ratingRequests).toBe(0);
+  await row
+    .getByRole("button", { name: "Rate relevance", exact: true })
+    .click();
   await row.getByLabel("Relevance rating (optional)").selectOption("5");
+  expect(ratingRequests).toBe(0);
   await row.getByRole("button", { name: "Share rating", exact: true }).click();
   await expect(row.getByRole("status")).toContainText("rating was saved");
+  expect(ratingRequests).toBe(1);
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,

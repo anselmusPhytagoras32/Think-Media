@@ -45,6 +45,8 @@ colors:
   category-applications: "#e9c7d6"
   mobile-navigation-active: "#f2dbe8"
   signin-action-hover: "#94d5dc"
+  signin-glass: "#fffefaad"
+  signin-glass-mobile: "#fffefac7"
   sidebar-toggle: "#f3edf8"
   sidebar-toggle-hover: "#e9dff2"
 typography:
@@ -100,8 +102,8 @@ rounded:
   discovery-category: "23px"
   discovery-category-mobile: "19px"
   opportunity-card: "24px"
-  signin-scene: "28px 100px 28px 28px"
-  signin-scene-mobile: "23px"
+  signin-card: "28px"
+  signin-card-mobile: "24px"
 spacing:
   control-gap: "10px"
   action-gap: "12px"
@@ -127,6 +129,16 @@ components:
     height: "51px"
   button-signin-hover:
     backgroundColor: "{colors.signin-action-hover}"
+  signin-glass-card:
+    backgroundColor: "{colors.signin-glass}"
+    border: "1px solid #ffffffc7"
+    rounded: "{rounded.signin-card}"
+    backdropFilter: "blur(22px) saturate(1.18)"
+  signin-glass-card-mobile:
+    backgroundColor: "{colors.signin-glass-mobile}"
+    border: "1px solid #ffffffd4"
+    rounded: "{rounded.signin-card-mobile}"
+    backdropFilter: "blur(20px) saturate(1.16)"
   sidebar-toggle:
     backgroundColor: "{colors.sidebar-toggle}"
     textColor: "{colors.deep-purple}"
@@ -199,7 +211,7 @@ components:
 
 Soft rounded surfaces, warm dimensional artwork and original duotone marks make career preparation feel approachable. Deep purple anchors readable actions and headings; turquoise, peach, pinks, olive and lavender give supporting surfaces their character. White navigation and pale paper keep forms, status history and real work queues easy to scan. The navigation rail can collapse to make more room, while sign-in pairs a full campus illustration with the native account form.
 
-The user's supplied job-app screenshots and nine-color palette replace the earlier green identity. The reusable signature combines four original task-specific transparent dimensional scenes, a fifth full-scene sign-in illustration, a rounded book logo, custom task icons and clear native controls. Student discovery gives imagery a stronger role through illustrated category tiles and real opportunity cards; company, instructor and administrator work retains its existing task-focused structure. Imagery welcomes people into the product; actual role work and its next action remain legible beside it. The North Star is descriptive language for this implementation, not a claim of separately approved brand strategy.
+The user's supplied job-app screenshots and nine-color palette replace the earlier green identity. The reusable signature combines four original task-specific transparent dimensional scenes, two responsive full-scene sign-in illustrations, a rounded book logo, custom task icons and clear native controls. Student discovery gives imagery a stronger role through illustrated category tiles and real opportunity cards; company, instructor and administrator work retains its existing task-focused structure. Imagery welcomes people into the product; actual role work and its next action remain legible beside it. The North Star is descriptive language for this implementation, not a claim of separately approved brand strategy.
 
 **Key Characteristics:**
 
@@ -268,17 +280,17 @@ Main content establishes the named inline-size container `workspace`. At a conte
 
 Categories use a (16px) gap, then (10px) on mobile. Student home alone uses mobile main padding (19px 20px 105px) and discovery paper. Recently posted uses two grid columns on desktop; on mobile it becomes a horizontally scrollable, mandatory snap row with a (13px) gap and cards at (83%) of its width, leaving the next card visible. Keyboard-accessible detail links remain inside each card. Learning previews use image/copy columns (105px and remaining width), reducing to (83px and remaining width) on mobile. This hierarchy is scoped to student home, not every role or screen.
 
-The introduction fills its entire viewport with the active step color: blush for Prepare, turquoise for Explore and lavender for Apply. Supporting text darkens to retain contrast on these colored backgrounds. The introduction uses a wide header (1260px maximum) and two-column body (1150px maximum), with illustration and copy in a (1.1fr to 1fr) ratio. On mobile the art precedes the copy in one column, with (22px) page gutters and a flexible full-width Next action. Wider screens at a minimum of (1500px) gain a larger introduction top offset. Authentication uses a white full-height scene/form grid (1.08fr/1fr) with (24px) outer padding. The full-bleed scene occupies the left panel, and the right form has a maximum width (420px). At (1100px), the split becomes equal columns with (18px) outer padding. At (720px), the scene becomes a compact header (190px) with (12px) outer margins above the form; at heights up to (700px) it shortens to (145px). The mobile form uses (24px 24px 26px) padding. Scene copy and footer hide on mobile; branding stays inside the image header and the native form heading remains visible.
+The introduction fills its entire viewport with the active step color: blush for Prepare, turquoise for Explore and lavender for Apply. Supporting text darkens to retain contrast on these colored backgrounds. The introduction uses a wide header (1260px maximum) and two-column body (1150px maximum), with illustration and copy in a (1.1fr to 1fr) ratio. On mobile the art precedes the copy in one column, with (22px) page gutters and a flexible full-width Next action. Wider screens at a minimum of (1500px) gain a larger introduction top offset. Authentication is a full-viewport scene, not a split panel. On desktop, a fixed cover background fills the screen: the student anchors the left, while a soft lavender garden and a pale right-side wash keep the account form legible. The native form sits in one glassmorphism card on the right (maximum width 510px, 28px radius, translucent warm-white fill, 22px backdrop blur, fine white border and quiet shadow). The logo and short welcome copy sit directly on the image without separate badges or caption cards. The form card stays inside the viewport; long create-account content scrolls inside the card. At widths up to (800px), the card centers and the text scales down. At (600px), switch to the portrait `<picture>` asset in a (250–340px) top image region; put the same glass card below it on the soft blush page background. Fix the viewport to (100svh), keep page/body scrolling off, and let only the form card scroll with `overscroll-behavior: contain`. Set the card content to start at its top (`justify-content: flex-start`) so the title, role field and first input are visible when registration opens. Keep image proportions with `object-fit: cover`; never force the landscape source into the phone banner or size its background against the growing registration page.
 
 ## Elevation & Depth
 
-Depth comes chiefly from pale surface layers, hairline borders and the softly sculpted artwork. Ordinary work panels have no resting shadow. Selected authentication tabs use a small shadow (`0 3px 9px #402c7510`); the open mobile drawer uses an offset shadow (`10px 0 30px #402c7526`) with a purple translucent backdrop. Illustration lighting stays inside the artwork. The mobile bottom bar has a small upward shadow (`0 -4px 18px #402c7509`) and rounded upper corners; discovery cards remain flat. Collapsed-rail tooltips use `0 5px 14px #402c7520`. A dark purple gradient overlays the sign-in scene to support white native text; mobile uses a lighter top gradient while scene copy is hidden.
+Depth comes chiefly from pale surface layers, hairline borders and the softly sculpted artwork. Ordinary work panels have no resting shadow. Selected authentication tabs use a small shadow (`0 3px 9px #402c7510`); the open mobile drawer uses an offset shadow (`10px 0 30px #402c7526`) with a purple translucent backdrop. Illustration lighting stays inside the artwork. The mobile bottom bar has a small upward shadow (`0 -4px 18px #402c7509`) and rounded upper corners; discovery cards remain flat. Collapsed-rail tooltips use `0 5px 14px #402c7520`. The fixed sign-in background gets a light horizontal wash on its right side so labels and links stay readable without a separate text panel. On mobile, the portrait illustration fades into the blush page above the glass form card.
 
 **The Quiet Surface Rule.** Let rounded tonal surfaces and artwork carry depth; keep work panels flat at rest.
 
 ## Shapes
 
-Soft rectangles are the recurring form: fields and buttons use their dedicated rounded tokens, navigation is a little fuller, and panels have broad corners that tighten on mobile. Status and metadata shapes are compact rounded rectangles. The greeting surface uses the welcome token (24px on mobile); introduction artwork has broad corners (29px on mobile). The sign-in scene uses its asymmetric radius token, reducing the large top-right corner to (70px) at the compact breakpoint and all corners to the mobile scene token on phones. Task emblems are compact colored tiles with rounded outlined symbols. Student discovery expands these into broad illustrated category surfaces with dedicated category radii; search uses its own rounding. Opportunity cards use the opportunity-card token, tightening to (23px) on mobile; learning previews use (21px), then (20px). Borders are generally one pixel; the surrounding interface stays flat while the sign-in scene uses its text-contrast overlay.
+Soft rectangles are the recurring form: fields and buttons use their dedicated rounded tokens, navigation is a little fuller, and panels have broad corners that tighten on mobile. Status and metadata shapes are compact rounded rectangles. The greeting surface uses the welcome token (24px on mobile); introduction artwork has broad corners (29px on mobile). The sign-in glass form card uses (28px) corners on desktop and (24px) on phones; the scene image itself is full bleed and has no enclosing card radius. Task emblems are compact colored tiles with rounded outlined symbols. Student discovery expands these into broad illustrated category surfaces with dedicated category radii; search uses its own rounding. Opportunity cards use the opportunity-card token, tightening to (23px) on mobile; learning previews use (21px), then (20px). Borders are generally one pixel; the surrounding interface stays flat while the sign-in scene uses its text-contrast overlay.
 
 ## Components
 
@@ -310,7 +322,7 @@ White rail, muted purple-gray labels and original rounded icons. Active destinat
 
 The book-and-leaf mark uses a rounded deep-purple tile with white pages, turquoise leaf and rose dot. Eleven custom SVG task marks share rounded strokes and small colored fills. Both mark families are in `frontend/src/brand.tsx`; utility icons elsewhere remain compatible with the outlined visual language. Opportunity and learning emblems identify content kinds, never fictional employer brands.
 
-Five original WebP assets live in `frontend/public/illustrations/`, each with its exact generation prompt in the adjacent `.webp.json` file:
+Original WebP assets live in `frontend/public/illustrations/`; generated assets have an adjacent `.webp.json` provenance record:
 
 | Asset | Native dimensions | Scene and implemented role |
 | --- | --- | --- |
@@ -318,13 +330,19 @@ Five original WebP assets live in `frontend/public/illustrations/`, each with it
 | `thinkmedia-opportunities.webp` | 960 × 960 | Young man with career materials and oversized briefcase; Find OJT category, opportunity covers/details and Explore introduction. |
 | `thinkmedia-learning.webp` | 960 × 960 | Books, study objects and graduation cap; learning category, resource previews/details and guidance. |
 | `thinkmedia-applications.webp` | 960 × 960 | Clipboard, folder, pencil and paper plane; applications category/empty state, alternating content covers and Apply introduction. |
-| `thinkmedia-signin-scene.webp` | 1024 × 1365 | Opaque campus study scene with a student at a laptop; full-bleed sign-in panel and mobile illustrated header (175106 bytes). |
+| `thinkmedia-signin-background.webp` | 1800 × 1013 | Desktop full-viewport botanical campus scene; student and books left, open garden space right. |
+| `thinkmedia-signin-mobile.webp` | 1024 × 1280 | Purpose-composed portrait version for the phone banner; keeps the student proportional and fades into blush at the bottom. |
+| `thinkmedia-signin-scene.webp` | 1024 × 1365 | Earlier portrait study scene retained as an unused source asset; do not use for the current sign-in layout. |
 
-The learning, opportunity, application and sign-in provenance files record `image_gen`, the original source path, prompt and decorative-use restriction; the welcome provenance records its prompt and creation time. They are generated illustration, not photographed participants, employer branding or research evidence. Use the task-appropriate asset rather than repeating the welcome scene everywhere. Images contain no interface wording and use empty alternative text beside meaningful native labels. The shared `Artwork` component reserves a square (960 × 960) box, eager-loads priority art and otherwise lazy-loads; its welcome asset is intrinsically shorter. The four transparent task assets use `object-fit: contain` to preserve the composition. The opaque sign-in scene uses its native (1024 × 1365) dimensions, high fetch priority, `object-fit: cover`, and `object-position: 50% 40%` on desktop; the mobile header uses `50% 5%` to retain the face in the crop.
+The learning, opportunity, application and both current sign-in provenance files record `image_gen`, the source path, prompt and decorative-use restriction; the welcome provenance records its prompt and creation time. They are generated illustration, not photographed participants, employer branding or research evidence. Use the task-appropriate asset rather than repeating the welcome scene everywhere. Images contain no interface wording and use empty alternative text beside meaningful native labels. The shared `Artwork` component reserves a square (960 × 960) box, eager-loads priority art and otherwise lazy-loads; its welcome asset is intrinsically shorter. The four transparent task assets use `object-fit: contain` to preserve the composition. The desktop background uses `thinkmedia-signin-background.webp` with `background-size: cover` and `background-attachment: fixed`, independent of registration form height. On phones, a `<picture>` source selects `thinkmedia-signin-mobile.webp`; its fixed-height banner uses `object-fit: cover` and `object-position: center 37%`. Never stretch a landscape image to fill the phone banner.
 
 ### Illustrated sign-in
 
-A prominent campus scene welcomes the visitor while the real account form stays native and readable. Branding and the scene h2 are HTML above the contrast overlay; the form owns the h1 ("Welcome back." or "Create your account"). Sign in/Create account mode buttons retain pressed state, password visibility remains a named button, and actual role selection, validation, errors, autocomplete and privacy copy remain part of the existing workflow. Authentication fields are at least (50px) high; mobile input text is (16px). The sign-in image is decorative and never replaces labels or native copy. Reference-only social providers and password recovery controls are not presented as working features. Scope: FR01–02/W01 with NFR03/05/09.
+The screen uses one continuous botanical campus image across the desktop viewport, with a fixed light wash at the right for contrast. Keep the art full scene; do not divide it into an image panel plus blank page. Put the real sign-in or registration form in one warm-white glassmorphism card, with translucent fill, backdrop blur, white hairline border, 28px desktop / 24px phone corners and restrained shadow. Do not put the logo or welcome caption in additional cards. The logo and short scene heading are native HTML directly over the left-side image. The h1 belongs inside the form card and reads “Welcome back.” or “Create your account.”
+
+Phone screens show the sign-in scene as a compact banner above the same glass card, fading into the blush page surface. The card overlaps the banner slightly and the document scrolls naturally, so the footer and every create-account field remain reachable without clipping or a nested scroll area. Keep the title and first field initially visible, preserve keyboard access, and prevent horizontal overflow.
+
+Sign in/Create account mode buttons retain pressed state, password visibility remains a named button, and actual role selection, validation, errors, autocomplete and privacy copy remain part of the existing workflow. Authentication fields are at least (50px) high; mobile input text is (16px). Artwork is decorative and never replaces labels or native copy. Reference-only social providers and password recovery controls are not presented as working features. Scope: FR01–02/W01 with NFR03/05/09. Visual references: `.impeccable/review/signin-fullbg-desktop.png`, `signin-fullbg-mobile.png`, and `signup-fixed-phone.png`.
 
 ### First-use introduction
 
@@ -344,7 +362,7 @@ Copy arrives with a brief vertical movement (0.35s, cubic-bezier(0.16, 1, 0.3, 1
 - **Do** keep introduction entry, skip, back and replay controls visible and usable.
 - **Do** preserve labels, keyboard focus, reduced motion and recoverable task states.
 - **Do** keep the desktop rail toggle reachable and the mobile drawer full width within its established (280px) size.
-- **Do** use the full-scene sign-in artwork with native branding, form headings and the documented mobile crop.
+- **Do** use the full-scene desktop illustration, dedicated portrait mobile art, and one translucent form card; let only that card scroll on registration.
 
 ### Don't:
 

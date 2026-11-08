@@ -38,6 +38,9 @@ test("student registration, profile persistence, logout and mobile layout", asyn
     .fill("Python, communication");
   await page.getByRole("button", { name: "Save profile" }).click();
   await expect(page.getByRole("status")).toContainText("saved");
+  await expect(
+    page.getByRole("link", { name: "Continue to opportunities", exact: true }),
+  ).toHaveAttribute("href", "#/opportunities");
   await page.reload();
   await expect(page).toHaveURL(/#\/profile$/);
   await expect(page.getByLabel("Institution", { exact: true })).toHaveValue(

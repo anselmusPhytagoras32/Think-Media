@@ -13,6 +13,7 @@ export const pages = [
   "content",
   "reports",
   "audit",
+  "more",
 ] as const;
 export type PageKey = (typeof pages)[number];
 export function href(page: string, id?: string) {

@@ -7,9 +7,11 @@ type Suggested = { item: { id: string; title: string }; reason: string };
 export function SuggestionsPreview({
   kind,
   onOpen,
+  browseHint,
 }: {
   kind: "listing" | "content";
   onOpen: (id: string) => void;
+  browseHint?: string;
 }) {
   const [items, setItems] = useState<Suggested[]>([]),
     [busy, setBusy] = useState(true),
@@ -45,7 +47,8 @@ export function SuggestionsPreview({
         </p>
       ) : unavailable ? (
         <p className="muted">
-          Suggestions are unavailable. You can continue browsing below.
+          Suggestions are unavailable.{" "}
+          {browseHint || "You can continue browsing below."}
         </p>
       ) : items.length ? (
         items.map(({ item, reason }) => (
@@ -67,8 +70,8 @@ export function SuggestionsPreview({
         ))
       ) : (
         <p className="muted">
-          No eligible suggestions yet. Browse available items below or update
-          your profile.
+          No eligible suggestions yet.{" "}
+          {browseHint || "Browse available items below or update your profile."}
         </p>
       )}
     </section>

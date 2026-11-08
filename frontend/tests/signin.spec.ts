@@ -24,6 +24,27 @@ test("illustrated sign-in is readable on desktop, tablet and phone", async ({
     ).toBeTruthy();
     await expect(page.getByLabel("Email address")).toBeVisible();
     await expect(page.getByLabel(/^Password/)).toBeVisible();
+    if (width <= 390) {
+      const mobileLayout = await page.evaluate(() => {
+        const main = document.querySelector<HTMLElement>(".auth-main")!;
+        const footer = document.querySelector<HTMLElement>(".auth-foot")!;
+        const artwork = document.querySelector<HTMLElement>(".auth-illustration")!;
+        const card = main.getBoundingClientRect();
+        const footerBox = footer.getBoundingClientRect();
+        const artBox = artwork.getBoundingClientRect();
+        return {
+          mainOverflow: getComputedStyle(main).overflowY,
+          pageHeight: document.documentElement.scrollHeight,
+          footerAfterCard:
+            footerBox.top >= card.top && footerBox.bottom <= card.bottom,
+          artworkAtPageTop: artBox.top <= 1 && artBox.width >= innerWidth - 2,
+        };
+      });
+      expect(mobileLayout.mainOverflow).toBe("visible");
+      expect(mobileLayout.footerAfterCard).toBeTruthy();
+      expect(mobileLayout.artworkAtPageTop).toBeTruthy();
+      expect(mobileLayout.pageHeight).toBeLessThanOrEqual(900);
+    }
     await page.screenshot({
       path: `../.impeccable/review/signin-scene-${width}.png`,
       fullPage: true,
@@ -55,6 +76,13 @@ test("sign-in preserves role registration, password visibility and real student 
   ).toBeVisible();
   await page.getByLabel("I’m joining as").selectOption("company");
   await expect(page.getByLabel("Company name")).toBeVisible();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollHeight > window.innerHeight,
+    ),
+  ).toBeTruthy();
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await expect(page.getByRole("button", { name: "Getting started" })).toBeVisible();
   await page.getByLabel("I’m joining as").selectOption("student");
   await expect(page.getByLabel("Company name")).toHaveCount(0);
   await page

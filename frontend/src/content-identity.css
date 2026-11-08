@@ -1,0 +1,111 @@
+/* FR03/04/W02/W03; NFR05/09: semantic art and consistent company identity. */
+.resource-artwork {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.company-logo {
+  display: block;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  object-fit: contain;
+}
+.company-logo-fallback {
+  display: grid;
+  place-items: center;
+  background: #e8e0f2;
+  color: var(--purple);
+  font-weight: 800;
+  font-size: 16px;
+}
+.company-cover {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
+  padding: 22px;
+  background: #eee8f6;
+}
+.company-cover .company-logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 17px;
+}
+.company-cover > div {
+  min-width: 0;
+}
+.company-cover strong {
+  display: block;
+  color: var(--purple);
+  font-family: "Manrope Variable", sans-serif;
+  font-size: 17px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.company-cover span:not(.company-logo) {
+  display: block;
+  margin-top: 5px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.opportunity-card .opportunity-cover {
+  height: auto;
+  min-height: 146px;
+  align-items: stretch;
+  padding-bottom: 30px;
+  background: #eee8f6;
+}
+.opportunity-card .opportunity-cover > .company-cover {
+  align-items: center;
+  padding: 18px 22px 12px;
+}
+.opportunity-card .opportunity-cover > span {
+  bottom: 10px;
+  padding: 4px 8px;
+  left: 22px;
+  font-size: 9px;
+}
+.opportunity-company .company-logo {
+  width: 40px;
+  height: 40px;
+}
+.company-detail-cover {
+  margin: 20px 0 24px;
+  border-radius: 18px;
+  overflow: hidden;
+}
+.company-detail-cover .company-cover {
+  min-height: 120px;
+  padding: 24px;
+}
+.company-detail-cover .company-logo {
+  width: 64px;
+  height: 64px;
+}
+.learning-discovery-art .resource-artwork {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+@media (max-width: 600px) {
+  .company-cover {
+    gap: 12px;
+  }
+  .company-cover strong {
+    font-size: 15px;
+  }
+  .company-cover .company-logo {
+    width: 50px;
+    height: 50px;
+  }
+  .opportunity-card .opportunity-cover {
+    min-height: 138px;
+  }
+  .company-detail-cover .company-cover {
+    padding: 20px;
+  }
+}

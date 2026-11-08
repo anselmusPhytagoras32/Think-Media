@@ -66,16 +66,14 @@ test("real home, quick navigation, reload, browser Back and drawer focus", async
   await expect(page).toHaveURL(/#\/learning$/);
   await page.goBack();
   await expect(page).toHaveURL(/#\/opportunities$/);
-  await page.getByRole("button", { name: "More navigation" }).click();
+  await page.getByRole("link", { name: "More navigation" }).click();
+  await expect(page).toHaveURL(/#\/more$/);
   await expect(
-    page.getByRole("dialog", { name: "Navigation drawer" }),
+    page.getByRole("heading", { name: "More", exact: true }),
   ).toBeVisible();
-  await page.keyboard.press("Escape");
-  await expect(
-    page.getByRole("button", { name: "More navigation" }),
-  ).toBeFocused();
-  await page.getByRole("button", { name: "More navigation" }).click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
   await page
+    .locator(".more-page")
     .getByRole("button", { name: "Getting started", exact: true })
     .click();
   await expect(
@@ -86,9 +84,9 @@ test("real home, quick navigation, reload, browser Back and drawer focus", async
   await page
     .getByRole("button", { name: "Go to workspace", exact: true })
     .click();
-  await expect(page).toHaveURL(/#\/opportunities$/);
+  await expect(page).toHaveURL(/#\/more$/);
   await expect(
-    page.getByRole("heading", { name: "Available opportunities" }),
+    page.getByRole("heading", { name: "More", exact: true }),
   ).toBeVisible();
   expect((await page.request.get("/api/v1/auth/me")).status()).toBe(200);
 });

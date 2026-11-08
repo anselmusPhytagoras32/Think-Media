@@ -216,9 +216,14 @@
 }
 @media (max-width: 600px) {
   .illustrated-signin.auth-layout {
-    height: 100svh;
+    display: block;
+    box-sizing: border-box;
+    height: auto;
     min-height: 100svh;
-    padding: min(40svh, 340px) 15px 28px;
+    padding: clamp(185px, calc(30svh - 58px), 212px) 15px
+      calc(20px + env(safe-area-inset-bottom));
+    overflow-x: clip;
+    overflow-y: visible;
     background: #f5ebf2;
     background-attachment: initial;
   }
@@ -228,7 +233,7 @@
     z-index: 0;
     display: block;
     width: 100%;
-    height: clamp(250px, 38svh, 340px);
+    height: clamp(205px, 30svh, 270px);
     max-height: none;
     min-height: 0;
     padding: 0;
@@ -245,7 +250,7 @@
     content: "";
     position: absolute;
     inset: 0 0 auto;
-    height: clamp(250px, 38svh, 340px);
+    height: clamp(205px, 30svh, 270px);
     z-index: -1;
     background: linear-gradient(180deg, #402c7510 60%, #f5ebf200 100%);
     pointer-events: none;
@@ -265,10 +270,10 @@
     align-self: start;
     min-height: 0;
     width: min(100%, 430px);
-    max-height: calc(100svh - min(40svh, 340px) - 28px);
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    margin: 0;
+    max-height: none;
+    overflow: visible;
+    overscroll-behavior: auto;
+    margin: 0 auto;
     padding: 23px 20px 21px;
     border: 1px solid #ffffffd4;
     border-radius: 24px;
@@ -308,7 +313,7 @@
 }
 @media (max-width: 360px) {
   .illustrated-signin.auth-layout {
-    padding-inline: 11px;
+    padding-inline: 10px;
   }
   .illustrated-signin .auth-main {
     padding-inline: 16px;

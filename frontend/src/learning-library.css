@@ -1,0 +1,416 @@
+/* FR03/08; NFR05/09/10: approved learning, discoverable topics and accessible card actions. */
+.learning-library-hero.page-heading {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 174px;
+  padding: 28px 32px;
+  margin-bottom: 26px;
+  overflow: hidden;
+  border-radius: 24px;
+  background: #e2eff0;
+}
+.learning-library-hero > div {
+  position: relative;
+  z-index: 1;
+  max-width: 68%;
+}
+.learning-library-hero h1 {
+  margin: 0 0 10px;
+  font-size: clamp(26px, 2.5vw, 34px);
+}
+.learning-library-hero p {
+  margin: 0;
+  max-width: 42ch;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #3e5767;
+}
+.learning-library-hero .learning-hero-art {
+  position: absolute;
+  right: 28px;
+  bottom: 0;
+  width: 180px;
+  height: 174px;
+  object-fit: contain;
+}
+.learning-library {
+  container-type: inline-size;
+  container-name: library;
+}
+.library-search {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(140px, 220px) auto;
+  gap: 12px;
+  align-items: end;
+}
+.library-search .field {
+  margin: 0;
+  min-width: 0;
+}
+.library-search label {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+.library-search input {
+  min-height: 48px;
+  background: white;
+}
+.library-search > button {
+  min-height: 48px;
+}
+.library-keyword > div {
+  position: relative;
+}
+.library-keyword svg {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+}
+.library-keyword input {
+  padding-left: 42px;
+}
+.library-topics {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 3px 18px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #c6b8d6 transparent;
+}
+.library-topics > span {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+  margin-right: 3px;
+}
+.library-topics > button {
+  flex-shrink: 0;
+  padding: 7px 12px;
+  min-height: 36px;
+  font-size: 12px;
+  color: var(--purple);
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.library-topics > button[aria-pressed="true"] {
+  color: white;
+  background: var(--purple);
+  border-color: var(--purple);
+}
+.library-topics > button:hover {
+  border-color: var(--purple);
+}
+.library-topics > button:focus-visible {
+  outline-offset: 1px;
+}
+.library-views {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  margin-top: 8px;
+  border-bottom: 1px solid var(--line);
+}
+.library-views > button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 13px 0;
+  min-height: 48px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--muted);
+}
+.library-views > button[aria-pressed="true"] {
+  color: var(--purple);
+  border-bottom-color: var(--purple);
+}
+.library-results-heading {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  padding: 24px 0 18px;
+}
+.library-results-heading h2 {
+  margin: 0;
+  font-size: 19px;
+}
+.library-results-heading > span {
+  font-size: 12px;
+  color: var(--muted);
+}
+.library-results-heading > button {
+  min-height: 28px;
+  font-size: 12px;
+  margin-left: auto;
+}
+.library-resource-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+  align-items: stretch;
+}
+.library-resource-card.resource-row {
+  position: static;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: white;
+  overflow: clip;
+}
+.library-resource-visual {
+  display: block;
+  position: relative;
+  width: 100%;
+  min-height: 170px;
+  height: 170px;
+  padding: 0;
+  border-radius: 0;
+  background: #eee7f5;
+}
+.library-resource-visual:hover {
+  background: #e7def0;
+}
+.library-resource-visual:focus-visible {
+  outline-offset: -4px;
+}
+.library-resource-visual img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 45%;
+}
+.library-resource-visual img[data-artwork-topic="general"] {
+  object-fit: contain;
+  padding: 12px;
+}
+.library-resource-kind {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  bottom: 12px;
+  left: 14px;
+  padding: 5px 8px;
+  border-radius: 7px;
+  font-size: 10px;
+  font-weight: 600;
+  background: #fffdf8;
+  color: var(--purple);
+}
+.library-resource-copy {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 20px;
+}
+.library-resource-topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 9px;
+  margin-bottom: 12px;
+}
+.library-resource-topics > span {
+  font-size: 11px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.library-resource-card h3 {
+  margin: 0 0 12px;
+}
+.library-resource-card h3 > button {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--purple);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.5;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+.library-resource-card h3 > button:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.library-resource-copy > p {
+  flex: 1;
+  font-size: 13px;
+  line-height: 1.75;
+  color: var(--muted);
+  margin: 0 0 20px;
+  overflow-wrap: anywhere;
+}
+.library-resource-copy .feed-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  padding: 0;
+  margin: auto 0 0;
+}
+.library-resource-copy .feed-actions > .text-button {
+  margin-right: auto;
+  min-height: 40px;
+  font-size: 12px;
+}
+.library-resource-copy .library-feedback {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 40px;
+  min-height: 40px;
+  padding: 0;
+  border-radius: 10px;
+}
+.library-feedback span {
+  display: none;
+}
+.library-feedback[aria-pressed="true"] {
+  background: #f5e4eb;
+  border-color: #d7a3b7;
+  color: #8a2445;
+}
+.library-pagination {
+  margin: 22px 0 0;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.library-state {
+  margin: 0;
+  padding: 32px 16px;
+}
+.library-state > p {
+  color: var(--muted);
+  font-size: 14px;
+}
+.library-suggestions {
+  padding: 24px 0;
+}
+.library-suggestions .suggestions-preview {
+  background: white;
+  margin-bottom: 18px;
+}
+/* The detail thumbnail must override shared fluid artwork sizing. */
+.learning-detail .library-detail-art {
+  display: block;
+  float: right;
+  width: 180px;
+  height: 170px;
+  margin: 0 0 20px 28px;
+  object-fit: contain;
+  border-radius: 18px;
+  background: #eee7f5;
+}
+.learning-detail .learning-actions {
+  clear: both;
+}
+@container library (max-width: 920px) {
+  .library-resource-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+  .library-resource-visual {
+    height: 180px;
+  }
+}
+@container library (max-width: 580px) {
+  .library-search {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px 10px;
+  }
+  .library-search .library-keyword {
+    grid-column: 1 / -1;
+  }
+  .library-resource-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+  .library-resource-visual {
+    height: 190px;
+  }
+  .library-resource-copy {
+    padding: 20px;
+  }
+  .library-resource-copy .library-feedback {
+    width: 42px;
+    height: 42px;
+  }
+  .library-topics {
+    padding-block: 14px;
+  }
+  .library-topics > button {
+    min-height: 40px;
+  }
+  .library-results-heading {
+    padding-top: 20px;
+  }
+  .library-results-heading h2 {
+    font-size: 17px;
+  }
+}
+@media (max-width: 600px) {
+  .learning-library-hero.page-heading {
+    min-height: 160px;
+    padding: 22px 18px;
+    margin-bottom: 22px;
+  }
+  .learning-library-hero > div {
+    max-width: 64%;
+  }
+  .learning-library-hero h1 {
+    font-size: 25px;
+    line-height: 1.3;
+  }
+  .learning-library-hero p {
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  .learning-library-hero .learning-hero-art {
+    width: 126px;
+    height: 140px;
+    right: 0;
+    bottom: 0;
+  }
+  .library-search input {
+    font-size: 16px;
+  }
+  .library-search > button {
+    padding: 10px 16px;
+  }
+  .library-search > button svg {
+    display: none;
+  }
+  .library-topics > span {
+    display: none;
+  }
+  .learning-detail .library-detail-art {
+    float: none;
+    width: 100%;
+    height: 180px;
+    margin: 0 0 22px;
+  }
+  .library-pagination {
+    gap: 8px;
+  }
+  .library-pagination button {
+    padding: 10px 12px;
+  }
+}

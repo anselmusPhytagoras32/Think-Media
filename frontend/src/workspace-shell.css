@@ -1,0 +1,197 @@
+/* FR01–11 / NFR05/09: navigation stays close to its controls; auto expansion
+   overlays the compact rail so reading/search content never jumps on hover. */
+.app-shell .mobile-header {
+  display: none;
+}
+.app-shell .main-content {
+  padding-top: 36px;
+}
+.app-shell .sidebar {
+  padding: 24px 16px 16px;
+}
+.sidebar .brand {
+  white-space: nowrap;
+  font-size: 23px;
+  padding-inline: 6px;
+}
+.sidebar .portal-label {
+  margin: 12px 8px 18px;
+}
+.sidebar-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 22px;
+}
+.sidebar-mode-label {
+  flex: 1;
+  padding-left: 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.sidebar-controls .sidebar-toggle,
+.sidebar-lock {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  min-height: 36px;
+  padding: 0;
+  color: var(--purple);
+  background: #f3edf8;
+  border-radius: 10px;
+}
+.sidebar-lock:hover {
+  background: #e9dff2;
+}
+.sidebar-lock[aria-pressed="true"] {
+  background: #e7dcf0;
+}
+.sidebar-is-collapsed .sidebar .brand {
+  margin-bottom: 16px;
+}
+.sidebar-is-collapsed .sidebar-controls {
+  flex-direction: column;
+  margin-bottom: 14px;
+}
+.sidebar-is-collapsed .sidebar-mode-label {
+  display: none;
+}
+.app-shell.sidebar-is-auto {
+  --sidebar-width: 84px;
+}
+.sidebar-is-auto:not(.sidebar-is-collapsed) .sidebar {
+  width: 238px;
+  box-shadow: 12px 0 24px #402c7514;
+}
+.sidebar-is-auto .workspace {
+  transition: none;
+}
+.sidebar-is-collapsed .sidebar nav {
+  gap: 5px;
+}
+.sidebar-is-collapsed .sidebar nav a {
+  min-height: 44px;
+}
+.workspace-demo-note {
+  margin-top: 40px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.workspace-demo-note details {
+  margin-bottom: 0;
+  font-size: 12px;
+}
+.profile-next-step {
+  margin-bottom: 24px;
+}
+.more-page {
+  max-width: 760px;
+  margin-inline: auto;
+}
+.more-account {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px;
+  background: #eee8f6;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  text-decoration: none;
+  margin-bottom: 30px;
+}
+.more-account .avatar {
+  width: 52px;
+  height: 52px;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.more-account > span:nth-child(2) {
+  display: grid;
+  gap: 5px;
+  flex: 1;
+  min-width: 0;
+}
+.more-account strong {
+  font-size: 17px;
+  overflow-wrap: anywhere;
+}
+.more-account small {
+  font-size: 13px;
+  color: var(--muted);
+}
+.more-page h2 {
+  font-size: 16px;
+  margin: 0 0 12px;
+}
+.more-menu-list {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: white;
+}
+.more-menu-list > a,
+.more-menu-list > button {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 58px;
+  padding: 16px 18px;
+  border: 0;
+  border-radius: 0;
+  background: white;
+  text-decoration: none;
+  color: var(--purple);
+  text-align: left;
+  font-size: 15px;
+}
+.more-page .more-menu-list > * + * {
+  border-top: 1px solid var(--line);
+}
+.more-menu-list > a:hover,
+.more-menu-list > button:hover {
+  background: var(--paper);
+}
+.more-menu-list > a:focus-visible,
+.more-menu-list > button:focus-visible {
+  outline-offset: -4px;
+}
+.more-menu-list > * > span {
+  flex: 1;
+  min-width: 0;
+}
+.more-account-actions {
+  margin-top: 28px;
+}
+.more-menu-list .more-sign-out {
+  color: #8a2445;
+}
+@media (max-width: 720px) {
+  .app-shell .mobile-header {
+    display: flex;
+    height: 60px;
+    padding-inline: 18px;
+  }
+  .app-shell .main-content {
+    padding-top: 24px;
+  }
+  .app-shell .sidebar,
+  .sidebar-is-auto:not(.sidebar-is-collapsed) .sidebar {
+    width: 280px;
+    padding: 28px 18px 18px;
+  }
+  .sidebar .brand {
+    font-size: 24px;
+  }
+  .sidebar .portal-label {
+    margin-bottom: 28px;
+  }
+  .sidebar-controls {
+    display: none;
+  }
+  .workspace-demo-note {
+    margin-top: 28px;
+  }
+}
