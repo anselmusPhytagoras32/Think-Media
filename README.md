@@ -2,6 +2,11 @@
 
 React + FastAPI + PostgreSQL career and OJT workspace. Product requirements are in [PRODUCT.md](PRODUCT.md); verified progress and remaining work are in [implementation status](docs/IMPLEMENTATION_STATUS.md).
 
+For the prepared **Windows + Ubuntu WSL local presentation**, follow the
+[presentation startup and acceptance guide](docs/PRESENTATION_READINESS.md).
+The backend virtual environment in this checkout is Linux-based; it does not
+contain Windows `Scripts/Activate.ps1` executables.
+
 ## Run the application directly
 
 Set up a local PostgreSQL database and backend environment using [backend setup](backend/README.md). Apply migrations only to a disposable local/development database:
@@ -28,7 +33,8 @@ Open http://127.0.0.1:5173. The React client proxies API requests to FastAPI on 
 cd frontend
 npm run build
 npx playwright install chromium
-npm test
+# Start the separate disposable browser API on port 8001 first.
+PLAYWRIGHT_API_TARGET=http://127.0.0.1:8001 PLAYWRIGHT_BASE_URL=http://127.0.0.1:5174 npm test
 ```
 
 Browser tests require the API, a disposable development database, and the synthetic test administrator described in [frontend setup](frontend/README.md). Backend pytest uses a separate disposable PostgreSQL database; see [audit evidence](backend/reports/codex-audit.md). Never run test cleanup against production.

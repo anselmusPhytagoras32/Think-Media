@@ -64,6 +64,9 @@ test("published resources, save/react, quiz and report review work end to end", 
   await admin
     .getByRole("button", { name: "Save resource", exact: true })
     .click();
+  await admin
+    .getByRole("button", { name: "Confirm publication", exact: true })
+    .click();
   await expect(admin.locator(".notice.success")).toContainText("saved");
   const studentContext = await browser.newContext({
     viewport: { width: 360, height: 800 },

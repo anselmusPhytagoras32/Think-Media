@@ -11,7 +11,7 @@
   isolation: isolate;
   background:
     linear-gradient(90deg, #ffffff00 0%, #f8f0f5a6 55%, #f8f0f5d9 100%),
-    url("/illustrations/thinkmedia-signin-background.webp") center / cover no-repeat;
+    url("/illustrations/thinkmedia-ojt-signin-3d.webp") center / cover no-repeat;
   background-attachment: fixed;
 }
 .illustrated-signin.auth-story {

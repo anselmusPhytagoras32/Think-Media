@@ -1,1 +1,3999 @@
-{"openapi":"3.1.0","info":{"title":"ThinkMedia API","description":"ThinkMedia accounts, private applications, verified-company listings, approved learning, recommendations, feedback, administration and read-only resource guidance.","version":"0.4.0"},"paths":{"/api/v1/feedback/csat":{"post":{"tags":["feedback"],"summary":"Satisfaction","operationId":"satisfaction_api_v1_feedback_csat_post","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/SatisfactionInput"}}},"required":true},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/api/v1/auth/csrf":{"get":{"tags":["auth"],"summary":"Get Csrf Token","description":"Bootstrap (or reuse) a session and return its bound CSRF token.","operationId":"get_csrf_token_api_v1_auth_csrf_get","responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/CsrfResponse"}}}},"401":{"description":"Authentication required or invalid credentials.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"403":{"description":"Forbidden request, invalid CSRF token or disallowed origin.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"422":{"description":"Request validation failed.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"429":{"description":"Authentication throttle exceeded.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"500":{"description":"Unexpected server error without internal details.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}}}}},"/api/v1/auth/register":{"post":{"tags":["auth"],"summary":"Register","operationId":"register_api_v1_auth_register_post","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/RegisterRequest"}}},"required":true},"responses":{"201":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ProfileEnvelope"}}}},"401":{"description":"Authentication required or invalid credentials.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"403":{"description":"Forbidden request, invalid CSRF token or disallowed origin.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"422":{"description":"Request validation failed.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"429":{"description":"Authentication throttle exceeded.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"500":{"description":"Unexpected server error without internal details.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}}}}},"/api/v1/auth/login":{"post":{"tags":["auth"],"summary":"Login","operationId":"login_api_v1_auth_login_post","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/LoginRequest"}}},"required":true},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ProfileEnvelope"}}}},"401":{"description":"Authentication required or invalid credentials.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"403":{"description":"Forbidden request, invalid CSRF token or disallowed origin.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"422":{"description":"Request validation failed.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"429":{"description":"Authentication throttle exceeded.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"500":{"description":"Unexpected server error without internal details.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}}}}},"/api/v1/auth/me":{"get":{"tags":["auth"],"summary":"Me","operationId":"me_api_v1_auth_me_get","responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ProfileEnvelope"}}}},"401":{"description":"Authentication required or invalid credentials.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"403":{"description":"Forbidden request, invalid CSRF token or disallowed origin.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"422":{"description":"Request validation failed.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"429":{"description":"Authentication throttle exceeded.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"500":{"description":"Unexpected server error without internal details.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}}}}},"/api/v1/auth/logout":{"post":{"tags":["auth"],"summary":"Logout","operationId":"logout_api_v1_auth_logout_post","responses":{"204":{"description":"Successful Response"},"401":{"description":"Authentication required or invalid credentials.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"403":{"description":"Forbidden request, invalid CSRF token or disallowed origin.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"422":{"description":"Request validation failed.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"429":{"description":"Authentication throttle exceeded.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"500":{"description":"Unexpected server error without internal details.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}}}}},"/api/v1/profiles/me":{"get":{"tags":["profiles"],"summary":"Get My Profile","operationId":"get_my_profile_api_v1_profiles_me_get","responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ProfileEnvelope"}}}},"401":{"description":"Authentication required.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"403":{"description":"Forbidden request, invalid CSRF token or disallowed origin.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"422":{"description":"Request validation failed.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"500":{"description":"Unexpected server error without internal details.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}}}},"patch":{"tags":["profiles"],"summary":"Update My Profile","operationId":"update_my_profile_api_v1_profiles_me_patch","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/ProfileUpdateRequest"}}},"required":true},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ProfileEnvelope"}}}},"401":{"description":"Authentication required.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"403":{"description":"Forbidden request, invalid CSRF token or disallowed origin.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"422":{"description":"Request validation failed.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"500":{"description":"Unexpected server error without internal details.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}}}}},"/api/v1/admin/companies":{"get":{"tags":["administration"],"summary":"List Companies","operationId":"list_companies_api_v1_admin_companies_get","parameters":[{"name":"status","in":"query","required":false,"schema":{"anyOf":[{"enum":["pending","verified","rejected"],"type":"string"},{"type":"null"}],"title":"Status"}},{"name":"limit","in":"query","required":false,"schema":{"type":"integer","maximum":100,"minimum":1,"default":20,"title":"Limit"}},{"name":"offset","in":"query","required":false,"schema":{"type":"integer","minimum":0,"default":0,"title":"Offset"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/CompanyListResponse"}}}},"401":{"description":"Authentication required.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"403":{"description":"Administrator privileges required or CSRF check failed.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"404":{"description":"Company not found.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"409":{"description":"Stale or disallowed verification state.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"422":{"description":"Request validation failed.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"500":{"description":"Unexpected server error without internal details.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}}}}},"/api/v1/admin/companies/{company_id}":{"get":{"tags":["administration"],"summary":"Get Company","operationId":"get_company_api_v1_admin_companies__company_id__get","parameters":[{"name":"company_id","in":"path","required":true,"schema":{"type":"string","format":"uuid","title":"Company Id"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/CompanyReviewOut"}}}},"401":{"description":"Authentication required.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"403":{"description":"Administrator privileges required or CSRF check failed.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"404":{"description":"Company not found.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"409":{"description":"Stale or disallowed verification state.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"422":{"description":"Request validation failed.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"500":{"description":"Unexpected server error without internal details.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}}}}},"/api/v1/admin/companies/{company_id}/verification":{"patch":{"tags":["administration"],"summary":"Update Company Verification","operationId":"update_company_verification_api_v1_admin_companies__company_id__verification_patch","parameters":[{"name":"company_id","in":"path","required":true,"schema":{"type":"string","format":"uuid","title":"Company Id"}}],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/VerificationUpdateRequest"}}}},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/VerificationUpdateResponse"}}}},"401":{"description":"Authentication required.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"403":{"description":"Administrator privileges required or CSRF check failed.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"404":{"description":"Company not found.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"409":{"description":"Stale or disallowed verification state.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"422":{"description":"Request validation failed.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"500":{"description":"Unexpected server error without internal details.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}}}}},"/api/v1/admin/audit-events":{"get":{"tags":["administration"],"summary":"List Audit Events","operationId":"list_audit_events_api_v1_admin_audit_events_get","parameters":[{"name":"limit","in":"query","required":false,"schema":{"type":"integer","maximum":100,"minimum":1,"default":20,"title":"Limit"}},{"name":"offset","in":"query","required":false,"schema":{"type":"integer","minimum":0,"default":0,"title":"Offset"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/AuditEventListResponse"}}}},"401":{"description":"Authentication required.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"403":{"description":"Administrator privileges required or CSRF check failed.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"404":{"description":"Company not found.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"409":{"description":"Stale or disallowed verification state.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"422":{"description":"Request validation failed.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}},"500":{"description":"Unexpected server error without internal details.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}}}}},"/api/v1/listings":{"get":{"tags":["marketplace"],"summary":"Listings","operationId":"listings_api_v1_listings_get","parameters":[{"name":"q","in":"query","required":false,"schema":{"anyOf":[{"type":"string","maxLength":200},{"type":"null"}],"title":"Q"}},{"name":"location","in":"query","required":false,"schema":{"anyOf":[{"type":"string","maxLength":200},{"type":"null"}],"title":"Location"}},{"name":"type","in":"query","required":false,"schema":{"anyOf":[{"enum":["ojt","job"],"type":"string"},{"type":"null"}],"title":"Type"}},{"name":"skill","in":"query","required":false,"schema":{"anyOf":[{"type":"string","maxLength":80},{"type":"null"}],"title":"Skill"}},{"name":"limit","in":"query","required":false,"schema":{"type":"integer","maximum":100,"minimum":1,"default":20,"title":"Limit"}},{"name":"offset","in":"query","required":false,"schema":{"type":"integer","minimum":0,"default":0,"title":"Offset"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/api/v1/listings/{id}":{"get":{"tags":["marketplace"],"summary":"Listing","operationId":"listing_api_v1_listings__id__get","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string","format":"uuid","title":"Id"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/api/v1/company/listings":{"get":{"tags":["marketplace"],"summary":"Own Listings","operationId":"own_listings_api_v1_company_listings_get","parameters":[{"name":"limit","in":"query","required":false,"schema":{"type":"integer","maximum":100,"minimum":1,"default":20,"title":"Limit"}},{"name":"offset","in":"query","required":false,"schema":{"type":"integer","minimum":0,"default":0,"title":"Offset"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}},"post":{"tags":["marketplace"],"summary":"Create","operationId":"create_api_v1_company_listings_post","requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/ListingInput"}}}},"responses":{"201":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/api/v1/company/listings/{id}":{"patch":{"tags":["marketplace"],"summary":"Edit","operationId":"edit_api_v1_company_listings__id__patch","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string","format":"uuid","title":"Id"}}],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/ListingPatch"}}}},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/api/v1/company/listings/{id}/publish":{"post":{"tags":["marketplace"],"summary":"Publish","operationId":"publish_api_v1_company_listings__id__publish_post","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string","format":"uuid","title":"Id"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/api/v1/company/listings/{id}/close":{"post":{"tags":["marketplace"],"summary":"Close","operationId":"close_api_v1_company_listings__id__close_post","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string","format":"uuid","title":"Id"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/api/v1/listings/{id}/applications":{"post":{"tags":["marketplace"],"summary":"Submit","operationId":"submit_api_v1_listings__id__applications_post","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string","format":"uuid","title":"Id"}}],"requestBody":{"required":true,"content":{"multipart/form-data":{"schema":{"$ref":"#/components/schemas/Body_submit_api_v1_listings__id__applications_post"}}}},"responses":{"201":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/api/v1/applications/me":{"get":{"tags":["marketplace"],"summary":"My Applications","operationId":"my_applications_api_v1_applications_me_get","parameters":[{"name":"limit","in":"query","required":false,"schema":{"type":"integer","maximum":100,"minimum":1,"default":20,"title":"Limit"}},{"name":"offset","in":"query","required":false,"schema":{"type":"integer","minimum":0,"default":0,"title":"Offset"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/api/v1/company/applications":{"get":{"tags":["marketplace"],"summary":"Company Applications","operationId":"company_applications_api_v1_company_applications_get","parameters":[{"name":"listing_id","in":"query","required":false,"schema":{"anyOf":[{"type":"string","format":"uuid"},{"type":"null"}],"title":"Listing Id"}},{"name":"limit","in":"query","required":false,"schema":{"type":"integer","maximum":100,"minimum":1,"default":20,"title":"Limit"}},{"name":"offset","in":"query","required":false,"schema":{"type":"integer","minimum":0,"default":0,"title":"Offset"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/api/v1/applications/{id}":{"get":{"tags":["marketplace"],"summary":"Application","operationId":"application_api_v1_applications__id__get","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string","format":"uuid","title":"Id"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/api/v1/applications/{id}/attachment":{"get":{"tags":["marketplace"],"summary":"Attachment","operationId":"attachment_api_v1_applications__id__attachment_get","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string","format":"uuid","title":"Id"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/api/v1/applications/{id}/status":{"patch":{"tags":["marketplace"],"summary":"Status","operationId":"status_api_v1_applications__id__status_patch","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string","format":"uuid","title":"Id"}}],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/StatusInput"}}}},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/api/v1/content":{"get":{"tags":["learning"],"summary":"Feed","operationId":"feed_api_v1_content_get","parameters":[{"name":"q","in":"query","required":false,"schema":{"anyOf":[{"type":"string","maxLength":200},{"type":"null"}],"title":"Q"}},{"name":"tag","in":"query","required":false,"schema":{"anyOf":[{"type":"string","maxLength":80},{"type":"null"}],"title":"Tag"}},{"name":"limit","in":"query","required":false,"schema":{"type":"integer","maximum":100,"minimum":1,"default":20,"title":"Limit"}},{"name":"offset","in":"query","required":false,"schema":{"type":"integer","minimum":0,"default":0,"title":"Offset"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/api/v1/content/{id}":{"get":{"tags":["learning"],"summary":"Detail","operationId":"detail_api_v1_content__id__get","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string","format":"uuid","title":"Id"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/api/v1/admin/content":{"get":{"tags":["learning"],"summary":"Admin Feed","operationId":"admin_feed_api_v1_admin_content_get","parameters":[{"name":"q","in":"query","required":false,"schema":{"anyOf":[{"type":"string","maxLength":200},{"type":"null"}],"title":"Q"}},{"name":"tag","in":"query","required":false,"schema":{"anyOf":[{"type":"string","maxLength":80},{"type":"null"}],"title":"Tag"}},{"name":"status","in":"query","required":false,"schema":{"anyOf":[{"enum":["draft","published","archived"],"type":"string"},{"type":"null"}],"title":"Status"}},{"name":"limit","in":"query","required":false,"schema":{"type":"integer","maximum":100,"minimum":1,"default":20,"title":"Limit"}},{"name":"offset","in":"query","required":false,"schema":{"type":"integer","minimum":0,"default":0,"title":"Offset"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}},"post":{"tags":["learning"],"summary":"Create","operationId":"create_api_v1_admin_content_post","requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/ContentInput"}}}},"responses":{"201":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/api/v1/admin/content/{id}":{"patch":{"tags":["learning"],"summary":"Edit","operationId":"edit_api_v1_admin_content__id__patch","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string","format":"uuid","title":"Id"}}],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/ContentPatch"}}}},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/api/v1/content/{id}/save":{"post":{"tags":["learning"],"summary":"Save","operationId":"save_api_v1_content__id__save_post","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string","format":"uuid","title":"Id"}}],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/SaveInput"}}}},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/api/v1/content/{id}/react":{"post":{"tags":["learning"],"summary":"React","operationId":"react_api_v1_content__id__react_post","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string","format":"uuid","title":"Id"}}],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/ReactInput"}}}},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/api/v1/content/{id}/quiz":{"get":{"tags":["learning"],"summary":"Quiz","operationId":"quiz_api_v1_content__id__quiz_get","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string","format":"uuid","title":"Id"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}},"post":{"tags":["learning"],"summary":"Answer","operationId":"answer_api_v1_content__id__quiz_post","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string","format":"uuid","title":"Id"}}],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/QuizInput"}}}},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/api/v1/reports":{"post":{"tags":["learning"],"summary":"Report","operationId":"report_api_v1_reports_post","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/ReportInput"}}},"required":true},"responses":{"201":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/api/v1/admin/reports":{"get":{"tags":["learning"],"summary":"Reports","operationId":"reports_api_v1_admin_reports_get","parameters":[{"name":"status","in":"query","required":false,"schema":{"enum":["pending","resolved"],"type":"string","default":"pending","title":"Status"}},{"name":"limit","in":"query","required":false,"schema":{"type":"integer","maximum":100,"minimum":1,"default":20,"title":"Limit"}},{"name":"offset","in":"query","required":false,"schema":{"type":"integer","minimum":0,"default":0,"title":"Offset"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/api/v1/admin/reports/{id}":{"patch":{"tags":["learning"],"summary":"Resolve","operationId":"resolve_api_v1_admin_reports__id__patch","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string","format":"uuid","title":"Id"}}],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/ResolveInput"}}}},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/api/v1/admin/content-events":{"get":{"tags":["learning"],"summary":"Events","operationId":"events_api_v1_admin_content_events_get","parameters":[{"name":"limit","in":"query","required":false,"schema":{"type":"integer","maximum":100,"minimum":1,"default":20,"title":"Limit"}},{"name":"offset","in":"query","required":false,"schema":{"type":"integer","minimum":0,"default":0,"title":"Offset"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/api/v1/assistant":{"post":{"tags":["learning"],"summary":"Assistant","operationId":"assistant_api_v1_assistant_post","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/AssistantInput"}}},"required":true},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/api/v1/recommendations":{"get":{"tags":["recommendations"],"summary":"Recommendations","operationId":"recommendations_api_v1_recommendations_get","parameters":[{"name":"limit","in":"query","required":false,"schema":{"type":"integer","maximum":20,"minimum":1,"default":10,"title":"Limit"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/api/v1/interactions":{"post":{"tags":["recommendations"],"summary":"Interactions","operationId":"interactions_api_v1_interactions_post","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/InteractionInput"}}},"required":true},"responses":{"201":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/health":{"get":{"tags":["health"],"summary":"Health","operationId":"health_health_get","responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HealthResponse"}}}},"500":{"description":"Unexpected server error without internal details.","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorEnvelope"}}}}}}}},"components":{"schemas":{"AdministratorProfileOut":{"properties":{"kind":{"type":"string","const":"administrator","title":"Kind","default":"administrator"}},"additionalProperties":false,"type":"object","title":"AdministratorProfileOut"},"AssistantInput":{"properties":{"question":{"type":"string","maxLength":2000,"minLength":1,"title":"Question"}},"additionalProperties":false,"type":"object","required":["question"],"title":"AssistantInput"},"AuditEventListResponse":{"properties":{"items":{"items":{"$ref":"#/components/schemas/AuditEventOut"},"type":"array","title":"Items"},"total":{"type":"integer","title":"Total"},"limit":{"type":"integer","title":"Limit"},"offset":{"type":"integer","title":"Offset"}},"additionalProperties":false,"type":"object","required":["items","total","limit","offset"],"title":"AuditEventListResponse"},"AuditEventOut":{"properties":{"id":{"type":"string","format":"uuid","title":"Id"},"actor_id":{"type":"string","format":"uuid","title":"Actor Id"},"action":{"type":"string","title":"Action"},"target_id":{"type":"string","format":"uuid","title":"Target Id"},"old_status":{"anyOf":[{"$ref":"#/components/schemas/VerificationStatus"},{"type":"null"}]},"new_status":{"$ref":"#/components/schemas/VerificationStatus"},"reason":{"type":"string","title":"Reason"},"created_at":{"type":"string","title":"Created At"}},"additionalProperties":false,"type":"object","required":["id","actor_id","action","target_id","old_status","new_status","reason","created_at"],"title":"AuditEventOut"},"Body_submit_api_v1_listings__id__applications_post":{"properties":{"file":{"type":"string","contentMediaType":"application/octet-stream","title":"File"},"cover_letter":{"type":"string","maxLength":5000,"title":"Cover Letter","default":""}},"type":"object","required":["file"],"title":"Body_submit_api_v1_listings__id__applications_post"},"CompanyListResponse":{"properties":{"items":{"items":{"$ref":"#/components/schemas/CompanyReviewOut"},"type":"array","title":"Items"},"total":{"type":"integer","title":"Total"},"limit":{"type":"integer","title":"Limit"},"offset":{"type":"integer","title":"Offset"}},"additionalProperties":false,"type":"object","required":["items","total","limit","offset"],"title":"CompanyListResponse"},"CompanyProfileOut":{"properties":{"kind":{"type":"string","const":"company","title":"Kind","default":"company"},"company_name":{"type":"string","title":"Company Name"},"description":{"type":"string","title":"Description"},"location":{"type":"string","title":"Location"},"website":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Website"},"contact_email":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Contact Email"},"contact_phone":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Contact Phone"},"verification_status":{"$ref":"#/components/schemas/VerificationStatus"},"verification_version":{"type":"integer","title":"Verification Version"}},"additionalProperties":false,"type":"object","required":["company_name","description","location","website","contact_email","contact_phone","verification_status","verification_version"],"title":"CompanyProfileOut"},"CompanyReviewOut":{"properties":{"id":{"type":"string","format":"uuid","title":"Id"},"user_id":{"type":"string","format":"uuid","title":"User Id"},"company_name":{"type":"string","title":"Company Name"},"description":{"type":"string","title":"Description"},"location":{"type":"string","title":"Location"},"website":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Website"},"contact_email":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Contact Email"},"contact_phone":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Contact Phone"},"verification_status":{"$ref":"#/components/schemas/VerificationStatus"},"verification_version":{"type":"integer","title":"Verification Version"},"created_at":{"type":"string","title":"Created At"},"updated_at":{"type":"string","title":"Updated At"}},"additionalProperties":false,"type":"object","required":["id","user_id","company_name","description","location","website","contact_email","contact_phone","verification_status","verification_version","created_at","updated_at"],"title":"CompanyReviewOut"},"ContentInput":{"properties":{"title":{"type":"string","maxLength":200,"minLength":1,"title":"Title"},"summary":{"type":"string","maxLength":500,"minLength":1,"title":"Summary"},"body":{"type":"string","maxLength":20000,"minLength":1,"title":"Body"},"tags":{"items":{"type":"string"},"type":"array","maxItems":30,"title":"Tags"},"status":{"type":"string","enum":["draft","published"],"title":"Status","default":"draft"},"questions":{"items":{"$ref":"#/components/schemas/QuestionInput"},"type":"array","maxItems":20,"title":"Questions"}},"additionalProperties":false,"type":"object","required":["title","summary","body"],"title":"ContentInput"},"ContentPatch":{"properties":{"title":{"anyOf":[{"type":"string","maxLength":200,"minLength":1},{"type":"null"}],"title":"Title"},"summary":{"anyOf":[{"type":"string","maxLength":500,"minLength":1},{"type":"null"}],"title":"Summary"},"body":{"anyOf":[{"type":"string","maxLength":20000,"minLength":1},{"type":"null"}],"title":"Body"},"tags":{"anyOf":[{"items":{"type":"string"},"type":"array","maxItems":30},{"type":"null"}],"title":"Tags"},"status":{"anyOf":[{"type":"string","enum":["draft","published","archived"]},{"type":"null"}],"title":"Status"}},"additionalProperties":false,"type":"object","title":"ContentPatch"},"CsrfResponse":{"properties":{"csrf_token":{"type":"string","title":"Csrf Token"}},"additionalProperties":false,"type":"object","required":["csrf_token"],"title":"CsrfResponse"},"ErrorDetail":{"properties":{"code":{"type":"string","title":"Code"},"message":{"type":"string","title":"Message"},"fields":{"additionalProperties":{"items":{"type":"string"},"type":"array"},"type":"object","title":"Fields"},"request_id":{"type":"string","title":"Request Id"}},"additionalProperties":false,"type":"object","required":["code","message","fields","request_id"],"title":"ErrorDetail"},"ErrorEnvelope":{"properties":{"error":{"$ref":"#/components/schemas/ErrorDetail"}},"additionalProperties":false,"type":"object","required":["error"],"title":"ErrorEnvelope"},"HTTPValidationError":{"properties":{"detail":{"items":{"$ref":"#/components/schemas/ValidationError"},"type":"array","title":"Detail"}},"type":"object","title":"HTTPValidationError"},"HealthResponse":{"properties":{"status":{"type":"string","const":"ok","title":"Status","default":"ok"}},"additionalProperties":false,"type":"object","title":"HealthResponse"},"InstructorProfileOut":{"properties":{"kind":{"type":"string","const":"instructor","title":"Kind","default":"instructor"},"institution":{"type":"string","title":"Institution"}},"additionalProperties":false,"type":"object","required":["institution"],"title":"InstructorProfileOut"},"InteractionInput":{"properties":{"item_type":{"type":"string","enum":["listing","content"],"title":"Item Type"},"item_id":{"type":"string","format":"uuid","title":"Item Id"},"event_type":{"type":"string","enum":["view","rating"],"title":"Event Type"},"rating":{"anyOf":[{"type":"integer","maximum":5.0,"minimum":1.0},{"type":"null"}],"title":"Rating"}},"additionalProperties":false,"type":"object","required":["item_type","item_id","event_type"],"title":"InteractionInput"},"ListingInput":{"properties":{"title":{"type":"string","maxLength":200,"minLength":1,"title":"Title"},"description":{"type":"string","maxLength":10000,"minLength":1,"title":"Description"},"requirements":{"type":"string","maxLength":10000,"minLength":1,"title":"Requirements"},"location":{"type":"string","maxLength":200,"minLength":1,"title":"Location"},"type":{"type":"string","enum":["ojt","job"],"title":"Type"},"skills":{"items":{"type":"string"},"type":"array","maxItems":30,"title":"Skills"}},"additionalProperties":false,"type":"object","required":["title","description","requirements","location","type"],"title":"ListingInput"},"ListingPatch":{"properties":{"title":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Title"},"description":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Description"},"requirements":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Requirements"},"location":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Location"},"type":{"anyOf":[{"type":"string","enum":["ojt","job"]},{"type":"null"}],"title":"Type"},"skills":{"anyOf":[{"items":{"type":"string"},"type":"array"},{"type":"null"}],"title":"Skills"}},"additionalProperties":false,"type":"object","title":"ListingPatch"},"LoginRequest":{"properties":{"email":{"type":"string","title":"Email"},"password":{"type":"string","maxLength":128,"title":"Password"}},"additionalProperties":false,"type":"object","required":["email","password"],"title":"LoginRequest"},"ProfileEnvelope":{"properties":{"user":{"$ref":"#/components/schemas/UserOut"},"profile":{"oneOf":[{"$ref":"#/components/schemas/StudentProfileOut"},{"$ref":"#/components/schemas/InstructorProfileOut"},{"$ref":"#/components/schemas/CompanyProfileOut"},{"$ref":"#/components/schemas/AdministratorProfileOut"}],"title":"Profile","discriminator":{"propertyName":"kind","mapping":{"administrator":"#/components/schemas/AdministratorProfileOut","company":"#/components/schemas/CompanyProfileOut","instructor":"#/components/schemas/InstructorProfileOut","student":"#/components/schemas/StudentProfileOut"}}}},"additionalProperties":false,"type":"object","required":["user","profile"],"title":"ProfileEnvelope"},"ProfileUpdateRequest":{"properties":{"display_name":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Display Name"},"institution":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Institution"},"program":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Program"},"skills":{"anyOf":[{"items":{"type":"string"},"type":"array"},{"type":"null"}],"title":"Skills"},"interests":{"anyOf":[{"items":{"type":"string"},"type":"array"},{"type":"null"}],"title":"Interests"},"company_name":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Company Name"},"description":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Description"},"location":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Location"},"website":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Website"},"background":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Background"},"contact_email":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Contact Email"},"contact_phone":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Contact Phone"}},"additionalProperties":false,"type":"object","title":"ProfileUpdateRequest","description":"Role-specific editable fields are accepted directly.\n\nUnknown fields (email, role, id, user_id, verification_status,\nverification_version, is_admin, ...) are rejected by ``extra='forbid'``.\nFields that do not belong to the authenticated role are rejected by the\nprofile service."},"QuestionInput":{"properties":{"question":{"type":"string","maxLength":1000,"minLength":1,"title":"Question"},"options":{"items":{"type":"string"},"type":"array","maxItems":6,"minItems":2,"title":"Options"},"correct_index":{"type":"integer","maximum":5.0,"minimum":0.0,"title":"Correct Index"}},"additionalProperties":false,"type":"object","required":["question","options","correct_index"],"title":"QuestionInput"},"QuizInput":{"properties":{"answers":{"additionalProperties":{"type":"integer"},"propertyNames":{"format":"uuid"},"type":"object","maxProperties":20,"title":"Answers"}},"additionalProperties":false,"type":"object","required":["answers"],"title":"QuizInput"},"ReactInput":{"properties":{"reacted":{"type":"boolean","title":"Reacted"}},"additionalProperties":false,"type":"object","required":["reacted"],"title":"ReactInput"},"RegisterRequest":{"properties":{"email":{"type":"string","title":"Email"},"password":{"type":"string","title":"Password"},"display_name":{"type":"string","title":"Display Name"},"role":{"type":"string","enum":["student","instructor","company"],"title":"Role"},"company_name":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Company Name"}},"additionalProperties":false,"type":"object","required":["email","password","display_name","role"],"title":"RegisterRequest"},"ReportInput":{"properties":{"content_id":{"type":"string","format":"uuid","title":"Content Id"},"reason":{"type":"string","maxLength":1000,"minLength":1,"title":"Reason"}},"additionalProperties":false,"type":"object","required":["content_id","reason"],"title":"ReportInput"},"ResolveInput":{"properties":{"status":{"type":"string","const":"resolved","title":"Status"},"resolution":{"type":"string","maxLength":1000,"minLength":1,"title":"Resolution"}},"additionalProperties":false,"type":"object","required":["status","resolution"],"title":"ResolveInput"},"Role":{"type":"string","enum":["student","instructor","company","administrator"],"title":"Role"},"SatisfactionInput":{"properties":{"rating":{"type":"integer","maximum":5.0,"minimum":1.0,"title":"Rating"}},"additionalProperties":false,"type":"object","required":["rating"],"title":"SatisfactionInput"},"SaveInput":{"properties":{"saved":{"type":"boolean","title":"Saved"}},"additionalProperties":false,"type":"object","required":["saved"],"title":"SaveInput"},"StatusInput":{"properties":{"status":{"type":"string","enum":["under_review","accepted","rejected"],"title":"Status"}},"additionalProperties":false,"type":"object","required":["status"],"title":"StatusInput"},"StudentProfileOut":{"properties":{"kind":{"type":"string","const":"student","title":"Kind","default":"student"},"institution":{"type":"string","title":"Institution"},"program":{"type":"string","title":"Program"},"location":{"type":"string","title":"Location"},"background":{"type":"string","title":"Background"},"skills":{"items":{"type":"string"},"type":"array","title":"Skills"},"interests":{"items":{"type":"string"},"type":"array","title":"Interests"}},"additionalProperties":false,"type":"object","required":["institution","program","location","background","skills","interests"],"title":"StudentProfileOut"},"UserOut":{"properties":{"id":{"type":"string","format":"uuid","title":"Id"},"email":{"type":"string","title":"Email"},"display_name":{"type":"string","title":"Display Name"},"role":{"$ref":"#/components/schemas/Role"},"created_at":{"type":"string","title":"Created At"}},"additionalProperties":false,"type":"object","required":["id","email","display_name","role","created_at"],"title":"UserOut"},"ValidationError":{"properties":{"loc":{"items":{"anyOf":[{"type":"string"},{"type":"integer"}]},"type":"array","title":"Location"},"msg":{"type":"string","title":"Message"},"type":{"type":"string","title":"Error Type"},"input":{"title":"Input"},"ctx":{"type":"object","title":"Context"}},"type":"object","required":["loc","msg","type"],"title":"ValidationError"},"VerificationStatus":{"type":"string","enum":["pending","verified","rejected"],"title":"VerificationStatus"},"VerificationUpdateRequest":{"properties":{"status":{"type":"string","enum":["verified","rejected"],"title":"Status"},"reason":{"type":"string","title":"Reason"},"expected_version":{"type":"integer","minimum":1.0,"title":"Expected Version"}},"additionalProperties":false,"type":"object","required":["status","reason","expected_version"],"title":"VerificationUpdateRequest"},"VerificationUpdateResponse":{"properties":{"company":{"$ref":"#/components/schemas/CompanyReviewOut"},"audit_event":{"$ref":"#/components/schemas/AuditEventOut"}},"additionalProperties":false,"type":"object","required":["company","audit_event"],"title":"VerificationUpdateResponse"}}}}
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "ThinkMedia API",
+    "description": "ThinkMedia accounts, private applications, verified-company listings, approved learning, recommendations, feedback, administration and read-only resource guidance.",
+    "version": "0.4.0"
+  },
+  "paths": {
+    "/api/v1/feedback/csat": {
+      "post": {
+        "tags": [
+          "feedback"
+        ],
+        "summary": "Satisfaction",
+        "operationId": "satisfaction_api_v1_feedback_csat_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SatisfactionInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/csrf": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Get Csrf Token",
+        "description": "Bootstrap (or reuse) a session and return its bound CSRF token.",
+        "operationId": "get_csrf_token_api_v1_auth_csrf_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CsrfResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden request, invalid CSRF token or disallowed origin.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Authentication throttle exceeded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server error without internal details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Register",
+        "operationId": "register_api_v1_auth_register_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileEnvelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden request, invalid CSRF token or disallowed origin.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Authentication throttle exceeded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server error without internal details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Login",
+        "operationId": "login_api_v1_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileEnvelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden request, invalid CSRF token or disallowed origin.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Authentication throttle exceeded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server error without internal details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Me",
+        "operationId": "me_api_v1_auth_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileEnvelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden request, invalid CSRF token or disallowed origin.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Authentication throttle exceeded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server error without internal details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Logout",
+        "operationId": "logout_api_v1_auth_logout_post",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Authentication required or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden request, invalid CSRF token or disallowed origin.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Authentication throttle exceeded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server error without internal details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/profiles/me": {
+      "get": {
+        "tags": [
+          "profiles"
+        ],
+        "summary": "Get My Profile",
+        "operationId": "get_my_profile_api_v1_profiles_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileEnvelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden request, invalid CSRF token or disallowed origin.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server error without internal details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "profiles"
+        ],
+        "summary": "Update My Profile",
+        "operationId": "update_my_profile_api_v1_profiles_me_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfileUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileEnvelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden request, invalid CSRF token or disallowed origin.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server error without internal details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/operations": {
+      "get": {
+        "tags": [
+          "administration"
+        ],
+        "summary": "Operations",
+        "operationId": "operations_api_v1_admin_operations_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Administrator privileges required or CSRF check failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Company not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Stale or disallowed verification state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server error without internal details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/companies": {
+      "get": {
+        "tags": [
+          "administration"
+        ],
+        "summary": "List Companies",
+        "operationId": "list_companies_api_v1_admin_companies_get",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "pending",
+                    "verified",
+                    "rejected"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompanyListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Administrator privileges required or CSRF check failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Company not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Stale or disallowed verification state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server error without internal details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/companies/{company_id}": {
+      "get": {
+        "tags": [
+          "administration"
+        ],
+        "summary": "Get Company",
+        "operationId": "get_company_api_v1_admin_companies__company_id__get",
+        "parameters": [
+          {
+            "name": "company_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Company Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompanyReviewOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Administrator privileges required or CSRF check failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Company not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Stale or disallowed verification state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server error without internal details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/companies/{company_id}/verification": {
+      "patch": {
+        "tags": [
+          "administration"
+        ],
+        "summary": "Update Company Verification",
+        "operationId": "update_company_verification_api_v1_admin_companies__company_id__verification_patch",
+        "parameters": [
+          {
+            "name": "company_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Company Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerificationUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerificationUpdateResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Administrator privileges required or CSRF check failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Company not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Stale or disallowed verification state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server error without internal details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/audit-events": {
+      "get": {
+        "tags": [
+          "administration"
+        ],
+        "summary": "List Audit Events",
+        "operationId": "list_audit_events_api_v1_admin_audit_events_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuditEventListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Administrator privileges required or CSRF check failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Company not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Stale or disallowed verification state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server error without internal details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/listings": {
+      "get": {
+        "tags": [
+          "marketplace"
+        ],
+        "summary": "Listings",
+        "operationId": "listings_api_v1_listings_get",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
+          },
+          {
+            "name": "location",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Location"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "ojt",
+                    "job"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Type"
+            }
+          },
+          {
+            "name": "skill",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 80
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Skill"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/listings/{id}": {
+      "get": {
+        "tags": [
+          "marketplace"
+        ],
+        "summary": "Listing",
+        "operationId": "listing_api_v1_listings__id__get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/company/listings": {
+      "get": {
+        "tags": [
+          "marketplace"
+        ],
+        "summary": "Own Listings",
+        "operationId": "own_listings_api_v1_company_listings_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "marketplace"
+        ],
+        "summary": "Create",
+        "operationId": "create_api_v1_company_listings_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListingInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/company/listings/{id}": {
+      "patch": {
+        "tags": [
+          "marketplace"
+        ],
+        "summary": "Edit",
+        "operationId": "edit_api_v1_company_listings__id__patch",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListingPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/company/listings/{id}/publish": {
+      "post": {
+        "tags": [
+          "marketplace"
+        ],
+        "summary": "Publish",
+        "operationId": "publish_api_v1_company_listings__id__publish_post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/company/listings/{id}/close": {
+      "post": {
+        "tags": [
+          "marketplace"
+        ],
+        "summary": "Close",
+        "operationId": "close_api_v1_company_listings__id__close_post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/listings/{id}/applications": {
+      "post": {
+        "tags": [
+          "marketplace"
+        ],
+        "summary": "Submit",
+        "operationId": "submit_api_v1_listings__id__applications_post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_submit_api_v1_listings__id__applications_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/applications/me": {
+      "get": {
+        "tags": [
+          "marketplace"
+        ],
+        "summary": "My Applications",
+        "operationId": "my_applications_api_v1_applications_me_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/company/applications": {
+      "get": {
+        "tags": [
+          "marketplace"
+        ],
+        "summary": "Company Applications",
+        "operationId": "company_applications_api_v1_company_applications_get",
+        "parameters": [
+          {
+            "name": "listing_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Listing Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/applications/{id}": {
+      "get": {
+        "tags": [
+          "marketplace"
+        ],
+        "summary": "Application",
+        "operationId": "application_api_v1_applications__id__get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/applications/{id}/attachment": {
+      "get": {
+        "tags": [
+          "marketplace"
+        ],
+        "summary": "Attachment",
+        "operationId": "attachment_api_v1_applications__id__attachment_get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/applications/{id}/status": {
+      "patch": {
+        "tags": [
+          "marketplace"
+        ],
+        "summary": "Status",
+        "operationId": "status_api_v1_applications__id__status_patch",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StatusInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/content": {
+      "get": {
+        "tags": [
+          "learning"
+        ],
+        "summary": "Feed",
+        "operationId": "feed_api_v1_content_get",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
+          },
+          {
+            "name": "tag",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 80
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Tag"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/content/{id}": {
+      "get": {
+        "tags": [
+          "learning"
+        ],
+        "summary": "Detail",
+        "operationId": "detail_api_v1_content__id__get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/content": {
+      "get": {
+        "tags": [
+          "learning"
+        ],
+        "summary": "Admin Feed",
+        "operationId": "admin_feed_api_v1_admin_content_get",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
+          },
+          {
+            "name": "tag",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 80
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Tag"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "draft",
+                    "published",
+                    "archived"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "learning"
+        ],
+        "summary": "Create",
+        "operationId": "create_api_v1_admin_content_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContentInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/content/{id}": {
+      "patch": {
+        "tags": [
+          "learning"
+        ],
+        "summary": "Edit",
+        "operationId": "edit_api_v1_admin_content__id__patch",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContentPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/content/{id}/save": {
+      "post": {
+        "tags": [
+          "learning"
+        ],
+        "summary": "Save",
+        "operationId": "save_api_v1_content__id__save_post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/content/{id}/react": {
+      "post": {
+        "tags": [
+          "learning"
+        ],
+        "summary": "React",
+        "operationId": "react_api_v1_content__id__react_post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReactInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/content/{id}/quiz": {
+      "get": {
+        "tags": [
+          "learning"
+        ],
+        "summary": "Quiz",
+        "operationId": "quiz_api_v1_content__id__quiz_get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "learning"
+        ],
+        "summary": "Answer",
+        "operationId": "answer_api_v1_content__id__quiz_post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuizInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reports": {
+      "post": {
+        "tags": [
+          "learning"
+        ],
+        "summary": "Report",
+        "operationId": "report_api_v1_reports_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/reports": {
+      "get": {
+        "tags": [
+          "learning"
+        ],
+        "summary": "Reports",
+        "operationId": "reports_api_v1_admin_reports_get",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "pending",
+                "resolved"
+              ],
+              "type": "string",
+              "default": "pending",
+              "title": "Status"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/reports/{id}": {
+      "patch": {
+        "tags": [
+          "learning"
+        ],
+        "summary": "Resolve",
+        "operationId": "resolve_api_v1_admin_reports__id__patch",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResolveInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/content-events": {
+      "get": {
+        "tags": [
+          "learning"
+        ],
+        "summary": "Events",
+        "operationId": "events_api_v1_admin_content_events_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assistant": {
+      "post": {
+        "tags": [
+          "learning"
+        ],
+        "summary": "Assistant",
+        "operationId": "assistant_api_v1_assistant_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssistantInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/recommendations": {
+      "get": {
+        "tags": [
+          "recommendations"
+        ],
+        "summary": "Recommendations",
+        "operationId": "recommendations_api_v1_recommendations_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 20,
+              "minimum": 1,
+              "default": 10,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/interactions": {
+      "post": {
+        "tags": [
+          "recommendations"
+        ],
+        "summary": "Interactions",
+        "operationId": "interactions_api_v1_interactions_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InteractionInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Health",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server error without internal details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AdministratorProfileOut": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "administrator",
+            "title": "Kind",
+            "default": "administrator"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "AdministratorProfileOut"
+      },
+      "AssistantInput": {
+        "properties": {
+          "question": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Question"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "question"
+        ],
+        "title": "AssistantInput"
+      },
+      "AuditEventListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AuditEventOut"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "AuditEventListResponse"
+      },
+      "AuditEventOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "actor_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Actor Id"
+          },
+          "action": {
+            "type": "string",
+            "title": "Action"
+          },
+          "target_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Target Id"
+          },
+          "old_status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VerificationStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "new_status": {
+            "$ref": "#/components/schemas/VerificationStatus"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "actor_id",
+          "action",
+          "target_id",
+          "old_status",
+          "new_status",
+          "reason",
+          "created_at"
+        ],
+        "title": "AuditEventOut"
+      },
+      "Body_submit_api_v1_listings__id__applications_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File"
+          },
+          "cover_letter": {
+            "type": "string",
+            "maxLength": 5000,
+            "title": "Cover Letter",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_submit_api_v1_listings__id__applications_post"
+      },
+      "CompanyListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/CompanyReviewOut"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "CompanyListResponse"
+      },
+      "CompanyProfileOut": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "company",
+            "title": "Kind",
+            "default": "company"
+          },
+          "company_name": {
+            "type": "string",
+            "title": "Company Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "location": {
+            "type": "string",
+            "title": "Location"
+          },
+          "website": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Website"
+          },
+          "contact_email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact Email"
+          },
+          "contact_phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact Phone"
+          },
+          "verification_status": {
+            "$ref": "#/components/schemas/VerificationStatus"
+          },
+          "verification_version": {
+            "type": "integer",
+            "title": "Verification Version"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "company_name",
+          "description",
+          "location",
+          "website",
+          "contact_email",
+          "contact_phone",
+          "verification_status",
+          "verification_version"
+        ],
+        "title": "CompanyProfileOut"
+      },
+      "CompanyReviewOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "User Id"
+          },
+          "company_name": {
+            "type": "string",
+            "title": "Company Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "location": {
+            "type": "string",
+            "title": "Location"
+          },
+          "website": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Website"
+          },
+          "contact_email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact Email"
+          },
+          "contact_phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact Phone"
+          },
+          "verification_status": {
+            "$ref": "#/components/schemas/VerificationStatus"
+          },
+          "verification_version": {
+            "type": "integer",
+            "title": "Verification Version"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "title": "Updated At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "user_id",
+          "company_name",
+          "description",
+          "location",
+          "website",
+          "contact_email",
+          "contact_phone",
+          "verification_status",
+          "verification_version",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "CompanyReviewOut"
+      },
+      "ContentInput": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "summary": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Summary"
+          },
+          "body": {
+            "type": "string",
+            "maxLength": 20000,
+            "minLength": 1,
+            "title": "Body"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 30,
+            "title": "Tags"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "published"
+            ],
+            "title": "Status",
+            "default": "draft"
+          },
+          "questions": {
+            "items": {
+              "$ref": "#/components/schemas/QuestionInput"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "title": "Questions"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "title",
+          "summary",
+          "body"
+        ],
+        "title": "ContentInput"
+      },
+      "ContentPatch": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
+          },
+          "body": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20000,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Body"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "maxItems": 30
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "draft",
+                  "published",
+                  "archived"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ContentPatch"
+      },
+      "CsrfResponse": {
+        "properties": {
+          "csrf_token": {
+            "type": "string",
+            "title": "Csrf Token"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "csrf_token"
+        ],
+        "title": "CsrfResponse"
+      },
+      "ErrorDetail": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "fields": {
+            "additionalProperties": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "type": "object",
+            "title": "Fields"
+          },
+          "request_id": {
+            "type": "string",
+            "title": "Request Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "code",
+          "message",
+          "fields",
+          "request_id"
+        ],
+        "title": "ErrorDetail"
+      },
+      "ErrorEnvelope": {
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ErrorDetail"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "title": "ErrorEnvelope"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HealthResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "ok",
+            "title": "Status",
+            "default": "ok"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "HealthResponse"
+      },
+      "InstructorProfileOut": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "instructor",
+            "title": "Kind",
+            "default": "instructor"
+          },
+          "institution": {
+            "type": "string",
+            "title": "Institution"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "institution"
+        ],
+        "title": "InstructorProfileOut"
+      },
+      "InteractionInput": {
+        "properties": {
+          "item_type": {
+            "type": "string",
+            "enum": [
+              "listing",
+              "content"
+            ],
+            "title": "Item Type"
+          },
+          "item_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Item Id"
+          },
+          "event_type": {
+            "type": "string",
+            "enum": [
+              "view",
+              "rating"
+            ],
+            "title": "Event Type"
+          },
+          "rating": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 5.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rating"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "item_type",
+          "item_id",
+          "event_type"
+        ],
+        "title": "InteractionInput"
+      },
+      "ListingInput": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 10000,
+            "minLength": 1,
+            "title": "Description"
+          },
+          "requirements": {
+            "type": "string",
+            "maxLength": 10000,
+            "minLength": 1,
+            "title": "Requirements"
+          },
+          "location": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Location"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "ojt",
+              "job"
+            ],
+            "title": "Type"
+          },
+          "skills": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 30,
+            "title": "Skills"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "title",
+          "description",
+          "requirements",
+          "location",
+          "type"
+        ],
+        "title": "ListingInput"
+      },
+      "ListingPatch": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "requirements": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requirements"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "ojt",
+                  "job"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Type"
+          },
+          "skills": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Skills"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ListingPatch"
+      },
+      "LoginRequest": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 128,
+            "title": "Password"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "LoginRequest"
+      },
+      "ProfileEnvelope": {
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/UserOut"
+          },
+          "profile": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/StudentProfileOut"
+              },
+              {
+                "$ref": "#/components/schemas/InstructorProfileOut"
+              },
+              {
+                "$ref": "#/components/schemas/CompanyProfileOut"
+              },
+              {
+                "$ref": "#/components/schemas/AdministratorProfileOut"
+              }
+            ],
+            "title": "Profile",
+            "discriminator": {
+              "propertyName": "kind",
+              "mapping": {
+                "administrator": "#/components/schemas/AdministratorProfileOut",
+                "company": "#/components/schemas/CompanyProfileOut",
+                "instructor": "#/components/schemas/InstructorProfileOut",
+                "student": "#/components/schemas/StudentProfileOut"
+              }
+            }
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "user",
+          "profile"
+        ],
+        "title": "ProfileEnvelope"
+      },
+      "ProfileUpdateRequest": {
+        "properties": {
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name"
+          },
+          "institution": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Institution"
+          },
+          "program": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Program"
+          },
+          "skills": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Skills"
+          },
+          "interests": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Interests"
+          },
+          "company_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Company Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location"
+          },
+          "website": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Website"
+          },
+          "background": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Background"
+          },
+          "contact_email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact Email"
+          },
+          "contact_phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact Phone"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ProfileUpdateRequest",
+        "description": "Role-specific editable fields are accepted directly.\n\nUnknown fields (email, role, id, user_id, verification_status,\nverification_version, is_admin, ...) are rejected by ``extra='forbid'``.\nFields that do not belong to the authenticated role are rejected by the\nprofile service."
+      },
+      "QuestionInput": {
+        "properties": {
+          "question": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 1,
+            "title": "Question"
+          },
+          "options": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 6,
+            "minItems": 2,
+            "title": "Options"
+          },
+          "correct_index": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 0.0,
+            "title": "Correct Index"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "question",
+          "options",
+          "correct_index"
+        ],
+        "title": "QuestionInput"
+      },
+      "QuizInput": {
+        "properties": {
+          "answers": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "propertyNames": {
+              "format": "uuid"
+            },
+            "type": "object",
+            "maxProperties": 20,
+            "title": "Answers"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "answers"
+        ],
+        "title": "QuizInput"
+      },
+      "ReactInput": {
+        "properties": {
+          "reacted": {
+            "type": "boolean",
+            "title": "Reacted"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "reacted"
+        ],
+        "title": "ReactInput"
+      },
+      "RegisterRequest": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "student",
+              "instructor",
+              "company"
+            ],
+            "title": "Role"
+          },
+          "company_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Company Name"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "email",
+          "password",
+          "display_name",
+          "role"
+        ],
+        "title": "RegisterRequest"
+      },
+      "ReportInput": {
+        "properties": {
+          "content_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Content Id"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 1,
+            "title": "Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "content_id",
+          "reason"
+        ],
+        "title": "ReportInput"
+      },
+      "ResolveInput": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "resolved",
+            "title": "Status"
+          },
+          "resolution": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 1,
+            "title": "Resolution"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "status",
+          "resolution"
+        ],
+        "title": "ResolveInput"
+      },
+      "Role": {
+        "type": "string",
+        "enum": [
+          "student",
+          "instructor",
+          "company",
+          "administrator"
+        ],
+        "title": "Role"
+      },
+      "SatisfactionInput": {
+        "properties": {
+          "rating": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Rating"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "rating"
+        ],
+        "title": "SatisfactionInput"
+      },
+      "SaveInput": {
+        "properties": {
+          "saved": {
+            "type": "boolean",
+            "title": "Saved"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "saved"
+        ],
+        "title": "SaveInput"
+      },
+      "StatusInput": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "under_review",
+              "accepted",
+              "rejected"
+            ],
+            "title": "Status"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "StatusInput"
+      },
+      "StudentProfileOut": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "student",
+            "title": "Kind",
+            "default": "student"
+          },
+          "institution": {
+            "type": "string",
+            "title": "Institution"
+          },
+          "program": {
+            "type": "string",
+            "title": "Program"
+          },
+          "location": {
+            "type": "string",
+            "title": "Location"
+          },
+          "background": {
+            "type": "string",
+            "title": "Background"
+          },
+          "skills": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Skills"
+          },
+          "interests": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Interests"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "institution",
+          "program",
+          "location",
+          "background",
+          "skills",
+          "interests"
+        ],
+        "title": "StudentProfileOut"
+      },
+      "UserOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          },
+          "role": {
+            "$ref": "#/components/schemas/Role"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "email",
+          "display_name",
+          "role",
+          "created_at"
+        ],
+        "title": "UserOut"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "VerificationStatus": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "verified",
+          "rejected"
+        ],
+        "title": "VerificationStatus"
+      },
+      "VerificationUpdateRequest": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "verified",
+              "rejected"
+            ],
+            "title": "Status"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Expected Version"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "status",
+          "reason",
+          "expected_version"
+        ],
+        "title": "VerificationUpdateRequest"
+      },
+      "VerificationUpdateResponse": {
+        "properties": {
+          "company": {
+            "$ref": "#/components/schemas/CompanyReviewOut"
+          },
+          "audit_event": {
+            "$ref": "#/components/schemas/AuditEventOut"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "company",
+          "audit_event"
+        ],
+        "title": "VerificationUpdateResponse"
+      }
+    }
+  }
+}

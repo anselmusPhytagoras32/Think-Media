@@ -12,7 +12,9 @@ Open http://127.0.0.1:5173. Start FastAPI separately on port 8000 using ../backe
 ```bash
 npm run build
 npx playwright install chromium
-npm test
+# Browser tests require an explicitly configured separate disposable API.
+# See docs/PRESENTATION_READINESS.md for Windows/WSL commands.
+PLAYWRIGHT_API_TARGET=http://127.0.0.1:8001 PLAYWRIGHT_BASE_URL=http://127.0.0.1:5174 npm test
 ```
 
 Browser tests need a running API and a migrated disposable development database, separate from the backend test database. The verification test needs a synthetic `admin@example.test` administrator with password `Local-browser-test-42` provisioned only in that disposable DB. These are test-only values and no account is installed automatically. Never point tests at production.

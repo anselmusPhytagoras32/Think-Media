@@ -1,5 +1,19 @@
 # Implementation decisions
 
+## 2026-11-07 · Local fictional-data presentation and Gemini preparation
+
+- Decided by: user in this session.
+- Scope: local presentation with fictional data, no cloud deployment or live
+  personal data. Developers/presenters are responsible for the demo data.
+- Runtime AI choice: prepare Gemini 3.8 Flash (`gemini-3.8-flash`), superseding
+  the earlier decision to keep all external integration out of the build.
+- Status: adapter implemented and simulated responses tested; current runtime
+  remains resource lookup until a private key and call budget are configured.
+- Research: reproducible synthetic evaluation demonstrates the pipeline;
+  genuine participant measurements remain unmeasured.
+- Authorization: continue routine engineering work inside OJT_HUB without
+  repeated approval requests; preserve sensitive files on the device.
+
 ## 2026-11-05 · Existing backend is extended in place
 - Decided by: user.
 - Why: preserve DeepSeek-generated functionality and avoid failed external orchestration.

@@ -16,9 +16,23 @@ This workspace uses privately unpacked PostgreSQL18 binaries under `/tmp/pg/usr/
 
 Before a pilot, schedule a private backup every day at 02:00 Asia/Manila on the approved host. Use an environment/service file outside Git for credentials, restrict backup access, record success/failure, and test restoration into a fresh isolated database regularly. Proposed maximum data loss is 24 hours; no recovery-time objective is claimed. Verify the restore before any rollback decision. Approve backup retention and deletion policy before removing files.
 
-The daily job is documented but not installed: hosting, production resources and retention policy require approval. No production database operation or scheduler change was performed.
+The local Windows task `ThinkMedia local daily backup` is installed at 02:00
+UTC+8 under the presenter's interactive account. Its manual verification returned
+result 0. It requires Windows on and the user logged in, with StartWhenAvailable
+for missed runs. It starts the existing WSL runtime and creates private dumps;
+daily runs do not create extra restore databases. The full restore-smoke command
+was checked separately. See the current [presentation guide](PRESENTATION_READINESS.md).
+No cloud/production scheduler or production database operation was configured.
 
 ## Representative local benchmark
+
+The current revision's [November 8 local report](../backend/reports/performance-presentation.json)
+measured 200 GETs with 20 concurrent synthetic students after warmup: p95
+729.553ms, zero failures. The fixture contained ten published listings and ten
+published resources. Reproduce with `wsl -d Ubuntu -- bash scripts/benchmark-current.sh`
+only after database tests finish; it uses the disposable `_test` database and its
+own API port 8002, and preserves the presentation database. AI, writes/uploads,
+authentication setup and cold startup are outside the timed request mix.
 
 ```bash
 DATABASE_URL=postgresql+psycopg://LOCAL_USER@127.0.0.1:PORT/thinkmedia_dev .venv/bin/python -m ops.benchmark --concurrency 20 --requests 200 --output reports/performance-local.json
@@ -28,4 +42,17 @@ The utility permits only loopback HTTP and explicit `_dev`/`_test` databases. It
 
 ## Deployment and privacy decisions still required
 
-Approve hosting/TLS, secrets management, the actual company-verification evidence procedure, privacy notice/legal basis, retention/deletion schedule, backup destination and scheduler before a pilot. Current throttles are in-process and require shared state for multiple workers. Private personalized API responses use no-store; public-content caching and scheduled expired-session/file cleanup remain future operational work under an agreed policy. No production deployment is authorized by these scripts.
+Approve hosting/TLS, secrets management, actual company-verification procedures,
+privacy notice/legal basis, retention/deletion and production recovery settings
+before a pilot. Current throttles and counters are process-local. Private API
+responses remain no-store; bounded internal public-content projections exclude
+personal flags. Administrators can monitor aggregate request/storage usage in
+Audit history. Explicit local maintenance can prune expired sessions, while
+policy-controlled attachment expiry is implemented as a separate explicit local
+command with dry run by default. It preserves application/status history and
+adds a durable audit, with410 for authorized expired downloads. Its operator
+must supply the approved period/reference and current administrator attribution.
+No presentation file was expired. Backup rotation still awaits an approved
+retention policy. [Restore evidence](../backend/reports/retention-restore-local.json)
+covers both retained bytes and a synthetic expired tombstone plus its audit.
+No production deployment is authorized by these scripts.

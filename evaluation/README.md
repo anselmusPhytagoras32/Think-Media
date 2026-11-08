@@ -18,7 +18,11 @@ Answers CSV: `id,candidate,reference`, optional `human_factual_correct` containi
 
 Collect real consented data and establish provenance before claiming research findings. Store private CSVs outside Git; do not include names, emails, resumes or application documents. No genuine datasets or respondent records have been provided for this implementation.
 
-The optional BERTScore call uses the [official score interface](https://github.com/Tiiiger/bert_score/blob/master/bert_score/score.py). It has not been executed against model weights in this repository; no semantic metric is claimed.
+The BERTScore call uses the [official score interface](https://github.com/Tiiiger/bert_score/blob/master/bert_score/score.py).
+It has now been executed offline against pinned local model weights on six
+explicitly synthetic pairs; [commands and evidence](SEMANTIC_DEMO.md) describe
+the result and its limits. This does not supply genuine research observations
+or human factual review. The genuine-data report remains pending.
 
 ## Warm-user hybrid validation
 

@@ -103,7 +103,7 @@ def application(id: UUID, s=Depends(service)):
 
 @router.get("/applications/{id}/attachment")
 def attachment(id: UUID, s=Depends(service)):
-    row = s.authorized_application(id)
+    row = s.downloadable_application(id)
     return Response(
         row.attachment,
         media_type="application/pdf",

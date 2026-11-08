@@ -87,6 +87,15 @@ export function Learning({
     [resolving, setResolving] = useState<Report | null>(null),
     [addQuiz, setAddQuiz] = useState(false);
   const [detailRevision, setDetailRevision] = useState(0);
+  // FR11/W08: publication requires a separate review before the API mutation.
+  const [pendingPublication, setPendingPublication] = useState<Record<
+    string,
+    unknown
+  > | null>(null);
+  const publicationHeading = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    if (pendingPublication) publicationHeading.current?.focus();
+  }, [pendingPublication]);
   const sequence = useRef(0);
   useEffect(
     () => () => {
@@ -257,6 +266,16 @@ export function Learning({
           correct_index: Number(d.correct_index),
         },
       ];
+    if (
+      payload.status === "published" &&
+      (editing === "new" || editing?.status !== "published")
+    ) {
+      setPendingPublication(payload);
+      return;
+    }
+    await persistContent(payload);
+  }
+  async function persistContent(payload: Record<string, unknown>) {
     setBusy(true);
     setError("");
     try {
@@ -268,6 +287,7 @@ export function Learning({
         payload,
       );
       setEditing(null);
+      setPendingPublication(null);
       setSelected(saved);
       onSelect?.(saved.id);
       setSuccess("Learning resource saved.");
@@ -341,6 +361,7 @@ export function Learning({
             className="primary"
             onClick={() => {
               setEditing("new");
+              setPendingPublication(null);
               setSelected(null);
               setAddQuiz(false);
               setError("");
@@ -361,11 +382,20 @@ export function Learning({
                 ? "Create a learning resource"
                 : "Edit learning resource"}
             </h2>
-            <button className="secondary" onClick={() => setEditing(null)}>
+            <button
+              className="secondary"
+              onClick={() => {
+                setEditing(null);
+                setPendingPublication(null);
+              }}
+            >
               Cancel
             </button>
           </div>
-          <form onSubmit={saveContent}>
+          <form
+            onSubmit={saveContent}
+            onChange={() => setPendingPublication(null)}
+          >
             <div className="field">
               <label htmlFor="content-title">Title (required)</label>
               <input
@@ -478,9 +508,52 @@ export function Learning({
               Published resources become available to learners and grounded
               guidance. Check the text and answer key before publishing.
             </p>
-            <button className="primary" disabled={busy}>
-              {busy ? "Saving…" : "Save resource"}
-            </button>
+            {pendingPublication && (
+              <section
+                className="confirmation"
+                aria-labelledby="publication-review-title"
+              >
+                <h3
+                  id="publication-review-title"
+                  tabIndex={-1}
+                  ref={publicationHeading}
+                >
+                  Review publication
+                </h3>
+                <p>
+                  Publish <strong>{String(pendingPublication.title)}</strong>?
+                  Learners will be able to read this resource and guidance can
+                  cite it. Check the resource and quiz answer key before
+                  confirming.
+                </p>
+                <div className="actions">
+                  <button
+                    type="button"
+                    className="secondary"
+                    disabled={busy}
+                    onClick={() => {
+                      setPendingPublication(null);
+                      document.getElementById("content-title")?.focus();
+                    }}
+                  >
+                    Keep editing
+                  </button>
+                  <button
+                    type="button"
+                    className="primary"
+                    disabled={busy}
+                    onClick={() => void persistContent(pendingPublication)}
+                  >
+                    Confirm publication
+                  </button>
+                </div>
+              </section>
+            )}
+            {!pendingPublication && (
+              <button className="primary" disabled={busy}>
+                {busy ? "Saving…" : "Save resource"}
+              </button>
+            )}
           </form>
         </section>
       ) : selected ? (
@@ -916,26 +989,62 @@ function Satisfaction() {
 }
 export function Assistant() {
   const [sourceContent, setSourceContent] = useState<Content | null>(null);
+  type GuidanceAnswer = {
+    answer: string;
+    sources: { id: string; title: string }[];
+    uncertainty: string | boolean;
+    mode: string;
+  };
+  type Exchange = {
+    id: number;
+    question: string;
+    answer?: GuidanceAnswer;
+    error?: string;
+  };
+  // FR10/W07, NFR03/11: bounded page-memory history, never browser persistence.
+  const [exchanges, setExchanges] = useState<Exchange[]>([]);
+  const [sourceExchange, setSourceExchange] = useState<number | null>(null);
+  const nextExchange = useRef(0);
+  const [announcement, setAnnouncement] = useState("");
   const [question, setQuestion] = useState(""),
-    [answer, setAnswer] = useState<{
-      answer: string;
-      sources: { id: string; title: string }[];
-      uncertainty: string | boolean;
-      mode: string;
-    } | null>(null),
     [busy, setBusy] = useState(false),
     [error, setError] = useState("");
-  async function ask(e?: FormEvent) {
+  async function ask(e?: FormEvent, retry?: Exchange) {
     e?.preventDefault();
-    if (!question.trim()) return;
+    const submittedQuestion = retry?.question || question.trim();
+    if (!submittedQuestion || busy) return;
+    const id = retry?.id ?? ++nextExchange.current;
+    const exchange: Exchange = { id, question: submittedQuestion };
+    setExchanges((old) =>
+      retry
+        ? old.map((item) => (item.id === id ? exchange : item))
+        : [...old, exchange].slice(-10),
+    );
     setBusy(true);
     setError("");
-    setAnswer(null);
+    setAnnouncement("Checking approved resources…");
     setSourceContent(null);
     try {
-      setAnswer(await api("/assistant", "POST", { question }));
+      const answer = await api<GuidanceAnswer>("/assistant", "POST", {
+        question: submittedQuestion,
+      });
+      setExchanges((old) =>
+        old.map((item) => (item.id === id ? { ...item, answer } : item)),
+      );
+      setAnnouncement(
+        "Guidance is ready. Read the response and its sources in the conversation.",
+      );
+      if (!retry)
+        setQuestion((current) =>
+          current.trim() === submittedQuestion ? "" : current,
+        );
     } catch (e) {
-      setError((e as Error).message);
+      setExchanges((old) =>
+        old.map((item) =>
+          item.id === id ? { ...item, error: (e as Error).message } : item,
+        ),
+      );
+      setAnnouncement("Guidance is unavailable. You can retry this question.");
     } finally {
       setBusy(false);
     }
@@ -965,6 +1074,24 @@ export function Assistant() {
           Keep personal details, resumes and private application information out
           of your question.
         </p>
+        <p className="muted">
+          The latest 10 exchanges stay on this page until you leave or clear
+          them. Each question is answered from approved resources.
+        </p>
+        {exchanges.length > 0 && (
+          <button
+            className="secondary"
+            disabled={busy}
+            onClick={() => {
+              setExchanges([]);
+              setSourceContent(null);
+              setError("");
+              setAnnouncement("Conversation cleared.");
+            }}
+          >
+            Clear conversation
+          </button>
+        )}
         <form onSubmit={ask}>
           <div className="field">
             <label htmlFor="assistant-question">Your question</label>
@@ -983,74 +1110,98 @@ export function Assistant() {
             <Send size={16} />
           </button>
         </form>
-        {busy && (
-          <p className="muted" role="status">
-            Checking approved resources…
-          </p>
-        )}
+        <p
+          className="muted"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          {announcement}
+        </p>
         <Messages error={error} />
-        {error && (
-          <div className="assistant-recovery">
-            <p>Your applications and opportunities remain available.</p>
-            <button
-              className="secondary"
-              disabled={busy}
-              onClick={() => void ask()}
-            >
-              Try again
-            </button>
-          </div>
-        )}
-        {answer && (
-          <section className="assistant-answer">
-            <span className="badge">
-              {answer.mode === "retrieval"
-                ? "Approved resource lookup"
-                : "Grounded guidance"}
-            </span>
-            <h2>Guidance from your resources</h2>
-            <p className="preserve-lines">{answer.answer}</p>
-            {answer.uncertainty && (
-              <p className="notice">
-                {typeof answer.uncertainty === "string"
-                  ? answer.uncertainty
-                  : "The available resources may not fully answer your question."}
-              </p>
-            )}
-            <h3>Sources</h3>
-            {answer.sources.length ? (
-              <ul>
-                {answer.sources.map((source) => (
-                  <li key={source.id}>
+        <section aria-label="Guidance conversation">
+          {exchanges.map((exchange) => {
+            const answer = exchange.answer;
+            return (
+              <article
+                className="assistant-answer"
+                key={exchange.id}
+                aria-labelledby={`exchange-${exchange.id}`}
+              >
+                <h2 id={`exchange-${exchange.id}`}>Your question</h2>
+                <p className="preserve-lines">{exchange.question}</p>
+                {exchange.error && (
+                  <div className="assistant-recovery">
+                    <p role="alert">{exchange.error}</p>
+                    <p>Your applications and opportunities remain available.</p>
                     <button
-                      className="text-button"
-                      onClick={async () => {
-                        try {
-                          setSourceContent(
-                            await api<Content>(`/content/${source.id}`),
-                          );
-                        } catch (e) {
-                          setError((e as Error).message);
-                        }
-                      }}
+                      className="secondary"
+                      disabled={busy}
+                      onClick={() => void ask(undefined, exchange)}
                     >
-                      {source.title}
+                      Try again
                     </button>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="muted">No matching approved sources were found.</p>
-            )}
-            <Satisfaction />
-            {sourceContent && (
-              <article className="source-preview">
-                <h3>{sourceContent.title}</h3>
-                <p className="preserve-lines">{sourceContent.body}</p>
+                  </div>
+                )}
+                {answer && (
+                  <>
+                    <span className="badge">
+                      {answer.mode === "retrieval"
+                        ? "Approved resource lookup"
+                        : "Grounded guidance"}
+                    </span>
+                    <h3>Guidance from your resources</h3>
+                    <p className="preserve-lines">{answer.answer}</p>
+                    {answer.uncertainty && (
+                      <p className="notice">
+                        {typeof answer.uncertainty === "string"
+                          ? answer.uncertainty
+                          : "The available resources may not fully answer your question."}
+                      </p>
+                    )}
+                    <h3>Sources</h3>
+                    {answer.sources.length ? (
+                      <ul>
+                        {answer.sources.map((source) => (
+                          <li key={source.id}>
+                            <button
+                              className="text-button"
+                              onClick={async () => {
+                                try {
+                                  setSourceContent(
+                                    await api<Content>(`/content/${source.id}`),
+                                  );
+                                  setSourceExchange(exchange.id);
+                                } catch (e) {
+                                  setError((e as Error).message);
+                                }
+                              }}
+                            >
+                              {source.title}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="muted">
+                        No matching approved sources were found.
+                      </p>
+                    )}
+                    {exchange.id === exchanges[exchanges.length - 1]?.id && (
+                      <Satisfaction key={exchange.id} />
+                    )}
+                    {sourceContent && sourceExchange === exchange.id && (
+                      <article className="source-preview">
+                        <h3>{sourceContent.title}</h3>
+                        <p className="preserve-lines">{sourceContent.body}</p>
+                      </article>
+                    )}
+                  </>
+                )}
               </article>
-            )}
-          </section>
-        )}
+            );
+          })}
+        </section>
       </section>
     </>
   );

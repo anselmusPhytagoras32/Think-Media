@@ -5,7 +5,7 @@ from __future__ import annotations
 import uuid
 from typing import Literal
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Request
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db, require_administrator, require_csrf
@@ -19,8 +19,26 @@ from app.schemas import (
     VerificationUpdateResponse,
 )
 from app.services.administration import AdministrationService
+from app.observability import storage_snapshot
 
 router = APIRouter(prefix="/admin", tags=["administration"], responses=ADMIN_ERRORS)
+
+
+@router.get("/operations")
+def operations(
+    request: Request,
+    _admin: User = Depends(require_administrator),
+    db: Session = Depends(get_db),
+):
+    result = request.app.state.operations.snapshot()
+    result["storage"] = storage_snapshot(db)
+    settings = request.app.state.settings
+    result["assistant"] = {
+        "mode": settings.assistant_mode,
+        "calls_used": getattr(request.app.state.assistant_provider, "calls_used", 0),
+        "call_budget": settings.assistant_call_budget,
+    }
+    return result
 
 
 @router.get("/companies", response_model=CompanyListResponse)

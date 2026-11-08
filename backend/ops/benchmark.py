@@ -48,7 +48,7 @@ def run(base_url,concurrency,requests):
             email=f'benchmark-{run_id}-{index}@example.test'
             with Session(engine) as db:
                 AccountService(db).register(RegisterRequest(email=email,password=password,display_name=f'Synthetic Benchmark Student {index+1}',role='student'))
-            client=httpx.Client(base_url=base_url.rstrip('/')+'/api/v1',timeout=30)
+            client=httpx.Client(base_url=base_url.rstrip('/')+'/api/v1',timeout=30,trust_env=False)
             csrf=client.get('/auth/csrf');csrf.raise_for_status()
             login=client.post('/auth/login',json={'email':email,'password':password},headers={'X-CSRF-Token':csrf.json()['csrf_token']});login.raise_for_status()
             token=client.get('/auth/csrf').json()['csrf_token']

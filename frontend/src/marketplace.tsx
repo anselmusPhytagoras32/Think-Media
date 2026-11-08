@@ -43,6 +43,8 @@ export type Application = {
   status: "submitted" | "under_review" | "accepted" | "rejected";
   cover_letter: string;
   attachment_name: string;
+  attachment_available?: boolean;
+  attachment_deleted_at?: string | null;
   created_at: string;
   history: {
     actor_id: string;
@@ -61,6 +63,188 @@ export type Application = {
 };
 type List<T> = { items: T[]; total: number; limit: number; offset: number };
 const statusLabel = (s: string) => s.replaceAll("_", " ");
+// FR05/07; NFR03/05/09/11: downloads stay private and expiry preserves context.
+function ApplicationAttachment({ application }: { application: Application }) {
+  const [busy, setBusy] = useState(false);
+  const [expiredDuringDownload, setExpiredDuringDownload] = useState(false);
+  const [error, setError] = useState("");
+  const [status, setStatus] = useState("");
+  const mounted = useRef(false);
+  const controller = useRef<AbortController | null>(null);
+  const urls = useRef(new Set<string>());
+  const releaseTimers = useRef(new Set<number>());
+  const expiredHeading = useRef<HTMLHeadingElement>(null);
+  const expired =
+    application.attachment_available === false || expiredDuringDownload;
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+      controller.current?.abort();
+      releaseTimers.current.forEach((timer) => window.clearTimeout(timer));
+      urls.current.forEach((url) => URL.revokeObjectURL(url));
+      releaseTimers.current.clear();
+      urls.current.clear();
+    };
+  }, []);
+  useEffect(() => {
+    if (expiredDuringDownload) expiredHeading.current?.focus();
+  }, [expiredDuringDownload]);
+  async function download() {
+    if (busy || expired) return;
+    setBusy(true);
+    setError("");
+    setStatus("");
+    const request = new AbortController();
+    controller.current = request;
+    const timeout = window.setTimeout(() => request.abort(), 30000);
+    const limit = 5 * 1024 * 1024;
+    try {
+      const response = await fetch(
+        `/api/v1/applications/${application.id}/attachment`,
+        {
+          credentials: "same-origin",
+          cache: "no-store",
+          signal: request.signal,
+        },
+      );
+      if (response.status === 410) {
+        await response.body?.cancel();
+        if (mounted.current) setExpiredDuringDownload(true);
+        return;
+      }
+      if (!response.ok) {
+        const failure = await response.json().catch(() => null);
+        throw new Error(
+          typeof failure?.error?.message === "string"
+            ? failure.error.message.slice(0, 1000)
+            : "The attachment could not be downloaded. Try again.",
+        );
+      }
+      if (Number(response.headers.get("content-length")) > limit) {
+        await response.body?.cancel();
+        throw new Error(
+          "This download exceeds the supported 5 MiB limit. Try again later.",
+        );
+      }
+      if (
+        response.headers
+          .get("content-type")
+          ?.split(";")[0]
+          .trim()
+          .toLowerCase() !== "application/pdf" ||
+        !response.body
+      ) {
+        await response.body?.cancel();
+        throw new Error("The attachment was not returned as a PDF. Try again.");
+      }
+      const reader = response.body.getReader();
+      const chunks: Uint8Array<ArrayBuffer>[] = [];
+      let size = 0;
+      try {
+        while (true) {
+          const next = await reader.read();
+          if (next.done) break;
+          size += next.value.byteLength;
+          if (size > limit) {
+            await reader.cancel();
+            throw new Error(
+              "This download exceeds the supported 5 MiB limit. Try again later.",
+            );
+          }
+          chunks.push(new Uint8Array(next.value));
+        }
+      } finally {
+        reader.releaseLock();
+      }
+      if (!size) throw new Error("The attachment was empty. Try again.");
+      if (!mounted.current) return;
+      const url = URL.createObjectURL(
+        new Blob(chunks, { type: "application/pdf" }),
+      );
+      urls.current.add(url);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = application.attachment_name;
+      link.hidden = true;
+      document.body.append(link);
+      link.click();
+      link.remove();
+      // Allow the browser to dispatch the download, then release the private blob.
+      const release = window.setTimeout(() => {
+        URL.revokeObjectURL(url);
+        urls.current.delete(url);
+        releaseTimers.current.delete(release);
+      }, 1000);
+      releaseTimers.current.add(release);
+      setStatus("Download started. Keep this PDF private.");
+    } catch (failure) {
+      if (mounted.current)
+        setError(
+          request.signal.aborted
+            ? "The download took too long. Try again."
+            : failure instanceof Error
+              ? failure.message
+              : "The attachment could not be downloaded. Try again.",
+        );
+    } finally {
+      window.clearTimeout(timeout);
+      if (controller.current === request) controller.current = null;
+      if (mounted.current) setBusy(false);
+    }
+  }
+  if (expired)
+    return (
+      <section
+        className="notice"
+        aria-labelledby={`expired-attachment-${application.id}`}
+      >
+        <div>
+          <h3
+            id={`expired-attachment-${application.id}`}
+            ref={expiredHeading}
+            tabIndex={-1}
+          >
+            Attachment expired
+          </h3>
+          <p>
+            This file is no longer available under the retention policy. The
+            application reference and status history remain available.
+          </p>
+          {application.attachment_deleted_at && (
+            <p>
+              Expired (Asia/Manila):{" "}
+              <time dateTime={application.attachment_deleted_at}>
+                {manila(application.attachment_deleted_at)}
+              </time>
+            </p>
+          )}
+        </div>
+      </section>
+    );
+  return (
+    <>
+      <button
+        className="secondary"
+        disabled={busy}
+        onClick={() => void download()}
+      >
+        <Download size={16} />
+        {busy
+          ? "Downloading attachment…"
+          : `Download ${application.attachment_name}`}
+      </button>
+      <p role="status" aria-live="polite">
+        {busy ? "Downloading the private PDF…" : status}
+      </p>
+      {error && (
+        <p className="notice error" role="alert">
+          {error}
+        </p>
+      )}
+    </>
+  );
+}
 function Feedback({ error, success }: { error: string; success?: string }) {
   return (
     <>
@@ -642,13 +826,10 @@ export function Marketplace({
           <p className="preserve-lines">
             {application.cover_letter || "No cover letter provided."}
           </p>
-          <a
-            className="secondary"
-            href={`/api/v1/applications/${application.id}/attachment`}
-          >
-            <Download size={16} />
-            Download {application.attachment_name}
-          </a>
+          <ApplicationAttachment
+            key={application.id}
+            application={application}
+          />
           {mode === "review" && application.student_profile && (
             <section className="applicant-profile">
               <h3>Applicant background</h3>

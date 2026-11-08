@@ -1,0 +1,546 @@
+{
+  "requirement": "FR12/NFR08 pipeline demonstration only",
+  "dataset_origin": "synthetic demonstration; not pilot evidence",
+  "notice": "NOT research results. All input values are generated fixtures; no human participants or actual interactions are represented.",
+  "seed": 20261107,
+  "configuration": {
+    "generator": "Python random.Random(seed); integer labels drawn uniformly from 1 through 5",
+    "rating_fixture_rows": 100,
+    "synthetic_user_ids": 10,
+    "synthetic_item_ids": 10,
+    "satisfaction_fixture_rows": 12,
+    "real_participants": 0,
+    "real_interactions": 0,
+    "packages": {
+      "scikit-learn": "1.9.1",
+      "numpy": "2.5.4",
+      "pandas": "3.1.1"
+    },
+    "fixtures": "Temporary CSVs; deterministic LF bytes and SHA256 provenance; removed after evaluation.",
+    "network_calls": 0,
+    "database_operations": 0
+  },
+  "recommender_cold_start": {
+    "status": "computed_synthetic_demo",
+    "sample_count": 100,
+    "distinct_users": 10,
+    "provenance": {
+      "input_file": "synthetic-ratings.csv",
+      "sha256": "ea06f505b3a243523d309d3f59847bd51f53157746e68ae5c9b855dd6907d516",
+      "origin": "Deterministically generated temporary fixtures from evaluation/demo.py; no consented research data."
+    },
+    "configuration": {
+      "seed": 20261107,
+      "split": "user-disjoint GroupShuffleSplit; 25% of users held out",
+      "model": "profile-only TF-IDF cosine; predicted rating = 1 + 4*cosine",
+      "max_features": 5000,
+      "ngram_range": [
+        1,
+        2
+      ],
+      "alpha": 1,
+      "text_fit": "training rows only"
+    },
+    "comparison": {
+      "train_count": 70,
+      "test_count": 30,
+      "train_users": [
+        "2eb5df3d5f584be13b34436b4dd19093eb624a056bdeb23a345a5a0f4ecc75c5",
+        "2fe4b6363ad1eb30562896680f43da417d071bb7f3966825f6e6f0171249e39c",
+        "62aa945c22bd6780e7f7d82dda7604be7a347bf0e59f35197ae607c0aa920291",
+        "a2ace1642a77c621dc8503579fb086fd7f14530921ea3f58d0144a368833b062",
+        "a388e670d648c61ee1b448e7dea8a574b3c5212d95172d78d5867743330d2a13",
+        "c386050db3d55b5eabf6e436179db980dc72415514855dfc12c2c823813a618b",
+        "e606cd9ee18c4cd68aafebf3de4702273bea4d7fd00e8be7282d37082ffc1b34"
+      ],
+      "test_users": [
+        "213e9a1f3fecb208d87c2ea940af12206ff80c5681da313b1e35927bb3c58db4",
+        "76f6c62a411bf74335fb5398e13b64775083fb0211a719b937c35b2b2ddf2e98",
+        "8ec0f6d51fd8c779508318cacbe07d258de9f7ac6d2e2f4b7b6af7919b55da18"
+      ],
+      "holdout_hashes": [
+        "07364fc83b43ada7b101487fa6fdf641c7705355a5601a03ee459cfb0fec394a",
+        "841ec598e800b47db19e38ef8d93b81bad0cc2659bd11372bc3df2c891cc19f6",
+        "f82aee773a13e8cf5c7b39b52dffafb14bc480aa8da78a7b7e0eee2ec457486d",
+        "8c22a77a2ec77f160edbfd979c9213a7459799c9fceb9336fccc8f04b49f1ef3",
+        "da0f3ec7dce0a0cca66f1f9f2363fbdcfcc33132a77f6153d4de8e1756d7dea7",
+        "6afef6f1abc948e3be784f3759aea6bfcdca9793f901406faf4d2fd4ef4791d8",
+        "1f6b4db38bd395d97443aed0a9a832cd161f226dc8aff75cbe4e327fdb01442b",
+        "92fb70c7e6c92fed6b8961670b73c0fe8b51128e4a0c391ad676b8d39b939bd3",
+        "d5484506fbe7fdd4fff9b68e7aa9c586c2bc90d78d78cea6e29eb5575fefe46c",
+        "42052f08cdf8f46ea612eb7b8014f67f18ae412679e372e9885445d6921bf823",
+        "986169edbb9f160df1973cb6c7a225de74bbb08d9ede2f17a7b076609b15074a",
+        "59d50f76f9cfb1fde27f9de2d1754c2776e6c9328db99fe2701bc73231941b9c",
+        "8df437089dd80d1545a1c52b6b812ac6dc0c230d8396bb201329be16e7dc8b54",
+        "f7c4cc5f7ed2ab76da15bbb8634d53f15c5048770bb047c1eefab0430e3023d3",
+        "029c5274de4da7764049e6daef8f68b17c50b376201a6f73d218d61b1413dd31",
+        "7fc809df36438b34d4c590520bec2b2b5c35d83cf55fcde6fdee981f8641c07a",
+        "d54a117676acbb32c342cc76aa392354077e7df558b20ff3428a0110cf567d80",
+        "79286c9c90bf9b771072a9cc719274435735a81658d1f4abb6f05337c480d727",
+        "343bcfb72a6f7883a90a88c44cab941bb1506a7c34be765f9647865f340360e9",
+        "113c00ba254fc861e4e5656ce49936f4107498b5f4295e4d41b1e6ba06781ebc",
+        "6133f6ec115bc33f302eb5d559a1b705cac6e22045f429ccbe515190a14a8d89",
+        "91a3e605a437dfc357c7effe2c51b7f71bfff4eac281defdf48f02509e8c288e",
+        "1cc0115b2b62df3c89d37aab3d493d8efa5a4637e505bd6782fe2e23bb083f79",
+        "435f43a92c5a0625e9e9a1f97538a71ca95a3015d984f1f7b317c27f85e8ab02",
+        "0a49ae8f203e05897177adcdc043796fdfd7d4ff8fff2f268a04559a2a8cd773",
+        "80ae33146feafb22621b2cb71ee38d94dad644b25dece0598e6a4d9ab06797f7",
+        "dfd12b81d8f38f4520d434c699ce5d202a82e8ffd043990bff059e4b1c6d8bda",
+        "a4be49177b71b01bbd4cf58859da5cee286dcbeeb2944a65ea7d069d112fa5ec",
+        "8683c01e3d1a4e6c7d1c60d0b31d27d49181fceee2e1c6f046f573a392e610fc",
+        "35705c453362f07faa0078d97faf81a9ab16d26cef9cafdf237de205ee752503"
+      ],
+      "model": {
+        "mae": 2.1002308020261826,
+        "rmse": 2.6232408198017256
+      },
+      "item_mean_baseline": {
+        "mae": 1.5857142857142859,
+        "rmse": 1.7432083955178974
+      },
+      "global_mean_baseline": {
+        "mae": 1.4733333333333334,
+        "rmse": 1.622754859285078
+      },
+      "vocabulary_size": 89
+    },
+    "cross_validation": {
+      "status": "computed_synthetic_demo",
+      "method": "five-fold GroupKFold; each fold fits text on its training rows only",
+      "folds": [
+        {
+          "train_count": 80,
+          "test_count": 20,
+          "train_users": [
+            "2fe4b6363ad1eb30562896680f43da417d071bb7f3966825f6e6f0171249e39c",
+            "62aa945c22bd6780e7f7d82dda7604be7a347bf0e59f35197ae607c0aa920291",
+            "76f6c62a411bf74335fb5398e13b64775083fb0211a719b937c35b2b2ddf2e98",
+            "8ec0f6d51fd8c779508318cacbe07d258de9f7ac6d2e2f4b7b6af7919b55da18",
+            "a2ace1642a77c621dc8503579fb086fd7f14530921ea3f58d0144a368833b062",
+            "a388e670d648c61ee1b448e7dea8a574b3c5212d95172d78d5867743330d2a13",
+            "c386050db3d55b5eabf6e436179db980dc72415514855dfc12c2c823813a618b",
+            "e606cd9ee18c4cd68aafebf3de4702273bea4d7fd00e8be7282d37082ffc1b34"
+          ],
+          "test_users": [
+            "213e9a1f3fecb208d87c2ea940af12206ff80c5681da313b1e35927bb3c58db4",
+            "2eb5df3d5f584be13b34436b4dd19093eb624a056bdeb23a345a5a0f4ecc75c5"
+          ],
+          "holdout_hashes": [
+            "a917ed1a4d9aa9b05970a3e96cda8acd3d14872ca3cba1e558a00c98177cb005",
+            "6853ece40e4d1c19af1478ed907d5f1298a029da37882a0ff20d5ceac2b33707",
+            "f8861312b11216ef4cd592ee1c873eed8ac5983cf39353b23463d97ff9eedad2",
+            "121ca805599b22e8b4bd865d0fba344a63672e9c1aeb8d23d91368073e32b1dd",
+            "e869cb5d828a7d147de99aec118678f043a8a31fa3a55d187007f9553a22f9a3",
+            "93ba0867f589ae477c06d1eb639756f4b14c1ce5d8d3d60abf7be395af5d572b",
+            "bee9ca3533b05ffa6b062b06158a11b1649f0592471cf82b1a387eaab51a9b6c",
+            "bc31d602b88dcbd7e2612558a507bb51897d193783a5da3951e48ae199d5c683",
+            "7afae3feb7b409592ee5a26caf6a08762fe8f84f73d9e78e3b4b945fabc185b3",
+            "49687a3c17d27df942885538f361603cf8ddab4e102288610b0a526f247e2726",
+            "6133f6ec115bc33f302eb5d559a1b705cac6e22045f429ccbe515190a14a8d89",
+            "91a3e605a437dfc357c7effe2c51b7f71bfff4eac281defdf48f02509e8c288e",
+            "1cc0115b2b62df3c89d37aab3d493d8efa5a4637e505bd6782fe2e23bb083f79",
+            "435f43a92c5a0625e9e9a1f97538a71ca95a3015d984f1f7b317c27f85e8ab02",
+            "0a49ae8f203e05897177adcdc043796fdfd7d4ff8fff2f268a04559a2a8cd773",
+            "80ae33146feafb22621b2cb71ee38d94dad644b25dece0598e6a4d9ab06797f7",
+            "dfd12b81d8f38f4520d434c699ce5d202a82e8ffd043990bff059e4b1c6d8bda",
+            "a4be49177b71b01bbd4cf58859da5cee286dcbeeb2944a65ea7d069d112fa5ec",
+            "8683c01e3d1a4e6c7d1c60d0b31d27d49181fceee2e1c6f046f573a392e610fc",
+            "35705c453362f07faa0078d97faf81a9ab16d26cef9cafdf237de205ee752503"
+          ],
+          "model": {
+            "mae": 2.22960129329709,
+            "rmse": 2.666749535117078
+          },
+          "item_mean_baseline": {
+            "mae": 1.475,
+            "rmse": 1.6312380267759823
+          },
+          "global_mean_baseline": {
+            "mae": 1.45625,
+            "rmse": 1.6078421097856592
+          },
+          "vocabulary_size": 89
+        },
+        {
+          "train_count": 80,
+          "test_count": 20,
+          "train_users": [
+            "213e9a1f3fecb208d87c2ea940af12206ff80c5681da313b1e35927bb3c58db4",
+            "2eb5df3d5f584be13b34436b4dd19093eb624a056bdeb23a345a5a0f4ecc75c5",
+            "2fe4b6363ad1eb30562896680f43da417d071bb7f3966825f6e6f0171249e39c",
+            "62aa945c22bd6780e7f7d82dda7604be7a347bf0e59f35197ae607c0aa920291",
+            "8ec0f6d51fd8c779508318cacbe07d258de9f7ac6d2e2f4b7b6af7919b55da18",
+            "a388e670d648c61ee1b448e7dea8a574b3c5212d95172d78d5867743330d2a13",
+            "c386050db3d55b5eabf6e436179db980dc72415514855dfc12c2c823813a618b",
+            "e606cd9ee18c4cd68aafebf3de4702273bea4d7fd00e8be7282d37082ffc1b34"
+          ],
+          "test_users": [
+            "76f6c62a411bf74335fb5398e13b64775083fb0211a719b937c35b2b2ddf2e98",
+            "a2ace1642a77c621dc8503579fb086fd7f14530921ea3f58d0144a368833b062"
+          ],
+          "holdout_hashes": [
+            "986169edbb9f160df1973cb6c7a225de74bbb08d9ede2f17a7b076609b15074a",
+            "59d50f76f9cfb1fde27f9de2d1754c2776e6c9328db99fe2701bc73231941b9c",
+            "8df437089dd80d1545a1c52b6b812ac6dc0c230d8396bb201329be16e7dc8b54",
+            "f7c4cc5f7ed2ab76da15bbb8634d53f15c5048770bb047c1eefab0430e3023d3",
+            "029c5274de4da7764049e6daef8f68b17c50b376201a6f73d218d61b1413dd31",
+            "7fc809df36438b34d4c590520bec2b2b5c35d83cf55fcde6fdee981f8641c07a",
+            "d54a117676acbb32c342cc76aa392354077e7df558b20ff3428a0110cf567d80",
+            "79286c9c90bf9b771072a9cc719274435735a81658d1f4abb6f05337c480d727",
+            "343bcfb72a6f7883a90a88c44cab941bb1506a7c34be765f9647865f340360e9",
+            "113c00ba254fc861e4e5656ce49936f4107498b5f4295e4d41b1e6ba06781ebc",
+            "900dbdf208d6bd3375f1ef7c48b26a9f87566a37f90ae20054bb0c840d37f544",
+            "20d38ec35162d94ae6348c2f42bf8ef9afed5baab658e304f644a3175568eafc",
+            "917cf4cda235670629d1d81e2acb10c39460f1e74ab7204b969f518fe9d4f613",
+            "af8c52889982fbbb68f16d16c24451c953ce43ae68718326594860faf7486ecb",
+            "09aa7755e86c803e60f35c5d317c3266658cd179ff9c772eb5b3ac112a06d048",
+            "1498ae5a72434f76d2e8628e8de237753a49400d654c17040e1cefd3ce4dc816",
+            "507343851794ce139cfea012c680d99e0928fb60e99eb4beddd5fa52e46bcde5",
+            "c23b502784ec5d57123613481d669afbe30469b0544273705268ea651491425d",
+            "4364cccabf123724f59035503086499358a61675f7465a9f9aa126d5c474b303",
+            "75d81b482f51d58b0cb7dca63c7a27f0971517165536fff89af8e85d92753592"
+          ],
+          "model": {
+            "mae": 1.7795817228527653,
+            "rmse": 2.3800589556474288
+          },
+          "item_mean_baseline": {
+            "mae": 1.3875,
+            "rmse": 1.6259612541509099
+          },
+          "global_mean_baseline": {
+            "mae": 1.3575,
+            "rmse": 1.5323592920721953
+          },
+          "vocabulary_size": 89
+        },
+        {
+          "train_count": 80,
+          "test_count": 20,
+          "train_users": [
+            "213e9a1f3fecb208d87c2ea940af12206ff80c5681da313b1e35927bb3c58db4",
+            "2eb5df3d5f584be13b34436b4dd19093eb624a056bdeb23a345a5a0f4ecc75c5",
+            "2fe4b6363ad1eb30562896680f43da417d071bb7f3966825f6e6f0171249e39c",
+            "62aa945c22bd6780e7f7d82dda7604be7a347bf0e59f35197ae607c0aa920291",
+            "76f6c62a411bf74335fb5398e13b64775083fb0211a719b937c35b2b2ddf2e98",
+            "a2ace1642a77c621dc8503579fb086fd7f14530921ea3f58d0144a368833b062",
+            "a388e670d648c61ee1b448e7dea8a574b3c5212d95172d78d5867743330d2a13",
+            "c386050db3d55b5eabf6e436179db980dc72415514855dfc12c2c823813a618b"
+          ],
+          "test_users": [
+            "8ec0f6d51fd8c779508318cacbe07d258de9f7ac6d2e2f4b7b6af7919b55da18",
+            "e606cd9ee18c4cd68aafebf3de4702273bea4d7fd00e8be7282d37082ffc1b34"
+          ],
+          "holdout_hashes": [
+            "07364fc83b43ada7b101487fa6fdf641c7705355a5601a03ee459cfb0fec394a",
+            "841ec598e800b47db19e38ef8d93b81bad0cc2659bd11372bc3df2c891cc19f6",
+            "f82aee773a13e8cf5c7b39b52dffafb14bc480aa8da78a7b7e0eee2ec457486d",
+            "8c22a77a2ec77f160edbfd979c9213a7459799c9fceb9336fccc8f04b49f1ef3",
+            "da0f3ec7dce0a0cca66f1f9f2363fbdcfcc33132a77f6153d4de8e1756d7dea7",
+            "6afef6f1abc948e3be784f3759aea6bfcdca9793f901406faf4d2fd4ef4791d8",
+            "1f6b4db38bd395d97443aed0a9a832cd161f226dc8aff75cbe4e327fdb01442b",
+            "92fb70c7e6c92fed6b8961670b73c0fe8b51128e4a0c391ad676b8d39b939bd3",
+            "d5484506fbe7fdd4fff9b68e7aa9c586c2bc90d78d78cea6e29eb5575fefe46c",
+            "42052f08cdf8f46ea612eb7b8014f67f18ae412679e372e9885445d6921bf823",
+            "aaa12b73f609f8c4cc6418ebf41d7d6b30fbcbfff614cc50d0a1bb858deb4353",
+            "25c82e935a5a52e7515c9ede09c462b9a75c4fdd7a730c676964ab46aa579ca0",
+            "8d4ef3541cca7728efc4b53fd1c07066b1a6cc2c55f9a5c5ef68343944e5a053",
+            "1ecf980aa4299b7fbfb3885865410d23a1c12cf0fc6d2fe1618377cea736ad47",
+            "e36864d4cebc91f3adc8b86713619402037e5cf18b8426deb804dd6e91104cff",
+            "5d517104cc7612dc9ad553c535758e079afffdc113f0035385558c17ae5734f8",
+            "031c8b4ecaf013af58d0da91ae686766a64010dd803bd039e94c9f4fdc012c2d",
+            "76ef77d34ec97ff4148e916e9fae2ab18fc2fa1d8c6f2a1a30f238dc96de09cb",
+            "81bac059008c6818a024c3aed11fe4d517a8740f3cb1cbf79ddae785d1429a01",
+            "ff9a2692a86ecc23f5e9e419419510af100dbd6f0dfdbc81de0b4750a6648c5d"
+          ],
+          "model": {
+            "mae": 1.5575533316613581,
+            "rmse": 2.0290624971447375
+          },
+          "item_mean_baseline": {
+            "mae": 1.175,
+            "rmse": 1.392502244163362
+          },
+          "global_mean_baseline": {
+            "mae": 1.19875,
+            "rmse": 1.3757384380760755
+          },
+          "vocabulary_size": 89
+        },
+        {
+          "train_count": 80,
+          "test_count": 20,
+          "train_users": [
+            "213e9a1f3fecb208d87c2ea940af12206ff80c5681da313b1e35927bb3c58db4",
+            "2eb5df3d5f584be13b34436b4dd19093eb624a056bdeb23a345a5a0f4ecc75c5",
+            "62aa945c22bd6780e7f7d82dda7604be7a347bf0e59f35197ae607c0aa920291",
+            "76f6c62a411bf74335fb5398e13b64775083fb0211a719b937c35b2b2ddf2e98",
+            "8ec0f6d51fd8c779508318cacbe07d258de9f7ac6d2e2f4b7b6af7919b55da18",
+            "a2ace1642a77c621dc8503579fb086fd7f14530921ea3f58d0144a368833b062",
+            "c386050db3d55b5eabf6e436179db980dc72415514855dfc12c2c823813a618b",
+            "e606cd9ee18c4cd68aafebf3de4702273bea4d7fd00e8be7282d37082ffc1b34"
+          ],
+          "test_users": [
+            "2fe4b6363ad1eb30562896680f43da417d071bb7f3966825f6e6f0171249e39c",
+            "a388e670d648c61ee1b448e7dea8a574b3c5212d95172d78d5867743330d2a13"
+          ],
+          "holdout_hashes": [
+            "43e7795a439a33353703130d5f66e1ab5367c59600432b8b23ae32c9bfde2451",
+            "6d6f62e8eaafdde60adb75e51c84c59e56d940b71cf0a9070d8c5c031a005ef3",
+            "630ed18dc0b7d8d00c7f755e454d4fdd3814a5203e908b6d507740a3beac247b",
+            "ef1b665dece4ba711c9b0a146c8264cae43a3a9b034a4fbdeb50f2c5b83cbdd4",
+            "3b34c409c021bf646e9ff9d52d5f3562ca86e819d81ea0ac5df270d998d36d4f",
+            "c7400393da4bfa89035a49ad9461172b66808880d3e6412ff28108d35f35001d",
+            "a9260018d4270eb2f62f4f505e702dd608daaa1918a38e9219a4b43b2c65a8cf",
+            "ebb0582b1ad78366cdfe5624390b66dfbeb2c196c532fa3b94bb5d8543eda6e4",
+            "fa91c31f017d7c9603bdedb63efe4aa90288f7557f91485d2c5ecd0f51f9cd8c",
+            "b6eac9f0f5095d09cfff9ddef6906dacf96e5c34848d71fe45a7666673c15094",
+            "b626987e1c5536992c2a823c3f9abf5009270e3f76bd54f6fc3b5818d41b7e26",
+            "8492ae768bb6cc3d08bf14602de3cb45580b45002afdaf27cd5d2f8a4622e19f",
+            "41c220d878e1069d8897504e6e76bca18a9b5b1f3d65322abeeecfcce1b1ffea",
+            "725c7c680c7f31a8b149ce450b0b6de13384878257722f6a3fe3868ce3bdd130",
+            "fe2bac900d174e78a22829ff748ad853767a597d1b717582be399d58812a67e5",
+            "c80427cbd6d932d571d4b7fbe3de672b816fcb69b313119cd20815ac6cdf4e61",
+            "470db3a727acb246ce9da9429e40707ba51f2017784a8338a1f0290b76f30d71",
+            "cf5bd54b2ae1248040b3c739860b1c36d09250d9c23da2bac545dc5b94b6b31b",
+            "9adf2e4badca661bfcd4172c89e1c644418ce5e6e907e4ec776005b3a0b179ae",
+            "6ec06bff5bdc51d5ec00b9bee92a56f433307402173297289ea8ca99c6a72848"
+          ],
+          "model": {
+            "mae": 1.5314258651528867,
+            "rmse": 1.9358277170425817
+          },
+          "item_mean_baseline": {
+            "mae": 1.0125,
+            "rmse": 1.3240562676865362
+          },
+          "global_mean_baseline": {
+            "mae": 0.95,
+            "rmse": 1.284523257866513
+          },
+          "vocabulary_size": 89
+        },
+        {
+          "train_count": 80,
+          "test_count": 20,
+          "train_users": [
+            "213e9a1f3fecb208d87c2ea940af12206ff80c5681da313b1e35927bb3c58db4",
+            "2eb5df3d5f584be13b34436b4dd19093eb624a056bdeb23a345a5a0f4ecc75c5",
+            "2fe4b6363ad1eb30562896680f43da417d071bb7f3966825f6e6f0171249e39c",
+            "76f6c62a411bf74335fb5398e13b64775083fb0211a719b937c35b2b2ddf2e98",
+            "8ec0f6d51fd8c779508318cacbe07d258de9f7ac6d2e2f4b7b6af7919b55da18",
+            "a2ace1642a77c621dc8503579fb086fd7f14530921ea3f58d0144a368833b062",
+            "a388e670d648c61ee1b448e7dea8a574b3c5212d95172d78d5867743330d2a13",
+            "e606cd9ee18c4cd68aafebf3de4702273bea4d7fd00e8be7282d37082ffc1b34"
+          ],
+          "test_users": [
+            "62aa945c22bd6780e7f7d82dda7604be7a347bf0e59f35197ae607c0aa920291",
+            "c386050db3d55b5eabf6e436179db980dc72415514855dfc12c2c823813a618b"
+          ],
+          "holdout_hashes": [
+            "5bd87ce82a89536d7a96c4704dafa331b2d5bfbf32eb0bd6e0d192f17d79a82e",
+            "05224ca3db38759d2edc2560271a6dc46611404b409e7c820a7715f6329283ff",
+            "5b530f1979f48493423248c46e10a75cf99daa633ff9e4939071ca32fb8446ec",
+            "9892ace9859d3904400dad831def140530a45c473d72814ca4c7b00a11b8e0a1",
+            "619da924fb7e4f80d86833277f8ac455dfd1ce0f1b8eec34280c0e8f40168c64",
+            "bcac32fb1b9130a5000963fe87c19de0ac5370c60e8cfb9d19ccff55c1a83ddc",
+            "b644f613dbdce822490ffded34642c6e18cc6e2c21e2ceb5f76dd2299c51ae75",
+            "e39fde6b7033fcaba6cc8f0eed7859cc821777e3f93022be895d14c4daa5a4f6",
+            "d689a479111ea4f28ab9a5b0bcf9654d86e895197532de502e7f83c60fe43d70",
+            "f3cdca374d18349a1b99e101080a8dbed4464197c951edf648d5acbd247c6c9c",
+            "e6a5fff6a4b15b88d334397d0b4ea671a329748d7a29d76dfe48a7bd57148238",
+            "ce1c4cb9513d021016b4d60e350f53253e33d625b657be3496edb039f409d3fe",
+            "13ad91f00b35b1896b7b584c6253631e49725cdba29ebb34f937124a3c5500a6",
+            "27a784b41349f1c8c42904d274a4c9ce4dd42c970d98e9f486deaee210bf5455",
+            "7d72b10ec17ac3757a803b90d64df2113802f3f7f802e4ba81e445cb0485aaea",
+            "e68fa76f9c79454bdc6c0dea67c112997a871a4c9b7333b88bde913b51255b51",
+            "b0d63c5e185f8a4274f03afe65bb6b31ea6cd29764834fd4fe2d077a5def0c42",
+            "0d25083c9718f9950ccad5d28dce27082d37b45935b91d949cec872711180265",
+            "5fdc391005ffa22809d49de2079c3bb9b68416d9776997256268e27d7ca15995",
+            "aba94f6e8aca1c693c9aed24ccaaac1b9227364de03f31799dfc1cb1d97c9298"
+          ],
+          "model": {
+            "mae": 1.7495104410318085,
+            "rmse": 2.210157880136295
+          },
+          "item_mean_baseline": {
+            "mae": 1.1875,
+            "rmse": 1.4317821063276353
+          },
+          "global_mean_baseline": {
+            "mae": 1.35,
+            "rmse": 1.4656483207099855
+          },
+          "vocabulary_size": 89
+        }
+      ],
+      "dataset_origin": "synthetic demonstration; not pilot evidence",
+      "evaluator_status": "measured_offline"
+    },
+    "limitations": [
+      "Offline profile-only reference evaluator, not validation of deployed hybrid weighting.",
+      "Numerical cosine-to-rating mapping is uncalibrated; compare against the same-holdout baselines.",
+      "These values characterize only the supplied dataset, not a pilot unless its provenance establishes that.",
+      "No missing interaction is converted into a numerical rating."
+    ],
+    "dataset_origin": "synthetic demonstration; not pilot evidence",
+    "evaluator_status": "measured_offline"
+  },
+  "recommender_warm_temporal": {
+    "status": "computed_synthetic_demo",
+    "sample_count": 100,
+    "distinct_users": 10,
+    "provenance": {
+      "input_file": "synthetic-ratings.csv",
+      "sha256": "ea06f505b3a243523d309d3f59847bd51f53157746e68ae5c9b855dd6907d516",
+      "origin": "Deterministically generated temporary fixtures from evaluation/demo.py; no consented research data."
+    },
+    "configuration": {
+      "protocol": "within-user chronological 60/20/20; warm users, not unseen users",
+      "fit": "training text and ratings only; validation selects alpha; test is untouched",
+      "hybrid": "cosine similarity on at least two jointly observed ratings; weighted neighbor ratings; absent neighbors use content only",
+      "alpha_grid": [
+        0,
+        0.25,
+        0.5,
+        0.75,
+        1
+      ],
+      "selected_alpha": 0.25,
+      "thresholds": {
+        "users": 5,
+        "training_ratings": 20
+      }
+    },
+    "train_count": 60,
+    "validation_count": 20,
+    "test_count": 20,
+    "validation_metrics": {
+      "0": {
+        "mae": 1.4804528334867513,
+        "rmse": 1.6667973637582207
+      },
+      "0.25": {
+        "mae": 1.447461532044224,
+        "rmse": 1.7159662422093527
+      },
+      "0.5": {
+        "mae": 1.4622430855206432,
+        "rmse": 1.857334637564329
+      },
+      "0.75": {
+        "mae": 1.613585790571247,
+        "rmse": 2.0721170059419296
+      },
+      "1": {
+        "mae": 1.773345580248823,
+        "rmse": 2.34018608996265
+      }
+    },
+    "comparison": {
+      "holdout_hashes": [
+        "d689a479111ea4f28ab9a5b0bcf9654d86e895197532de502e7f83c60fe43d70",
+        "f3cdca374d18349a1b99e101080a8dbed4464197c951edf648d5acbd247c6c9c",
+        "fa91c31f017d7c9603bdedb63efe4aa90288f7557f91485d2c5ecd0f51f9cd8c",
+        "b6eac9f0f5095d09cfff9ddef6906dacf96e5c34848d71fe45a7666673c15094",
+        "d5484506fbe7fdd4fff9b68e7aa9c586c2bc90d78d78cea6e29eb5575fefe46c",
+        "42052f08cdf8f46ea612eb7b8014f67f18ae412679e372e9885445d6921bf823",
+        "343bcfb72a6f7883a90a88c44cab941bb1506a7c34be765f9647865f340360e9",
+        "113c00ba254fc861e4e5656ce49936f4107498b5f4295e4d41b1e6ba06781ebc",
+        "7afae3feb7b409592ee5a26caf6a08762fe8f84f73d9e78e3b4b945fabc185b3",
+        "49687a3c17d27df942885538f361603cf8ddab4e102288610b0a526f247e2726",
+        "5fdc391005ffa22809d49de2079c3bb9b68416d9776997256268e27d7ca15995",
+        "aba94f6e8aca1c693c9aed24ccaaac1b9227364de03f31799dfc1cb1d97c9298",
+        "9adf2e4badca661bfcd4172c89e1c644418ce5e6e907e4ec776005b3a0b179ae",
+        "6ec06bff5bdc51d5ec00b9bee92a56f433307402173297289ea8ca99c6a72848",
+        "81bac059008c6818a024c3aed11fe4d517a8740f3cb1cbf79ddae785d1429a01",
+        "ff9a2692a86ecc23f5e9e419419510af100dbd6f0dfdbc81de0b4750a6648c5d",
+        "4364cccabf123724f59035503086499358a61675f7465a9f9aa126d5c474b303",
+        "75d81b482f51d58b0cb7dca63c7a27f0971517165536fff89af8e85d92753592",
+        "8683c01e3d1a4e6c7d1c60d0b31d27d49181fceee2e1c6f046f573a392e610fc",
+        "35705c453362f07faa0078d97faf81a9ab16d26cef9cafdf237de205ee752503"
+      ],
+      "model": {
+        "mae": 1.4010325053069492,
+        "rmse": 1.6440602887948534
+      },
+      "profile_only": {
+        "mae": 2.1316946418158778,
+        "rmse": 2.574287243140635
+      },
+      "item_mean_baseline": {
+        "mae": 1.2333333333333334,
+        "rmse": 1.47290340635238
+      },
+      "global_mean_baseline": {
+        "mae": 1.305,
+        "rmse": 1.4961988875517556
+      },
+      "collaborative_covered_test_count": 20
+    },
+    "limitations": [
+      "Offline reference estimator; not a pilot claim without genuine provenance.",
+      "Validation observations are not folded back into training histories.",
+      "Current runtime candidate eligibility and recommendation ranking require separate integration checks.",
+      "Do not reuse warm-user results as unseen-user accuracy."
+    ],
+    "dataset_origin": "synthetic demonstration; not pilot evidence",
+    "evaluator_status": "measured_offline"
+  },
+  "satisfaction_aggregation": {
+    "status": "computed_synthetic_demo",
+    "sample_count": 12,
+    "provenance": {
+      "input_file": "synthetic-satisfaction.csv",
+      "sha256": "08cfce1624e25c11c3e61efd2cb3d244fab85ff3e7df6fb2a72b13139a9655f7",
+      "origin": "Deterministically generated temporary fixtures from evaluation/demo.py; no consented research data."
+    },
+    "configuration": {
+      "scale": "five-point integer satisfaction",
+      "baseline": "not applicable to survey; target is separate"
+    },
+    "metrics": {
+      "mean": 3.3333333333333335,
+      "distribution": {
+        "1": 3,
+        "2": 1,
+        "3": 2,
+        "4": 1,
+        "5": 5
+      },
+      "satisfied_share_4_or_5": 0.5
+    },
+    "proposed_target": 4.0,
+    "limitations": [
+      "No people were surveyed. sample_count counts synthetic fixture rows only.",
+      "These arbitrary numbers demonstrate aggregation, not satisfaction with ThinkMedia."
+    ],
+    "dataset_origin": "synthetic demonstration; not pilot evidence",
+    "evaluator_status": "measured_from_supplied_responses"
+  },
+  "assistant": {
+    "dataset_origin": "synthetic demonstration; not pilot evidence",
+    "bertscore": {
+      "status": "not_measured",
+      "reason": "No fixed candidate/reference answer set supplied.",
+      "sample_count": null,
+      "metrics": null,
+      "dataset_origin": "synthetic demonstration; not pilot evidence"
+    },
+    "human_factual_review": {
+      "status": "not_measured",
+      "reason": "No fixed answer/reference set or human factual review supplied. No review is simulated.",
+      "sample_count": null,
+      "metrics": null,
+      "dataset_origin": "synthetic demonstration; not pilot evidence"
+    }
+  },
+  "limitations": [
+    "NOT research results. All input values are generated fixtures; no human participants or actual interactions are represented.",
+    "Arbitrary random labels intentionally do not establish predictive quality or favorable performance.",
+    "This exercises the existing offline reference evaluator; it does not validate runtime ranking or select a deployed alpha.",
+    "Cold-start user-disjoint results and warm-user temporal results answer different questions and must be presented separately.",
+    "evaluation/reports/pending.json remains the report for absent genuine research data.",
+    "No BERTScore model/dependency download, live LLM call, app record, or mock survey respondent is created."
+  ]
+}

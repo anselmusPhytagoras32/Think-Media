@@ -30,6 +30,8 @@ APP_TABLES = {
     "moderation_reports",
     "content_events",
     "interactions",
+    "satisfaction_feedback",
+    "attachment_retention_events",
 }
 
 

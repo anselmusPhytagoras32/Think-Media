@@ -7,6 +7,7 @@ from sqlalchemy import (
     CheckConstraint,
     DateTime,
     ForeignKey,
+    Integer,
     LargeBinary,
     String,
     Text,
@@ -63,7 +64,8 @@ class Application(Base):
     status: Mapped[str] = mapped_column(String(20), default="submitted")
     cover_letter: Mapped[str] = mapped_column(String(5000))
     attachment_name: Mapped[str] = mapped_column(String(200))
-    attachment: Mapped[bytes] = mapped_column(LargeBinary, deferred=True)
+    attachment: Mapped[bytes | None] = mapped_column(LargeBinary, deferred=True, nullable=True)
+    attachment_deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=utcnow
     )
@@ -77,6 +79,11 @@ class Application(Base):
         ),
         CheckConstraint(
             "octet_length(attachment) BETWEEN 1 AND 5242880", name="attachment_size"
+        ),
+        CheckConstraint(
+            "(attachment IS NOT NULL AND attachment_deleted_at IS NULL) OR "
+            "(attachment IS NULL AND attachment_deleted_at IS NOT NULL)",
+            name="attachment_state",
         ),
     )
 
@@ -121,4 +128,25 @@ class MarketplaceEvent(Base):
     new_status: Mapped[str] = mapped_column(String(20))
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=utcnow
+    )
+
+
+class AttachmentRetentionEvent(Base):
+    """FR11/NFR03/04/11: durable expiry audit without filenames or file data."""
+    __tablename__ = "attachment_retention_events"
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    application_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("applications.id", ondelete="RESTRICT"), nullable=False, unique=True
+    )
+    actor_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="RESTRICT"), nullable=False
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    retention_days: Mapped[int] = mapped_column(Integer)
+    policy_reference: Mapped[str] = mapped_column(String(200))
+    byte_count: Mapped[int] = mapped_column(Integer)
+    __table_args__ = (
+        CheckConstraint("retention_days BETWEEN 1 AND 36500", name="days_range"),
+        CheckConstraint("char_length(policy_reference) BETWEEN 1 AND 200", name="policy_reference_length"),
+        CheckConstraint("byte_count BETWEEN 1 AND 5242880", name="byte_count_range"),
     )

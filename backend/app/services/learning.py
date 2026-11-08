@@ -15,6 +15,7 @@ from app.models import (
 )
 from app.repositories.learning import ContentRepository
 from app.schemas.learning import ContentInput
+from app.services.content_cache import public_content_cache
 from app.time_utils import iso_manila, utcnow
 
 
@@ -45,19 +46,31 @@ class LearningService:
         return row
 
     def out(self, row):
+        # FR03/11, NFR03/11: callers have fetched/authorized the current row.
+        # A versioned public projection can be shared; private flags cannot.
+        bind = self.db.get_bind()
+        engine = getattr(bind, "engine", bind)
+        key = (engine, row.id, row.updated_at, row.status)
+        projection = public_content_cache.get(key) if row.status == "published" else None
+        if projection is None:
+            projection = dict(
+                id=str(row.id),
+                title=row.title,
+                summary=row.summary,
+                body=row.body,
+                tags=list(row.tags),
+                status=row.status,
+                created_at=iso_manila(row.created_at),
+                updated_at=iso_manila(row.updated_at),
+                has_quiz=bool(self.repo.questions(row.id)),
+            )
+            if row.status == "published":
+                public_content_cache.put(key, projection)
         state = self.db.get(ContentState, (self.user.id, row.id))
         return dict(
-            id=str(row.id),
-            title=row.title,
-            summary=row.summary,
-            body=row.body,
-            tags=row.tags,
-            status=row.status,
-            created_at=iso_manila(row.created_at),
-            updated_at=iso_manila(row.updated_at),
+            **projection,
             saved=bool(state and state.saved),
             reacted=bool(state and state.reacted),
-            has_quiz=bool(self.repo.questions(row.id)),
         )
 
     def page(self, query, limit, offset, presenter):

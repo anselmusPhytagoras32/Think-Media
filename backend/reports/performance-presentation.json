@@ -1,0 +1,56 @@
+{
+  "requirement": "NFR01",
+  "measured_at": "2026-11-07T16:04:12.655769+00:00",
+  "environment": {
+    "python": "3.14.4",
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+    "target": "local loopback FastAPI + PostgreSQL"
+  },
+  "dataset_kind": "synthetic local functional benchmark; not pilot participants",
+  "concurrent_users": 20,
+  "measured_requests": 200,
+  "warmup_requests": 80,
+  "path_mix": [
+    "/profiles/me",
+    "/listings?limit=20",
+    "/content?limit=20",
+    "/recommendations?limit=10"
+  ],
+  "database_row_counts": {
+    "users": 24,
+    "listings": 10,
+    "learning_content": 10,
+    "applications": 0,
+    "interactions": 0
+  },
+  "elapsed_seconds": 4.869,
+  "p95_method": "nearest-rank on all measured request durations",
+  "p95_ms": 729.553,
+  "max_ms": 862.396,
+  "failures": 0,
+  "per_path": {
+    "/profiles/me": {
+      "requests": 50,
+      "p95_ms": 400.987
+    },
+    "/listings?limit=20": {
+      "requests": 50,
+      "p95_ms": 662.368
+    },
+    "/content?limit=20": {
+      "requests": 50,
+      "p95_ms": 645.018
+    },
+    "/recommendations?limit=10": {
+      "requests": 50,
+      "p95_ms": 809.298
+    }
+  },
+  "target_ms": 2000,
+  "limitations": [
+    "Warmed local runtime and synthetic accounts; not a production or pilot load result.",
+    "AI latency excluded. No external AI provider is called.",
+    "Synthetic actors are preserved; no existing data is removed."
+  ],
+  "target_met": true
+}

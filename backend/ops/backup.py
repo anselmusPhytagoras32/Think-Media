@@ -47,9 +47,29 @@ def private_dump(output:Path,pg_bin:Path):
         raise
 
 
-def restore_smoke(backup:Path,pg_bin:Path):
+def attachment_fingerprint(rows):
+    """NFR03/07: hash retained bytes and expiry tombstones without logging either."""
+    digest = hashlib.sha256()
+    for identity, payload, deleted_at in rows:
+        digest.update(str(identity).encode())
+        if payload is None:
+            if deleted_at is None:
+                raise ValueError('A missing attachment requires an expiry tombstone.')
+            digest.update(b'\x00expired\x00')
+            digest.update(deleted_at.astimezone(timezone.utc).isoformat(timespec='microseconds').encode())
+        else:
+            if deleted_at is not None:
+                raise ValueError('Retained attachment bytes cannot have an expiry tombstone.')
+            digest.update(b'\x00retained\x00')
+            digest.update(hashlib.sha256(payload).digest())
+    return digest.hexdigest()
+
+
+def restore_smoke(backup:Path,pg_bin:Path,*,target_namespace='backup'):
+    if target_namespace not in {'backup','migration_test'}:
+        raise ValueError('Restore namespace must be backup or migration_test; existing databases are never targets.')
     source=local_connection()
-    target='tm_restore_'+uuid.uuid4().hex[:16]
+    target=('tm_restore_'+uuid.uuid4().hex[:16]) if target_namespace=='backup' else ('tm_migration_'+uuid.uuid4().hex[:12])
     admin={**source,'dbname':'postgres'}
     with psycopg.connect(**admin,autocommit=True) as connection:
         connection.execute(sql.SQL('CREATE DATABASE {}').format(sql.Identifier(target)))
@@ -65,16 +85,16 @@ def restore_smoke(backup:Path,pg_bin:Path):
             tables=connection.execute("SELECT tablename FROM pg_tables WHERE schemaname='public' ORDER BY tablename").fetchall()
             counts={name:connection.execute(sql.SQL('SELECT count(*) FROM {}').format(sql.Identifier(name))).fetchone()[0] for (name,) in tables}
             version=connection.execute('SELECT version_num FROM alembic_version').fetchone()[0]
-            attachment_hash=hashlib.sha256()
+            # Keep backup compatibility with databases predating retention.
+            has_expiry=connection.execute("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='applications' AND column_name='attachment_deleted_at')").fetchone()[0]
             with connection.cursor(name='restore_attachment_verification') as cursor:
-                cursor.execute('SELECT id, attachment FROM applications ORDER BY id')
-                while record:=cursor.fetchone():
-                    attachment_hash.update(str(record[0]).encode())
-                    attachment_hash.update(hashlib.sha256(record[1]).digest())
-            return dict(version=version,rows=counts,attachment_fingerprint=attachment_hash.hexdigest())
+                expiry_column='attachment_deleted_at' if has_expiry else 'NULL::timestamptz'
+                cursor.execute(f'SELECT id, attachment, {expiry_column} FROM applications ORDER BY id')
+                fingerprint=attachment_fingerprint(iter(cursor.fetchone,None))
+            return dict(version=version,rows=counts,attachment_fingerprint=fingerprint,attachment_fingerprint_format='retained-and-expired-v2')
     expected=snapshot(source); actual=snapshot({**source,'dbname':target})
     if expected!=actual: raise RuntimeError(f'Restored schema/row counts differ in fresh database {target}; ensure the source is quiescent.')
-    return dict(restored_database=target,schema_version=actual['version'],tables=len(actual['rows']),row_counts=actual['rows'],source_counts_match=True,private_attachment_bytes_match=True,cleanup='Fresh database preserved; no existing resource was overwritten or dropped.')
+    return dict(restored_database=target,schema_version=actual['version'],tables=len(actual['rows']),row_counts=actual['rows'],source_counts_match=True,private_attachment_bytes_match=True,attachment_states_match=True,attachment_fingerprint_format=actual['attachment_fingerprint_format'],cleanup='Fresh database preserved; no existing resource was overwritten or dropped.')
 
 
 def main():

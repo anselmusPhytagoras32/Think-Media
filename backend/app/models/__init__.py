@@ -17,6 +17,7 @@ __all__ = [
     "Application",
     "ApplicationStatusHistory",
     "MarketplaceEvent",
+    "AttachmentRetentionEvent",
     "AuditEvent",
     "Base",
     "CompanyProfile",
@@ -37,6 +38,7 @@ from app.models.learning import (
 from app.models.marketplace import (
     Application,
     ApplicationStatusHistory,
+    AttachmentRetentionEvent,
     Listing,
     MarketplaceEvent,
 )

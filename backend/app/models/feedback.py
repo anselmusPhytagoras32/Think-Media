@@ -12,4 +12,4 @@ class SatisfactionFeedback(Base):
     rating:Mapped[int]=mapped_column(Integer)
     mode:Mapped[str]=mapped_column(String(20))
     updated_at:Mapped[datetime]=mapped_column(DateTime(timezone=True),default=utcnow)
-    __table_args__=(CheckConstraint('rating BETWEEN 1 AND 5',name='rating_range'),CheckConstraint("mode IN ('disabled','retrieval')",name='mode_allowed'))
+    __table_args__=(CheckConstraint('rating BETWEEN 1 AND 5',name='rating_range'),CheckConstraint("mode IN ('disabled','retrieval','external')",name='mode_allowed'))

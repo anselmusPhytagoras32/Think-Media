@@ -12,13 +12,13 @@ Listing output: `id, company_id, company_name, title, description, requirements,
 - POST `/company/listings/{id}/publish`: draft -> published.
 - POST `/company/listings/{id}/close`: published -> closed. No reopening. Log actor/time/old/new status with transactional history.
 
-Application output: `id, reference, listing_id, listing_title, company_name, student_id, student_name, status (submitted|under_review|accepted|rejected), cover_letter, attachment_name, created_at, history: [{actor_id,old_status,new_status,created_at}]`. Company detail additionally includes applicant role-specific profile, no unrelated applications. Private application endpoints use no-store.
+Application output: `id, reference, listing_id, listing_title, company_name, student_id, student_name, status (submitted|under_review|accepted|rejected), cover_letter, attachment_name, attachment_available, attachment_deleted_at, created_at, history: [{actor_id,old_status,new_status,created_at}]`. Company detail additionally includes applicant role-specific profile, no unrelated applications. Private application endpoints use no-store. Attachment availability is a boolean and the deletion timestamp is nullable Asia/Manila ISO.
 
 - POST `/listings/{id}/applications`: multipart `cover_letter` plus `file`, student only. Default PDF only, required, <=5MiB, extension/MIME/signature validated. Store bytes privately in PostgreSQL in same transaction as application and initial history; safe default avoids orphan files and public paths. Reject invalid/missing files. Bound request before parsing. Serialize submission against listing close; unique student/listing constraint. Returns 201 receipt application output.
 - GET `/applications/me`: student own applications only.
 - GET `/company/applications?listing_id=`: company own applicants only, paginated.
 - GET `/applications/{id}`: student owner or listing company owner only; instructor/admin denied.
-- GET `/applications/{id}/attachment`: same owner checks, PDF attachment with safe filename, no-store/nosniff.
+- GET `/applications/{id}/attachment`: same owner checks FIRST, PDF attachment with safe filename, no-store/nosniff. Authorized expired files return410 `ATTACHMENT_EXPIRED`; unauthorized callers retain the existing non-disclosing denial. The application reference, decision and history remain accessible to authorized parties.
 - PATCH `/applications/{id}/status`: company owner only, body `{status}`. submitted -> under_review|rejected; under_review -> accepted|rejected; final immutable. Lock application, commit decision/history atomically; failure rolls back. Conflicting transition 409.
 
 Ownership failures 403 or non-disclosing 404; missing auth 401; duplicate/closed/conflict 409; validation 422; too-large 413. Bounded input, UUID parameters, parameterized ORM, unique/FK/check constraints, versioned additive migration.
@@ -26,3 +26,9 @@ Ownership failures 403 or non-disclosing 404; missing auth 401; duplicate/closed
 Tests: verified publish/student submit/review; unverified and wrong-role denied; cross-company/student isolation; duplicate race; closed listing; missing/oversized/disguised PDF; unauthorized download; invalid transition; injected history failure rollback; close/submission synchronization.
 
 Review clarifications: `/applications/me` paginates with the same 20 default/100 maximum. Actual-byte request envelope cap 6MiB applies only to the application POST; other routes retain 64KiB. Listing title 200, description/requirements 10000 each, location 200, <=30 skills of <=80 each; cover_letter <=5000. Applicant projection explicitly limited to display name, institution, program, skills, interests, location, background; no account email/session/password/other applications. Student output excludes company private contact details. Durable separate marketplace events record listing create/edit/transitions; verification audit table remains unchanged. History records decision actor/time/status atomically.
+
+Expiry is an explicit local administrator operation, not an HTTP decision API or
+an automatic startup task. See [retention contract](API_ATTACHMENT_RETENTION.md).
+No real-user retention period is assumed. Download bytes and expiry markers are
+read together after authorization to prevent a concurrent expiry yielding an
+empty successful PDF. The UI handles expiry in place and bounds download memory.

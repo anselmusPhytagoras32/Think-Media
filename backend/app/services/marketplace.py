@@ -179,6 +179,8 @@ class MarketplaceService:
             status=row.status,
             cover_letter=row.cover_letter,
             attachment_name=row.attachment_name,
+            attachment_available=row.attachment_deleted_at is None,
+            attachment_deleted_at=iso_manila(row.attachment_deleted_at) if row.attachment_deleted_at else None,
             created_at=iso_manila(row.created_at),
             history=[
                 dict(
@@ -205,6 +207,20 @@ class MarketplaceService:
             }
             result["student_profile"]["display_name"] = student.display_name
         return result
+
+    def downloadable_application(self, id):
+        # Authorization precedes expiry disclosure, including for administrators.
+        row = self.authorized_application(id)
+        # Load the marker and deferred bytes together after authorization. The
+        # lock prevents concurrent expiry from turning a valid download into an
+        # empty 200 response between the metadata check and deferred-byte load.
+        self.db.refresh(row, attribute_names=["attachment_deleted_at", "attachment"], with_for_update=True)
+        if row.attachment_deleted_at is not None:
+            raise ApiError(
+                410, "ATTACHMENT_EXPIRED",
+                "This attachment has expired under the retention policy. Your application and status history remain available.",
+            )
+        return row
 
     def submit(self, id, cover_letter, name, content_type, data):
         self.require_role("student")

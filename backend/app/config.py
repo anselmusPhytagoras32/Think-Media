@@ -10,8 +10,9 @@ from __future__ import annotations
 import secrets
 from functools import lru_cache
 from typing import Annotated, Literal
+from urllib.parse import urlsplit
 
-from pydantic import AliasChoices, Field, field_validator
+from pydantic import AliasChoices, Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 DEFAULT_ALLOWED_ORIGINS = (
@@ -32,6 +33,7 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
         extra="ignore",
         case_sensitive=False,
+        populate_by_name=True,
     )
 
     recommender_alpha: float = Field(
@@ -42,8 +44,35 @@ class Settings(BaseSettings):
         validation_alias="APP_RECOMMENDER_ALPHA",
     )
 
-    assistant_mode: Literal["disabled", "retrieval"] = Field(
+    assistant_mode: Literal["disabled", "retrieval", "external"] = Field(
         default="disabled", validation_alias="APP_ASSISTANT_MODE"
+    )
+    assistant_provider_profile: Literal["openai", "gemini"] = Field(
+        default="openai", validation_alias="APP_ASSISTANT_PROVIDER_PROFILE"
+    )
+    assistant_reasoning_effort: Literal["low", "medium", "high"] = Field(
+        default="low", validation_alias="APP_ASSISTANT_REASONING_EFFORT"
+    )
+    # FR10/NFR02/11: explicit operator configuration, never supplied by a client.
+    assistant_endpoint: str = Field(
+        default="", max_length=2048, validation_alias="APP_ASSISTANT_ENDPOINT"
+    )
+    assistant_model: str = Field(
+        default="", max_length=200, validation_alias="APP_ASSISTANT_MODEL"
+    )
+    assistant_api_key: SecretStr = Field(
+        default=SecretStr(""), repr=False, validation_alias="APP_ASSISTANT_API_KEY"
+    )
+    assistant_timeout_seconds: float = Field(
+        default=10, ge=1, le=30, allow_inf_nan=False,
+        validation_alias="APP_ASSISTANT_TIMEOUT_SECONDS",
+    )
+    assistant_max_completion_tokens: int = Field(
+        default=512, ge=64, le=2048,
+        validation_alias="APP_ASSISTANT_MAX_COMPLETION_TOKENS",
+    )
+    assistant_call_budget: int = Field(
+        default=0, ge=0, le=10000, validation_alias="APP_ASSISTANT_CALL_BUDGET"
     )
     assistant_max_requests: int = Field(
         default=10, ge=1, le=100, validation_alias="APP_ASSISTANT_MAX_REQUESTS"
@@ -123,10 +152,36 @@ class Settings(BaseSettings):
         validation_alias=AliasChoices("APP_TRUSTED_PROXY_HEADERS"),
     )
 
+    @field_validator("assistant_endpoint")
+    @classmethod
+    def _assistant_endpoint(cls, value: str) -> str:
+        value = value.strip()
+        if value:
+            parsed = urlsplit(value)
+            if (
+                parsed.scheme != "https" or not parsed.hostname
+                or parsed.username or parsed.password or parsed.query or parsed.fragment
+                or not parsed.path.endswith("/chat/completions")
+            ):
+                raise ValueError("Use an HTTPS chat/completions endpoint without URL credentials or query parameters.")
+        return value
+
     @field_validator("app_env")
     @classmethod
     def _normalize_env(cls, value: str) -> str:
         return value.strip().lower()
+
+    @property
+    def assistant_effective_endpoint(self) -> str:
+        if self.assistant_provider_profile == "gemini" and not self.assistant_endpoint:
+            return "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
+        return self.assistant_endpoint
+
+    @property
+    def assistant_effective_model(self) -> str:
+        if self.assistant_provider_profile == "gemini" and not self.assistant_model.strip():
+            return "gemini-3.8-flash"
+        return self.assistant_model.strip()
 
     @property
     def origin_set(self) -> frozenset[str]:

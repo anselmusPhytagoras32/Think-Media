@@ -27,6 +27,7 @@ import "@fontsource-variable/dm-sans";
 import { Marketplace } from "./marketplace";
 import { Learning, Assistant } from "./learning";
 import { Recommendations } from "./recommendations";
+import { Operations } from "./operations";
 import { Home } from "./home";
 import { BrandMark, ThinkIcon, type IconName } from "./brand";
 import { Onboarding } from "./onboarding";
@@ -108,7 +109,17 @@ function Field({
         {label}
         {required && <span aria-hidden="true"> *</span>}
       </label>
-      {children ||
+      {(React.isValidElement<Record<string, unknown>>(children)
+        ? React.cloneElement(children, {
+            "aria-invalid": !!errors?.[name],
+            "aria-describedby": [
+              children.props["aria-describedby"],
+              `${name}-hint`,
+            ]
+              .filter(Boolean)
+              .join(" "),
+          })
+        : children) ||
         (type === "password" ? (
           <div className="password-control">
             {input}
@@ -147,6 +158,28 @@ function Notice({ error, success }: { error?: string; success?: string }) {
         </div>
       )}
     </>
+  );
+}
+// W01 / NFR03: presentation policy approved for fictional local data only.
+function LocalDemoNotice() {
+  return (
+    <details className="privacy-disclosure">
+      <summary>Local presentation: how demo data is used</summary>
+      <p>
+        Use fictional account details and sample PDFs only. Account details,
+        activity, ratings and applications are kept in the local demo database.
+        Your profile and activity help suggestions; ratings are optional.
+        Application documents are private to your account and the reviewing demo
+        company.
+      </p>
+      <p>
+        The developers and presenters manage this local demonstration. If a
+        presenter enables external AI, your question and approved resource
+        excerpts are sent to the configured provider. Keep personal details and
+        private application information out of questions. This demonstration is
+        not ready to collect real personal data.
+      </p>
+    </details>
   );
 }
 function Auth({
@@ -204,15 +237,11 @@ function Auth({
           </span>
         </a>
         <picture className="auth-illustration">
-          <source
-            media="(max-width: 600px)"
-            srcSet="/illustrations/thinkmedia-signin-mobile.webp"
-          />
           <img
             className="signin-scene"
-            src="/illustrations/thinkmedia-signin-background.webp"
-            width="1024"
-            height="1365"
+            src="/illustrations/thinkmedia-ojt-signin-3d.webp"
+            width="1672"
+            height="941"
             alt=""
             fetchPriority="high"
             decoding="async"
@@ -342,17 +371,7 @@ function Auth({
                   : undefined
               }
             />
-            {register && (
-              <details className="privacy-disclosure">
-                <summary>How your information is used</summary>
-                <p>
-                  Your profile and viewed opportunities/resources help
-                  suggestions. Ratings are optional. Application documents are
-                  private to you and the company reviewing them. Administrator
-                  accounts are created separately.
-                </p>
-              </details>
-            )}
+            {register && <LocalDemoNotice />}
             <button className="primary wide" disabled={busy}>
               {busy ? "Please wait…" : register ? "Create account" : "Sign in"}
               <ArrowRight size={18} />
@@ -833,6 +852,7 @@ function Audit() {
         <h2>Content and moderation</h2>
         {events(content)}
       </section>
+      <Operations />
     </>
   );
 }
@@ -1323,6 +1343,7 @@ function App() {
         </header>
         <main id="main" className="main-content" tabIndex={-1}>
           <Notice error={error} />
+          <LocalDemoNotice />
           {page === "profile" ? (
             <Profile account={account} onSave={setAccount} />
           ) : page === "verification" ? (

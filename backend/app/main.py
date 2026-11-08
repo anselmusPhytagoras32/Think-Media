@@ -20,6 +20,7 @@ from app.errors import (
     sanitize_request_id,
 )
 from app.providers.assistant import provider_for
+from app.observability import APIMetrics
 from app.schemas import HealthResponse
 from app.security.throttle import Throttle
 
@@ -86,7 +87,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.login_throttle = login_throttle
     app.state.registration_throttle = registration_throttle
     app.state.interaction_throttle = Throttle(max_attempts=60, window_seconds=60)
-    app.state.assistant_provider = provider_for(settings.assistant_mode)
+    app.state.assistant_provider = provider_for(settings)
     app.state.assistant_throttle = Throttle(
         max_attempts=settings.assistant_max_requests,
         window_seconds=settings.assistant_window_seconds,
@@ -101,6 +102,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         )
         token = request_id_var.set(rid)
         request.state.request_id = rid
+        is_api = request.url.path == API_PREFIX or request.url.path.startswith(API_PREFIX + "/")
+        metrics = app.state.operations
+        started = metrics.start() if is_api else None
+        status = 500
         try:
             content_length = request.headers.get("content-length")
             if content_length is not None:
@@ -119,6 +124,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                     response = await _bounded_request(request, call_next, settings)
             else:
                 response = await _bounded_request(request, call_next, settings)
+        except Exception:
+            # Monitoring and client errors must not retain raw paths, exception
+            # text or private data. Preserve the uniform request-ID response.
+            logger.error("Unhandled request failure; returning generic API error.")
+            response = json_error_response(
+                500, "INTERNAL_ERROR", "An unexpected error occurred.", request_id=rid
+            )
         finally:
             request_id_var.reset(token)
 
@@ -127,6 +139,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             response.headers.setdefault("Cache-Control", "no-store")
         response.headers.setdefault("X-Content-Type-Options", "nosniff")
         response.headers.setdefault("Referrer-Policy", "no-referrer")
+        status = response.status_code
+        if is_api:
+            route = getattr(request.scope.get("route"), "path", None)
+            # Lazy included routers retain the unprefixed APIRoute in scope.
+            # The metrics whitelist accepts only complete registered templates.
+            if route is not None and not route.startswith(API_PREFIX + "/"):
+                route = API_PREFIX + route
+            metrics.record(method=request.method, route=route, status=status, started=started)
         return response
 
     app.include_router(feedback.router, prefix=API_PREFIX)
@@ -146,6 +166,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     def health() -> HealthResponse:
         return HealthResponse()
 
+    app.state.operations = APIMetrics(
+        # Resolve included routers through FastAPI's public schema interface;
+        # some versions retain router groups instead of flattening app.routes.
+        allowed_routes=set(app.openapi()["paths"])
+    )
     return app
 
 

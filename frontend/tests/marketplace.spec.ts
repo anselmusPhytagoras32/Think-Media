@@ -186,9 +186,9 @@ test("verified company publishes, student applies once, owner reviews and closes
     .click();
   await student.getByRole("button", { name: "Confirm and submit" }).click();
   await expect(student).toHaveURL(/#\/applications\/[^/]+$/);
-  await expect(student.getByRole("status")).toContainText(
-    "Your application is with",
-  );
+  await expect(
+    student.getByRole("status").filter({ hasText: "Your application is with" }),
+  ).toContainText("Your application is with");
   await student.reload();
   await expect(
     student.getByRole("heading", { name: title, exact: true }),

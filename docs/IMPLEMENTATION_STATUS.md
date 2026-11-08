@@ -1,8 +1,61 @@
 # ThinkMedia — verified local implementation
 
-DeepSeek’s existing FastAPI backend is preserved and extended. React/TypeScript now connects to actual FastAPI endpoints and PostgreSQL, using HttpOnly sessions and CSRF. No functioning endpoint is replaced with frontend mock data. Synthetic records exist only in local automated-test/benchmark setup.
+DeepSeek’s existing FastAPI backend is preserved and extended. React/TypeScript
+connects to actual FastAPI endpoints and PostgreSQL, using HttpOnly sessions and
+CSRF. No functioning endpoint is replaced with frontend mock data. Clearly
+labeled synthetic presentation records use their own local database; automated
+tests and benchmarks use separate disposable databases.
 
-## Current verification
+## Current local presentation verification — November 8, 2026
+
+The current Windows/WSL worktree passes **237 backend tests** (171.21s), **30
+browser acceptance tests** in native Chrome (2.3min), **8 evaluation integrity
+tests**, the production frontend build and Alembic schema drift validation.
+Private local backup/restore matched all 20 table counts and the attachment
+fingerprint. A user-scoped daily local backup task is installed and its first
+manual execution returned result 0. The app and API both returned HTTP 200.
+
+This pass adds bounded guidance conversation/retry, publication review and
+confirmation, accessible custom-field errors, a fictional-data notice, a public
+projection cache that excludes learner flags, aggregate maintenance/session
+expiry tools, and a tested Gemini 3.8 Flash integration profile. The external
+adapter has 35 simulated-provider tests; a live Gemini result awaits private key
+configuration and an authorized smoke test. The original synthetic resource
+lookup remains available in the prepared presentation runtime.
+
+Administrators can inspect real aggregate API/storage/call-budget snapshots in
+Audit history. Bounded counters retain route templates only, with no raw IDs,
+queries or bodies. The current isolated warm 20-user benchmark measured 200 GETs,
+zero failures and p95 **729.553 ms**; this is synthetic local evidence with the
+conditions in [the report](../backend/reports/performance-presentation.json).
+The real offline BERTScore implementation ran twice on six fixed synthetic QA
+pairs, producing the same mean F1 **0.8282506466**; this is semantic similarity on
+fixtures, not accuracy or research effectiveness. See
+[semantic evaluation](../evaluation/SEMANTIC_DEMO.md). Human factual review is
+explicitly pending. The launcher now tolerates slow cold imports, reports
+progress and prevents duplicate starts; [startup evidence](STARTUP_DIAGNOSIS.md)
+records the observed timeout and checks.
+
+Attachment retention is now implemented as an explicit policy-controlled local
+command with dry run by default. It expires bytes only for old, closed/final
+applications with canonical history, preserves references/history, records a
+transactional audit and serves authorized expiry as410. No actual presentation
+file was expired. A separate synthetic restore smoke verified retained bytes,
+an expired tombstone and its audit across all20 tables. Migrations0007–0008
+preserve existing bytes and enable external-mode satisfaction feedback; they
+refuse downgrades that would discard tombstones or external feedback. A real
+retention period is still an operator/policy decision. See
+[final SRS audit](FINAL_SRS_AUDIT.md) for evidence and unresolved dependencies.
+
+The project owner explicitly selected local presentation with fictional data.
+The [presentation guide](PRESENTATION_READINESS.md) documents startup, exact
+verification commands, SRS coverage and outstanding human/pilot evidence.
+[Synthetic evaluation](../evaluation/DEMO.md) executes the actual metric pipeline
+on labeled generated fixtures; it is not research evidence. Genuine research
+metrics, human factual review and real assistive-technology user testing remain
+unmeasured. No cloud deployment or live personal-data processing was performed.
+
+## Earlier verification
 
 | Command/check | Verified result |
 | --- | --- |
@@ -27,7 +80,7 @@ Detailed evidence: [backend audit](../backend/reports/codex-audit.md), [marketpl
 | FR05 | Required validated PDF<=5MiB, private transactional PostgreSQL storage, unique student/listing application, receipt/reference and tracker/history. |
 | FR06–07 | Verified-owner draft/edit/publish/close; own-applicant review; allowed final transitions; atomic actor/time/status history. |
 | FR08–09 | Actual TF-IDF/profile ranking; truthful recency/activity fallback; observed-rating neighbor component with thresholds; alpha1 until genuine validation; typed actual interactions and optional strict1–5 ratings. Suggestions embedded in learning/opportunity discovery and a dedicated workspace. |
-| FR10 | Read-only approved-resource retrieval, citations, uncertainty, rate limits, provider-unavailable recovery and no private application queries. External LLM remains off by explicit user choice. |
+| FR10 | Read-only approved-resource retrieval, citations, uncertainty, rate limits and provider-unavailable recovery. Gemini 3.8 Flash adapter is implemented and tested with simulated responses; live verification awaits private configuration. |
 | FR11 | Company verification, content publication/archive, report resolution and privileged event/audit views. |
 | FR12 | Optional authenticated guidance satisfaction intake; offline MAE/RMSE plus same-holdout baselines, cold-start grouped folds and warm-user chronological alpha validation, CSAT reporting and optional local BERTScore pipeline. Genuine research results remain not measured. |
 
@@ -43,7 +96,15 @@ NFR01/07: actual local load and restore evidence is documented in [operations](O
 
 NFR08: no pilot observations, respondent counts, MAE/RMSE, fold results or BERTScore have been invented. [Research report](../evaluation/reports/pending.json) explicitly records missing datasets. [Evaluation instructions](EVALUATION.md) explain input provenance and limitations.
 
-NFR03/11: privacy notice/legal basis, retention/deletion schedule, company evidence procedure and genuine pilot participation must be agreed before a pilot. In-process throttles need shared state for multiple workers. Personalized/private responses use no-store; public-content caching and scheduled expired-session/file cleanup remain pending policy/operational work. No automatic deletion is implemented.
+NFR03/11: privacy notice/legal basis, retention/deletion schedule, company
+evidence procedures and genuine participation must be agreed before a pilot.
+Throttles and monitoring counters are process-local. Private responses use
+no-store; bounded internal public-content projections exclude personal flags.
+Aggregate API/storage usage is visible to administrators. Explicit local
+maintenance can prune expired sessions. Policy-controlled attachment expiry is
+implemented but requires an explicit period/reference, confirmation and current
+administrator attribution. Backup rotation and a real-user policy remain
+unapproved. No automatic application deletion is implemented.
 
 ## Decisions and execution
 
