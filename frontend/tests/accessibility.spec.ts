@@ -36,7 +36,7 @@ test("account and role workspaces pass automated accessibility scans", async ({
   await openApp(page, "/");
   await scan(page);
   await page
-    .getByRole("button", { name: "Create account", exact: true })
+    .getByRole("button", { name: "Create an account", exact: true })
     .click();
   await page.getByLabel("I’m joining as").selectOption("company");
   await scan(page);
@@ -58,7 +58,6 @@ test("account and role workspaces pass automated accessibility scans", async ({
     "Opportunities",
     "Learning",
     "Suggestions",
-    "Guidance",
   ]) {
     await page.getByRole("button", { name: "Open navigation" }).click();
     await page
@@ -71,6 +70,27 @@ test("account and role workspaces pass automated accessibility scans", async ({
         () => document.documentElement.scrollWidth <= innerWidth,
       ),
     ).toBeTruthy();
+  }
+  await page.locator(".guidance-bubble-trigger").click();
+  await scan(page);
+  await page.getByRole("button", { name: "Close guidance", exact: true }).first().click();
+  const companyContext = await browser.newContext({
+    viewport: { width: 360, height: 800 },
+    reducedMotion: "reduce",
+  });
+  const companyEmail = `accessibility-company-${Date.now()}@example.test`;
+  await mutate(companyContext.request, "/auth/register", {
+    email: companyEmail, password, display_name: "Company User", role: "company", company_name: "Accessibility Company",
+  });
+  await mutate(companyContext.request, "/auth/login", { email: companyEmail, password });
+  const company = await companyContext.newPage();
+  await openApp(company, "/");
+  await scan(company);
+  for (const label of ["My listings", "Applicants", "Company profile"]) {
+    await company.getByRole("button", { name: "Open navigation" }).click();
+    await company.locator(".sidebar").getByRole("link", { name: new RegExp(label) }).click();
+    await scan(company);
+    expect(await company.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
   }
   const adminContext = await browser.newContext({
     viewport: { width: 1440, height: 1000 },
@@ -95,5 +115,6 @@ test("account and role workspaces pass automated accessibility scans", async ({
     await scan(admin);
   }
   await context.close();
+  await companyContext.close();
   await adminContext.close();
 });

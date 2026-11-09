@@ -212,9 +212,15 @@ test("verified company publishes, student applies once, owner reviews and closes
   await company
     .getByLabel("New application status")
     .selectOption("under_review");
+  await company.getByRole("button", { name: "Review status change" }).click();
+  await expect(company.getByRole("heading", { name: "Review status change" })).toBeFocused();
+  await company.getByRole("button", { name: "Change selection" }).click();
+  await expect(company.getByLabel("New application status")).toBeFocused();
+  await company.getByRole("button", { name: "Review status change" }).click();
   await company.getByRole("button", { name: "Confirm status change" }).click();
   await expect(company.locator(".notice.success")).toContainText("updated");
   await company.getByLabel("New application status").selectOption("accepted");
+  await company.getByRole("button", { name: "Review status change" }).click();
   await company.getByRole("button", { name: "Confirm status change" }).click();
   await expect(company.locator(".detail-toolbar .status-badge")).toHaveText(
     "Accepted",

@@ -174,11 +174,7 @@ test("published resources, save/react, quiz and report review work end to end", 
   await expect(admin.locator(".notice.success")).toContainText(
     "resolution recorded",
   );
-  await student.getByRole("button", { name: "Open navigation" }).click();
-  await student
-    .locator(".sidebar")
-    .getByRole("link", { name: "Guidance", exact: true })
-    .click();
+  await student.locator(".guidance-bubble-trigger").click();
   await student
     .getByLabel("Your question")
     .fill("How can I prepare for an OJT interview?");

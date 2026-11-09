@@ -84,7 +84,7 @@ export function Home({ account }: { account: Account }) {
       ? !account.profile.institution
       : false;
   const title = admin
-    ? "Review workspace"
+    ? "Administration"
     : company
       ? "Company dashboard"
       : `Hello, ${account.user.display_name.split(" ")[0]}.`;
@@ -122,12 +122,12 @@ export function Home({ account }: { account: Account }) {
   if (student) return <StudentHome account={account} />;
   return (
     <>
-      <header className="page-heading dashboard-heading illustrated-welcome">
+      <header className={admin || company ? "page-heading role-dashboard-heading" : "page-heading dashboard-heading illustrated-welcome"}>
         <div>
           <h1>{title}</h1>
           <p>
             {admin
-              ? "Verify companies and review reported learning content."
+              ? "Keep the platform trustworthy. Review company accounts, learning resources and reports."
               : company
                 ? "Manage your listings and follow up on applications."
                 : student
@@ -146,7 +146,7 @@ export function Home({ account }: { account: Account }) {
               : "Find opportunities"}
           <ArrowRight size={17} />
         </a>
-        <WelcomeArt className="dashboard-illustration" />
+        {!admin && !company && <WelcomeArt className="dashboard-illustration" />}
       </header>
       {error && (
         <div className="notice error" role="alert">
@@ -198,7 +198,7 @@ export function Home({ account }: { account: Account }) {
           </a>
         </div>
       )}
-      <div className="dashboard-grid">
+      <div className={`dashboard-grid ${admin ? "admin-dashboard-grid" : ""}`}>
         <div className="dashboard-main">
           {admin ? (
             <section className="work-section">
@@ -590,6 +590,19 @@ export function Home({ account }: { account: Account }) {
           </section>
         </aside>
       </div>
+      {admin && (
+        <section className="admin-role-guide" aria-labelledby="admin-role-guide-title">
+          <div className="admin-role-guide-intro">
+            <ShieldCheck size={27} aria-hidden="true" />
+            <div><h2 id="admin-role-guide-title">How opportunities reach students</h2><p>Each account has a different part to play.</p></div>
+          </div>
+          <div className="admin-role-steps">
+            <div><span className="admin-role-icon"><ShieldCheck size={22} /></span><div><strong>Administrator</strong><p>Reviews and verifies company accounts.</p></div></div>
+            <div><span className="admin-role-icon"><BriefcaseBusiness size={22} /></span><div><strong>Company</strong><p>Creates and publishes its own opportunities after verification.</p></div></div>
+            <div><span className="admin-role-icon"><UserRound size={22} /></span><div><strong>Student</strong><p>Finds opportunities and applies directly.</p></div></div>
+          </div>
+        </section>
+      )}
     </>
   );
 }

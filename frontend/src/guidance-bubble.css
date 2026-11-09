@@ -1,0 +1,69 @@
+/* FR10, NFR05/09: accessible guidance and bounded artwork on small screens. */
+.guidance-bubble {
+  position: fixed;
+  right: max(20px, env(safe-area-inset-right));
+  bottom: 20px;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+.guidance-bubble-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 52px;
+  padding: 12px 18px;
+  border: 0;
+  border-radius: 28px;
+  background: #402c75;
+  color: white;
+  font-weight: 700;
+  box-shadow: 0 6px 20px #34244f38;
+  cursor: pointer;
+}
+.guidance-bubble-panel {
+  width: min(420px, calc(100vw - 32px));
+  max-height: min(680px, calc(100dvh - 110px));
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border: 1px solid #e8e1ee;
+  border-radius: 22px;
+  box-shadow: 0 12px 36px #34244f30;
+  overflow: hidden;
+}
+.guidance-bubble-panel[hidden] { display: none; }
+.guidance-bubble-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  border-bottom: 1px solid #e8e1ee;
+}
+.guidance-bubble-header button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: #402c75;
+  cursor: pointer;
+}
+.guidance-bubble-content { overflow-y: auto; overscroll-behavior: contain; padding: 16px; }
+.guidance-bubble-content .page-heading { display: none; }
+.guidance-bubble-content .assistant-panel { padding: 0; border: 0; }
+.guidance-bubble-content .assistant-intro h2 { font-size: 19px; }
+.guidance-bubble-content .assistant-answer { overflow-wrap: anywhere; }
+.main-content img { max-width: 100%; }
+.main-content, .main-content section, .main-content article { min-width: 0; }
+@media (max-width: 720px) {
+  .guidance-bubble { right: 12px; bottom: calc(82px + env(safe-area-inset-bottom)); }
+  .guidance-bubble-panel { max-height: calc(100dvh - 170px - env(safe-area-inset-bottom)); }
+  .guidance-bubble-trigger { min-height: 48px; padding: 10px 14px; }
+  .guidance-bubble-trigger span { font-size: 0; }
+  .guidance-bubble-trigger span::after { content: "Guidance"; font-size: 13px; }
+}

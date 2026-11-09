@@ -391,9 +391,13 @@ export function Learning({
     unknown
   > | null>(null);
   const publicationHeading = useRef<HTMLHeadingElement>(null);
+  const resolutionHeading = useRef<HTMLHeadingElement>(null);
+  const editorHeading = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
     if (pendingPublication) publicationHeading.current?.focus();
   }, [pendingPublication]);
+  useEffect(() => { if (resolving) resolutionHeading.current?.focus(); }, [resolving]);
+  useEffect(() => { if (editing) editorHeading.current?.focus(); }, [editing]);
   const sequence = useRef(0);
   useEffect(
     () => () => {
@@ -647,7 +651,7 @@ export function Learning({
   return (
     <>
       <header
-        className={`page-heading ${!admin && !reports && !selected ? "learning-library-hero" : ""}`}
+        className={`page-heading ${!admin && !reports && !selected ? "learning-library-hero" : ""} ${admin || reports ? "role-page-heading" : ""}`}
       >
         <div>
           <h1>
@@ -668,7 +672,7 @@ export function Learning({
         {!admin && !reports && !selected && (
           <Artwork kind="learning" className="learning-hero-art" priority />
         )}
-        {admin && !reports && (
+        {admin && !reports && !editing && (
           <button
             className="primary"
             onClick={() => {
@@ -689,7 +693,7 @@ export function Learning({
       {editing ? (
         <section className="panel" key={editing === "new" ? "new" : editing.id}>
           <div className="detail-toolbar">
-            <h2>
+            <h2 ref={editorHeading} tabIndex={-1}>
               {editing === "new"
                 ? "Create a learning resource"
                 : "Edit learning resource"}
@@ -881,7 +885,7 @@ export function Learning({
             }}
           >
             <ArrowLeft size={16} />
-            Back to resources
+            Back to {reports ? "reports" : "resources"}
           </button>
           {!admin && (
             <ResourceArtwork
@@ -1030,7 +1034,7 @@ export function Learning({
                 const p = new URLSearchParams();
                 for (const [k, v] of d) if (v) p.set(k, String(v));
                 setOffset(0);
-                setFilter("&" + p.toString());
+                setFilter(p.size ? "&" + p.toString() : "");
               }}
             >
               <div className="field">
@@ -1088,6 +1092,7 @@ export function Learning({
                   value={new URLSearchParams(filter).get("status") || "pending"}
                   onChange={(e) => {
                     setOffset(0);
+                    setResolving(null);
                     setFilter("&status=" + e.target.value);
                   }}
                 >
@@ -1112,22 +1117,23 @@ export function Learning({
                 <BookOpen size={32} />
                 <h3>
                   {reports
-                    ? "No reports to review"
-                    : admin
+                    ? new URLSearchParams(filter).get("status") === "resolved" ? "No resolved reports" : "No reports to review"
+                    : admin && !filter
                       ? "No learning resources yet"
                       : "No resources found"}
                 </h3>
                 <p>
                   {reports
-                    ? "Reported content will appear here for review."
-                    : admin
+                    ? new URLSearchParams(filter).get("status") === "resolved" ? "Resolved reports will appear here." : "Reported content will appear here for review."
+                    : admin && !filter
                       ? "Create a draft to prepare your first approved resource."
                       : "Try another topic or check again when resources are published."}
                 </p>
               </div>
             ) : reports ? (
               reportItems.map((r) => (
-                <article className="company-row" key={r.id}>
+                <article className="company-row report-row" key={r.id}>
+                  <span className="role-row-icon" aria-hidden="true"><Flag size={21} /></span>
                   <div>
                     <h3>Content report</h3>
                     <p>{r.reason}</p>
@@ -1220,7 +1226,7 @@ export function Learning({
           </section>
           {resolving && (
             <section className="panel review-panel">
-              <h2>Resolve content report</h2>
+              <h2 ref={resolutionHeading} tabIndex={-1}>Resolve content report</h2>
               <p>{resolving.reason}</p>
               <button
                 className="secondary"

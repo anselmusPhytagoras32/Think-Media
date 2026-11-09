@@ -31,6 +31,7 @@ import { Learning, Assistant } from "./learning";
 import { Recommendations } from "./recommendations";
 import { Operations } from "./operations";
 import { Home } from "./home";
+import { CompanyLogo } from "./company-brand";
 import { BrandMark, ThinkIcon, type IconName } from "./brand";
 import { Onboarding } from "./onboarding";
 import { hasSeenWelcome, markWelcomeSeen } from "./welcome-state";
@@ -45,6 +46,8 @@ import "./opportunities.css";
 import "./learning-library.css";
 import "./content-identity.css";
 import "./suggestions.css";
+import "./guidance-bubble.css";
+import "./role-workspace.css";
 import {
   readSidebarPreference,
   saveSidebarPreference,
@@ -246,9 +249,9 @@ function Auth({
         <picture className="auth-illustration">
           <img
             className="signin-scene"
-            src="/illustrations/thinkmedia-ojt-signin-3d.webp"
-            width="1672"
-            height="941"
+            src="/illustrations/thinkmedia-signin-flat.png"
+            width="1586"
+            height="992"
             alt=""
             fetchPriority="high"
             decoding="async"
@@ -284,7 +287,7 @@ function Auth({
         </p>
       </section>
       <main className="auth-main">
-        <div className="auth-box">
+        <div className={register ? "auth-box is-register" : "auth-box"}>
           <a className="auth-form-brand brand" href="#">
             <BrandMark size={32} />
             <span>
@@ -312,7 +315,7 @@ function Auth({
             </button>
           </div>
           <h1 className="auth-title">
-            {register ? "Create your account" : "Welcome back."}
+            {register ? "Create your account" : "Login to your account"}
           </h1>
           <p className="muted">
             {register
@@ -446,16 +449,16 @@ function Profile({
   }
   return (
     <>
-      <header className="page-heading">
+      <header className={`page-heading ${p.kind === "company" || p.kind === "administrator" ? "role-page-heading" : ""}`}>
         <div>
           <h1>Your profile</h1>
-          <p>Update the details used in your account and applications.</p>
+          <p>{p.kind === "company" ? "Update the organization details used for verification and listings." : "Update the details used in your account."}</p>
         </div>
         <span className="badge">{account.user.role}</span>
       </header>
       <div className="profile-grid">
         <section className="panel">
-          <h2>Personal information</h2>
+          <h2>{p.kind === "company" ? "Account and company details" : "Personal information"}</h2>
           <p className="muted">Keep your details up to date.</p>
           <Notice error={error} success={success} />
           {success && p.kind === "student" && (
@@ -587,12 +590,12 @@ function Profile({
         </section>
         <aside className="profile-aside">
           <ShieldCheck size={28} />
-          <h2>Who can see this?</h2>
-          <p>
-            Other students cannot open your private profile. Application
-            documents are shared only with the company reviewing your
-            submission.
-          </p>
+          <h2>{p.kind === "administrator" ? "Your account" : "Who can see this?"}</h2>
+          <p>{p.kind === "company"
+            ? "Keep your company details accurate for verification and for students viewing your published opportunities."
+            : p.kind === "student"
+              ? "Other students cannot open your private profile. Application documents are shared only with the company reviewing your submission."
+              : "Your account details are used to manage your access to ThinkMedia."}</p>
           {p.kind === "student" && (
             <>
               <hr />
@@ -621,6 +624,7 @@ function Profile({
 }
 function Admin() {
   const sequence = useRef(0);
+  const reviewHeading = useRef<HTMLHeadingElement>(null);
   useEffect(
     () => () => {
       sequence.current++;
@@ -632,13 +636,16 @@ function Admin() {
     [offset, setOffset] = useState(0),
     [status, setStatus] = useState("pending"),
     [error, setError] = useState(""),
+    [loadError, setLoadError] = useState(false),
     [busy, setBusy] = useState(false),
     [selected, setSelected] = useState<Company | null>(null),
     [success, setSuccess] = useState("");
+  useEffect(() => { if (selected) reviewHeading.current?.focus(); }, [selected]);
   async function load() {
     const request = ++sequence.current;
     setBusy(true);
     setError("");
+    setLoadError(false);
     try {
       const data = await api<{ items: Company[]; total: number }>(
         `/admin/companies?status=${status}&limit=20&offset=${offset}`,
@@ -647,7 +654,10 @@ function Admin() {
       setItems(data.items);
       setTotal(data.total);
     } catch (e) {
-      if (request === sequence.current) setError((e as Error).message);
+      if (request === sequence.current) {
+        setError((e as Error).message);
+        setLoadError(true);
+      }
     } finally {
       if (request === sequence.current) setBusy(false);
     }
@@ -676,18 +686,17 @@ function Admin() {
   }
   return (
     <>
-      <header className="page-heading">
+      <header className="page-heading role-page-heading">
         <div>
           <h1>Company verification</h1>
           <p>Review organizations before they publish opportunities.</p>
         </div>
-        <ShieldCheck />
       </header>
       <Notice error={error} success={success} />
       <section className="panel">
         <div className="list-toolbar">
           <h2>
-            Organizations <span className="count">{total}</span>
+            Organizations {!busy && !loadError && <span className="count">{total}</span>}
           </h2>
           <label>
             Verification status{" "}
@@ -696,6 +705,8 @@ function Admin() {
               onChange={(e) => {
                 setStatus(e.target.value);
                 setOffset(0);
+                setSelected(null);
+                setSuccess("");
               }}
             >
               <option value="pending">Pending</option>
@@ -706,6 +717,12 @@ function Admin() {
         </div>
         {busy ? (
           <p role="status">Loading organizations…</p>
+        ) : loadError ? (
+          <div className="empty">
+            <h3>Could not load organizations</h3>
+            <p>Try again to see the current verification queue.</p>
+            <button className="secondary" onClick={() => void load()}>Retry loading</button>
+          </div>
         ) : items.length === 0 ? (
           <div className="empty">
             <ShieldCheck />
@@ -714,7 +731,8 @@ function Admin() {
           </div>
         ) : (
           items.map((c) => (
-            <article className="company-row" key={c.id}>
+            <article className="company-row verification-row" key={c.id}>
+              <CompanyLogo companyId={c.id} companyName={c.company_name} />
               <div>
                 <h3>{c.company_name}</h3>
                 <p>{c.location || "Location not provided"}</p>
@@ -738,19 +756,19 @@ function Admin() {
         )}
         <div className="pagination">
           <button
-            disabled={!offset || busy}
-            onClick={() => setOffset(offset - 20)}
+            disabled={!offset || busy || loadError}
+            onClick={() => { setSelected(null); setOffset(offset - 20); }}
           >
             Previous
           </button>
           <span>
-            {total
+            {loadError ? "Results unavailable" : total
               ? `${offset + 1}–${Math.min(offset + 20, total)} of ${total}`
               : "0 organizations"}
           </span>
           <button
-            disabled={offset + 20 >= total || busy}
-            onClick={() => setOffset(offset + 20)}
+            disabled={offset + 20 >= total || busy || loadError}
+            onClick={() => { setSelected(null); setOffset(offset + 20); }}
           >
             Next
           </button>
@@ -758,7 +776,7 @@ function Admin() {
       </section>
       {selected && (
         <section className="panel review-panel">
-          <h2>Review {selected.company_name}</h2>
+          <h2 ref={reviewHeading} tabIndex={-1}>Review {selected.company_name}</h2>
           <p className="preserve-lines">
             {selected.description || "No description supplied."}
           </p>
@@ -776,7 +794,8 @@ function Admin() {
           </p>
           <form onSubmit={review}>
             <Field label="Decision" name="status">
-              <select id="status" name="status">
+              <select id="status" name="status" defaultValue="" required>
+                <option value="" disabled>Choose a decision</option>
                 <option value="verified">Verify company</option>
                 <option value="rejected">Reject verification</option>
               </select>
@@ -816,9 +835,15 @@ function Audit() {
   };
   const [verification, setVerification] = useState<Event[]>([]),
     [content, setContent] = useState<Event[]>([]),
-    [error, setError] = useState("");
+    [error, setError] = useState(""),
+    [busy, setBusy] = useState(true),
+    [revision, setRevision] = useState(0);
   useEffect(() => {
     let active = true;
+    setBusy(true);
+    setError("");
+    setVerification([]);
+    setContent([]);
     Promise.allSettled([
       api<{ items: Event[] }>("/admin/audit-events"),
       api<{ items: Event[] }>("/admin/content-events"),
@@ -829,11 +854,12 @@ function Audit() {
           (i === 0 ? setVerification : setContent)(result.value.items);
         else setError(result.reason.message);
       });
+      setBusy(false);
     });
     return () => {
       active = false;
     };
-  }, []);
+  }, [revision]);
   const events = (rows: Event[]) =>
     rows.length ? (
       rows.map((r) => (
@@ -852,13 +878,16 @@ function Audit() {
     );
   return (
     <>
-      <header className="page-heading">
+      <header className="page-heading role-page-heading">
         <div>
           <h1>Audit history</h1>
           <p>Recent privileged actions. Times shown in Asia/Manila.</p>
         </div>
       </header>
       <Notice error={error} />
+      {error && <button className="secondary" onClick={() => setRevision((value) => value + 1)}>Retry audit history</button>}
+      {busy && <p role="status">Loading audit history…</p>}
+      {!busy && !error && <>
       <section className="panel">
         <h2>Company verification</h2>
         {events(verification)}
@@ -867,6 +896,7 @@ function Audit() {
         <h2>Content and moderation</h2>
         {events(content)}
       </section>
+      </>}
       <Operations />
     </>
   );
@@ -886,6 +916,30 @@ function navIcon(page: string): IconName {
     audit: "audit",
   };
   return names[page] || "home";
+}
+// FR10 / NFR05,09: keep guidance available throughout the signed-in workspace.
+function GuidanceBubble() {
+  const [open, setOpen] = useState(false);
+  const [started, setStarted] = useState(false);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const close = () => {
+    setOpen(false);
+    trigger.current?.focus();
+  };
+  return (
+    <div className="guidance-bubble" onKeyDown={(event) => { if (event.key === "Escape" && open) close(); }}>
+      <section id="floating-guidance" className="guidance-bubble-panel" aria-label="OJT guidance" hidden={!open}>
+        <div className="guidance-bubble-header">
+          <strong>OJT guidance</strong>
+          <button type="button" aria-label="Close guidance" onClick={close}><X size={20} /></button>
+        </div>
+        <div className="guidance-bubble-content">{started && <Assistant />}</div>
+      </section>
+      <button ref={trigger} type="button" className="guidance-bubble-trigger" aria-expanded={open} aria-controls="floating-guidance" onClick={() => { setStarted(true); setOpen(!open); }}>
+        <ThinkIcon name="guidance" size={24} /> <span>{open ? "Close guidance" : "Ask guidance"}</span>
+      </button>
+    </div>
+  );
 }
 function App() {
   const { route, navigate } = useRoute();
@@ -1040,10 +1094,10 @@ function App() {
   useEffect(() => {
     if (account)
       requestAnimationFrame(() => {
-        if (route.page === "more") window.scrollTo(0, 0);
+        window.scrollTo(0, 0);
         document
           .getElementById("main")
-          ?.focus({ preventScroll: route.page === "more" });
+          ?.focus({ preventScroll: true });
       });
   }, [route.page, route.id]);
   if (welcomeOpen)
@@ -1167,10 +1221,9 @@ function App() {
           },
         ]
       : []),
-    { id: "assistant", label: "Guidance", short: "Guidance", icon: BookOpen },
   ];
   const profileLabel = company ? "Company profile" : "My profile";
-  const allowed = [...nav.map((n) => n.id), "profile", "more"];
+  const allowed = [...nav.map((n) => n.id), "profile", "more", "assistant"];
   const page = allowed.includes(route.page) ? route.page : "overview";
   const quickIds = admin
     ? ["overview", "verification", "content", "reports"]
@@ -1178,7 +1231,7 @@ function App() {
       ? ["overview", "opportunities", "review"]
       : student
         ? ["overview", "learning", "opportunities", "applications"]
-        : ["overview", "learning", "opportunities", "assistant"];
+        : ["overview", "learning", "opportunities"];
   const quick = nav.filter((n) => quickIds.includes(n.id));
   async function logout() {
     try {
@@ -1386,7 +1439,7 @@ function App() {
             ThinkMedia<span>.</span>
           </a>
         </header>
-        <main id="main" className="main-content" tabIndex={-1}>
+        <main id="main" className={`main-content ${admin || company ? "role-workspace" : ""}`} tabIndex={-1}>
           <Notice error={error} />
           {page === "more" ? (
             <section className="more-page" aria-labelledby="more-title">
@@ -1533,6 +1586,7 @@ function App() {
             <span>More</span>
           </a>
         </nav>
+        {page !== "assistant" && <GuidanceBubble />}
       </div>
     </div>
   );

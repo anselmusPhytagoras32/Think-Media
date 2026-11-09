@@ -762,10 +762,19 @@ export function Marketplace({
       null,
     );
   const [detailRevision, setDetailRevision] = useState(0);
+  const [confirmDecision, setConfirmDecision] = useState(false);
   const [browseView, setBrowseView] = useState<"all" | "suggested">("all");
   const [reviewFile, setReviewFile] = useState<File | null>(null),
     [reviewLetter, setReviewLetter] = useState("");
   const loadSequence = useRef(0);
+  const editorHeading = useRef<HTMLHeadingElement>(null);
+  const applicationHeading = useRef<HTMLHeadingElement>(null);
+  const decisionHeading = useRef<HTMLHeadingElement>(null);
+  const listingConfirmationHeading = useRef<HTMLHeadingElement>(null);
+  useEffect(() => { if (editing) editorHeading.current?.focus(); }, [editing]);
+  useEffect(() => { if (application && mode === "review") applicationHeading.current?.focus(); }, [application?.id, mode]);
+  useEffect(() => { if (confirmDecision) decisionHeading.current?.focus(); }, [confirmDecision]);
+  useEffect(() => { if (pendingAction) listingConfirmationHeading.current?.focus(); }, [pendingAction]);
   useEffect(() => {
     setFilters(initialFilters ? "&" + initialFilters : "");
     setOffset(0);
@@ -848,6 +857,7 @@ export function Marketplace({
   useEffect(() => {
     setApplication(null);
     setDecision("");
+    setConfirmDecision(false);
     setError("");
     if (!initialApplicationId) {
       setApplication(null);
@@ -1007,14 +1017,14 @@ export function Marketplace({
       setApplication(await api<Application>(`/applications/${a.id}`));
       onApplication?.(a.id);
       setDecision("");
+      setConfirmDecision(false);
     } catch (e) {
       setError((e as Error).message);
     } finally {
       setBusy(false);
     }
   }
-  async function decide(e: FormEvent) {
-    e.preventDefault();
+  async function decide() {
     if (!application || !decision) return;
     setBusy(true);
     setError("");
@@ -1027,6 +1037,7 @@ export function Marketplace({
         ),
       );
       setDecision("");
+      setConfirmDecision(false);
       setSuccess("Application status updated and recorded in history.");
       await load();
     } catch (e) {
@@ -1046,7 +1057,7 @@ export function Marketplace({
   return (
     <>
       <header
-        className={`page-heading ${mode === "browse" ? "opportunity-heading" : ""}`}
+        className={`page-heading ${mode === "browse" ? "opportunity-heading" : ""} ${company || mode === "review" ? "role-page-heading" : ""}`}
       >
         <div>
           <h1>{title}</h1>
@@ -1060,7 +1071,7 @@ export function Marketplace({
                   : "Follow your submissions, references and status history."}
           </p>
         </div>
-        {company && (
+        {company && !editing && (
           <button
             className="primary"
             onClick={() => {
@@ -1096,12 +1107,13 @@ export function Marketplace({
             Company verification is required to create or publish opportunities.
             Complete your company profile for administrator review.
           </p>
+          <a className="secondary" href={href("profile")}>Open company profile</a>
         </div>
       )}
       {editing ? (
         <section className="panel" key={editing === "new" ? "new" : editing.id}>
           <div className="detail-toolbar">
-            <h2>
+            <h2 ref={editorHeading} tabIndex={-1}>
               {editing === "new" ? "Create an opportunity" : "Edit opportunity"}
             </h2>
             <button className="secondary" onClick={() => setEditing(null)}>
@@ -1174,7 +1186,7 @@ export function Marketplace({
           </button>
           <div className="detail-toolbar">
             <div>
-              <h2>{application.listing_title}</h2>
+              <h2 ref={applicationHeading} tabIndex={-1}>{application.listing_title}</h2>
               <p className="muted">{application.company_name}</p>
             </div>
             <StatusBadge status={application.status} />
@@ -1232,14 +1244,14 @@ export function Marketplace({
           </ol>
           {mode === "review" &&
             ["submitted", "under_review"].includes(application.status) && (
-              <form className="decision-form" onSubmit={decide}>
+              <form className="decision-form" onSubmit={(event) => { event.preventDefault(); setConfirmDecision(true); }}>
                 <div className="field">
                   <label htmlFor="review-status">New application status</label>
                   <select
                     id="review-status"
                     required
                     value={decision}
-                    onChange={(e) => setDecision(e.target.value)}
+                    onChange={(e) => { setDecision(e.target.value); setConfirmDecision(false); }}
                   >
                     <option value="">Choose a status</option>
                     {application.status === "submitted" ? (
@@ -1254,9 +1266,16 @@ export function Marketplace({
                   Accepted and rejected decisions are final. This change is
                   visible to the student and retained in history.
                 </p>
-                <button className="primary" disabled={busy || !decision}>
-                  Confirm status change
-                </button>
+                {confirmDecision ? (
+                  <section className="confirmation" aria-labelledby="decision-review-title">
+                    <h3 id="decision-review-title" ref={decisionHeading} tabIndex={-1}>Review status change</h3>
+                    <p>Change {application.student_name}'s application from <strong>{statusLabel(application.status)}</strong> to <strong>{statusLabel(decision)}</strong>?</p>
+                    <div className="actions">
+                      <button type="button" className="secondary" disabled={busy} onClick={() => { setConfirmDecision(false); document.getElementById("review-status")?.focus(); }}>Change selection</button>
+                      <button type="button" className="primary" disabled={busy} onClick={() => void decide()}>Confirm status change</button>
+                    </div>
+                  </section>
+                ) : <button className="primary" disabled={busy || !decision}>Review status change</button>}
               </form>
             )}
         </section>
@@ -1322,6 +1341,7 @@ export function Marketplace({
               {selected.status === "draft" && (
                 <button
                   className="primary"
+                  id="listing-publish"
                   disabled={busy}
                   onClick={() => setPendingAction("publish")}
                 >
@@ -1331,6 +1351,7 @@ export function Marketplace({
               {selected.status === "published" && (
                 <button
                   className="secondary"
+                  id="listing-close"
                   disabled={busy}
                   onClick={() => setPendingAction("close")}
                 >
@@ -1339,7 +1360,7 @@ export function Marketplace({
               )}
               {pendingAction && (
                 <div className="confirmation">
-                  <h3>
+                  <h3 ref={listingConfirmationHeading} tabIndex={-1}>
                     {pendingAction === "publish"
                       ? "Publish this opportunity?"
                       : "Close this opportunity?"}
@@ -1352,7 +1373,7 @@ export function Marketplace({
                   <div className="actions">
                     <button
                       className="secondary"
-                      onClick={() => setPendingAction(null)}
+                      onClick={() => { const action = pendingAction; setPendingAction(null); document.getElementById(`listing-${action}`)?.focus(); }}
                     >
                       Cancel
                     </button>
@@ -1545,6 +1566,7 @@ export function Marketplace({
                     </small>
                   </div>
                   <StatusBadge status={a.status} />
+                  {mode === "review" && <span className="application-row-action">Review application <ArrowRight size={15} aria-hidden="true" /></span>}
                 </button>
               ))
             ) : (

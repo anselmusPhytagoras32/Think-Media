@@ -9,7 +9,7 @@ test("student registration, profile persistence, logout and mobile layout", asyn
   await page.setViewportSize({ width: 360, height: 800 });
   await openApp(page, "/");
   await page
-    .getByRole("button", { name: "Create account", exact: true })
+    .getByRole("button", { name: "Create an account", exact: true })
     .click();
   await page.getByLabel("Full name").fill("José Student");
   await page.getByLabel("Email address").fill(email);
@@ -61,7 +61,7 @@ test("student registration, profile persistence, logout and mobile layout", asyn
   await page.getByRole("button", { name: "Open navigation" }).click();
   await page.getByRole("button", { name: "Sign out" }).click();
   await expect(
-    page.getByRole("heading", { name: "Welcome back." }),
+    page.getByRole("heading", { name: "Login to your account" }),
   ).toBeVisible();
   await page.getByLabel("Email address").fill(email);
   await page.getByLabel(/^Password/).fill(password);
@@ -90,7 +90,7 @@ test("invalid credentials are readable and do not enter workspace", async ({
     .click();
   await expect(page.getByRole("alert")).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: "Welcome back." }),
+    page.getByRole("heading", { name: "Login to your account" }),
   ).toBeVisible();
 });
 test("company profile and administrator verification use real role-protected endpoints", async ({
@@ -100,7 +100,7 @@ test("company profile and administrator verification use real role-protected end
   const company = await companyContext.newPage();
   await openApp(company, "/");
   await company
-    .getByRole("button", { name: "Create account", exact: true })
+    .getByRole("button", { name: "Create an account", exact: true })
     .click();
   await company.getByLabel("I’m joining as").selectOption("company");
   const name = `Browser company ${Date.now()}`;
@@ -140,6 +140,9 @@ test("company profile and administrator verification use real role-protected end
     .click();
   const row = admin.locator("article").filter({ hasText: name });
   await row.getByRole("button", { name: "Review", exact: true }).click();
+  await expect(admin.getByLabel("Decision", { exact: true })).toHaveValue("");
+  expect(await admin.getByLabel("Decision", { exact: true }).evaluate((element: HTMLSelectElement) => element.checkValidity())).toBe(false);
+  await admin.getByLabel("Decision", { exact: true }).selectOption("verified");
   await admin
     .getByLabel("Reason for decision")
     .fill(
