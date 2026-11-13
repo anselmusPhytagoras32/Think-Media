@@ -74,15 +74,6 @@
 .sidebar-is-collapsed .sidebar nav a {
   min-height: 44px;
 }
-.workspace-demo-note {
-  margin-top: 40px;
-  padding-top: 18px;
-  border-top: 1px solid var(--line);
-}
-.workspace-demo-note details {
-  margin-bottom: 0;
-  font-size: 12px;
-}
 .profile-next-step {
   margin-bottom: 24px;
 }
@@ -190,8 +181,5 @@
   }
   .sidebar-controls {
     display: none;
-  }
-  .workspace-demo-note {
-    margin-top: 28px;
   }
 }

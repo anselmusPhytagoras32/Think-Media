@@ -201,6 +201,7 @@ test("published resources, save/react, quiz and report review work end to end", 
     await expect(student.locator(".source-preview")).toContainText(
       "synthetic local test content",
     );
+    await student.getByText("Rate this guidance", { exact: true }).click();
     await student.getByLabel("Helpfulness rating (optional)").selectOption("5");
     await student
       .getByRole("button", { name: "Share satisfaction rating", exact: true })

@@ -64,6 +64,29 @@ def test_explicit_constructor_settings_override_environment(monkeypatch):
     assert isinstance(provider_for(explicit), DisabledProvider)
 
 
+def test_local_dotenv_precedence_and_explicit_test_isolation(tmp_path, monkeypatch):
+    """FR10/NFR02: local settings load privately without leaking into tests."""
+    monkeypatch.chdir(tmp_path)
+    for name in ("APP_ASSISTANT_MODE", "APP_ASSISTANT_API_KEY", "APP_ASSISTANT_CALL_BUDGET"):
+        monkeypatch.delenv(name, raising=False)
+    (tmp_path / ".env").write_text("APP_ASSISTANT_MODE=retrieval\n", encoding="utf-8")
+    (tmp_path / ".env.local").write_text(
+        "APP_ASSISTANT_MODE=external\n"
+        "APP_ASSISTANT_API_KEY=synthetic-local-test-value\n"
+        "APP_ASSISTANT_CALL_BUDGET=25\n",
+        encoding="utf-8",
+    )
+    local = Settings()
+    assert local.assistant_mode == "external"
+    assert local.assistant_api_key.get_secret_value() == "synthetic-local-test-value"
+    assert local.assistant_call_budget == 25
+    monkeypatch.setenv("APP_ASSISTANT_MODE", "disabled")
+    assert Settings().assistant_mode == "disabled"
+    isolated = Settings(_env_file=None)
+    assert isolated.assistant_api_key.get_secret_value() == ""
+    assert isolated.assistant_call_budget == 0
+
+
 def test_external_request_has_only_bounded_public_context_and_no_tools():
     recorded = []
 
@@ -73,7 +96,8 @@ def test_external_request_has_only_bounded_public_context_and_no_tools():
 
     provider = ExternalProvider(settings(), transport=httpx.MockTransport(handle))
     source = {**sources()[0], "private_profile": "PRIVATE-MARKER"}
-    answer = provider.respond("How should I write my resume?", [source])
+    history = ['What should I include in my resume?']
+    answer = provider.respond("How should I write my resume?", [source], previous_questions=history)
     assert answer["sources"] == [{"id": "approved-id", "title": "Resume guide"}]
     assert answer["mode"] == "external"
     payload = json.loads(recorded[0].content)
@@ -83,6 +107,10 @@ def test_external_request_has_only_bounded_public_context_and_no_tools():
     assert payload["response_format"]["json_schema"]["strict"] is True
     assert "untrusted" in payload["messages"][0]["content"]
     assert "PRIVATE-MARKER" not in recorded[0].content.decode()
+    context = json.loads(payload['messages'][1]['content'])
+    assert set(context) == {'question', 'previous_questions', 'approved_excerpts'}
+    assert context['previous_questions'] == history
+    assert set(context['approved_excerpts'][0]) == {'id', 'title', 'excerpt'}
     assert "synthetic-test-secret" not in recorded[0].content.decode()
     assert recorded[0].headers["authorization"] == "Bearer synthetic-test-secret"
     assert provider.calls_used == 1
@@ -167,7 +195,7 @@ def test_call_budget_is_atomic_and_failed_attempts_consume_it():
 
 def test_input_caps_are_enforced_before_network():
     provider = ExternalProvider(settings(), transport=httpx.MockTransport(lambda _: pytest.fail("Network forbidden")))
-    for question, context in [("x" * 2001, sources()), ("Resume", sources() * 4), ("Resume", [{**sources()[0], "excerpt": "x" * 801}])]:
+    for question, context in [("x" * 2001, sources()), ("Resume", sources() * 4), ("Resume", [{**sources()[0], "excerpt": "x" * 1601}])]:
         with pytest.raises(AssistantUnavailable):
             provider.respond(question, context)
     assert provider.calls_used == 0

@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { api } from "./api";
+import { useDataRevision } from "./live-data";
 import { suggestionReason } from "./copy";
 type Suggested = { item: { id: string; title: string }; reason: string };
 export function SuggestionsPreview({
@@ -16,13 +17,14 @@ export function SuggestionsPreview({
   const [items, setItems] = useState<Suggested[]>([]),
     [busy, setBusy] = useState(true),
     [unavailable, setUnavailable] = useState(false);
+  const liveRevision = useDataRevision(["accounts", "marketplace", "learning", "recommendations"]);
   useEffect(() => {
     let active = true;
     api<{ listings: Suggested[]; content: Suggested[] }>(
       "/recommendations?limit=3",
     )
       .then((data) => {
-        if (active) setItems(kind === "listing" ? data.listings : data.content);
+        if (active) { setItems(kind === "listing" ? data.listings : data.content); setUnavailable(false); }
       })
       .catch(() => {
         if (active) setUnavailable(true);
@@ -33,7 +35,7 @@ export function SuggestionsPreview({
     return () => {
       active = false;
     };
-  }, [kind]);
+  }, [kind, liveRevision]);
   return (
     <section className="panel suggestions-preview">
       <h2>Suggestions to explore</h2>

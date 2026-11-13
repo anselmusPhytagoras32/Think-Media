@@ -20,6 +20,7 @@ import { ThinkIcon } from "./brand";
 import { Artwork } from "./artwork";
 import { href } from "./navigation";
 import { CompanyLogo, CompanyCover } from "./company-brand";
+import { useDataRevision } from "./live-data";
 export type Listing = {
   id: string;
   company_id: string;
@@ -727,6 +728,7 @@ export function Marketplace({
   account,
   mode,
   initialId,
+  initialCreate = false,
   initialApplicationId,
   initialFilters = "",
   onFilters,
@@ -735,6 +737,7 @@ export function Marketplace({
 }: {
   account: Account;
   initialId?: string;
+  initialCreate?: boolean;
   initialApplicationId?: string;
   initialFilters?: string;
   onFilters?: (filters: string) => void;
@@ -771,6 +774,7 @@ export function Marketplace({
   const applicationHeading = useRef<HTMLHeadingElement>(null);
   const decisionHeading = useRef<HTMLHeadingElement>(null);
   const listingConfirmationHeading = useRef<HTMLHeadingElement>(null);
+  const liveRevision = useDataRevision(["marketplace", "accounts"], !editing && !applying && !confirm && !confirmDecision && !pendingAction && !decision);
   useEffect(() => { if (editing) editorHeading.current?.focus(); }, [editing]);
   useEffect(() => { if (application && mode === "review") applicationHeading.current?.focus(); }, [application?.id, mode]);
   useEffect(() => { if (confirmDecision) decisionHeading.current?.focus(); }, [confirmDecision]);
@@ -787,9 +791,9 @@ export function Marketplace({
   );
   const company = mode === "company",
     applicationMode = mode === "applications" || mode === "review";
-  async function load() {
+  async function load(background = false) {
     const sequence = ++loadSequence.current;
-    setBusy(true);
+    if (!background) setBusy(true);
     setError("");
     try {
       if (applicationMode) {
@@ -855,6 +859,12 @@ export function Marketplace({
     };
   }, [initialId, detailRevision]);
   useEffect(() => {
+    if (company && initialCreate && !initialId && account.profile.verification_status === "verified") {
+      setSelected(null);
+      setEditing("new");
+    }
+  }, [mode, initialCreate, initialId, account.profile.verification_status]);
+  useEffect(() => {
     setApplication(null);
     setDecision("");
     setConfirmDecision(false);
@@ -879,6 +889,17 @@ export function Marketplace({
       active = false;
     };
   }, [initialApplicationId, detailRevision]);
+  useEffect(() => {
+    if (!liveRevision) return;
+    let active = true;
+    void load(true);
+    if (application) {
+      api<Application>(`/applications/${application.id}`).then((fresh) => { if (active) setApplication(fresh); }).catch((failure) => { if (active) setError(failure.message); });
+    } else if (selected) {
+      api<Listing>(`/listings/${selected.id}`).then((fresh) => { if (active) setSelected(fresh); }).catch((failure) => { if (active) { setSelected(null); setError(failure.message); } });
+    }
+    return () => { active = false; };
+  }, [liveRevision]);
   async function open(l: Pick<Listing, "id">) {
     setBusy(true);
     setError("");
@@ -1116,7 +1137,7 @@ export function Marketplace({
             <h2 ref={editorHeading} tabIndex={-1}>
               {editing === "new" ? "Create an opportunity" : "Edit opportunity"}
             </h2>
-            <button className="secondary" onClick={() => setEditing(null)}>
+            <button className="secondary" onClick={() => { setEditing(null); if (initialCreate) onListing?.(); }}>
               Cancel
             </button>
           </div>

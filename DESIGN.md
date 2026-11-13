@@ -352,6 +352,36 @@ Copy arrives with a brief vertical movement (0.35s, cubic-bezier(0.16, 1, 0.3, 1
 
 ## Do's and Don'ts
 
+### Company and administration workspaces — November 14
+
+Role homes now share the student discovery header scale, rose emphasis and
+peach/aqua/pink task destinations. Their custom SVG artwork extends the existing
+book-and-task marks with organization, applicant and listing-board motifs.
+Live review queues and listing/applicant records replace the former generic
+tool-list sidebar and role tutorial. Counts always come from the corresponding API.
+
+Company verification uses a queue/detail composition, with status, organization
+facts and decision fields in the same visual system. The desktop queue scrolls
+within a bounded area. Narrow workspaces show queue or selected review with a
+Back action, preserving validation input and focus. Read-only past decisions,
+stale-version recovery and explicitly confirmed writes remain part of the flow.
+See [the role workspace record](docs/ux/role-workspaces.md) for behavior and checks.
+
+### Guidance conversation surface — November 13
+
+Guidance uses the existing purple book mark and learning illustration, with a
+lavender header and a compact illustrated welcome. Suggested questions fill the
+composer without sending. User questions sit in lavender right-aligned bubbles;
+resource-based replies carry their actual mode, uncertainty and source actions.
+Only the conversation scrolls; the header and composer remain reachable.
+
+The desktop panel is a 440px nonmodal dialog, expandable to 700px. Phones use a
+native modal sheet with an eight-pixel viewport inset and a height that follows
+VisualViewport changes. Escape/close restores launcher focus and body scrolling.
+Reduced motion removes the loading icon's rotation. Optional satisfaction
+feedback and source previews open within the conversation. Full interaction and
+verification details are in [the guidance record](docs/ux/guidance-conversation.md).
+
 ### Do:
 
 - **Do** preserve the user's rounded, illustrated job-app direction and nine-color palette.

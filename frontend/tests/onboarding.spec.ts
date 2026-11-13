@@ -79,7 +79,7 @@ test("first-use introduction has accessible steps and opens real registration", 
   await page.reload();
   await expect(page.locator(".onboarding")).toHaveCount(0);
   await expect(
-    page.getByRole("heading", { name: "Welcome back.", exact: true }),
+    page.getByRole("heading", { name: "Login to your account", exact: true }),
   ).toBeVisible();
 });
 
@@ -89,7 +89,7 @@ test("introduction can be skipped, stays dismissed and can be replayed", async (
   await page.goto("/");
   await page.getByRole("button", { name: "Skip introduction" }).click();
   await expect(
-    page.getByRole("heading", { name: "Welcome back.", exact: true }),
+    page.getByRole("heading", { name: "Login to your account", exact: true }),
   ).toBeVisible();
   await page.reload();
   await expect(page.locator(".onboarding")).toHaveCount(0);
@@ -99,7 +99,7 @@ test("introduction can be skipped, stays dismissed and can be replayed", async (
   await expect(page.getByRole("heading", { name: headings[0] })).toBeVisible();
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
   await expect(
-    page.getByRole("heading", { name: "Welcome back.", exact: true }),
+    page.getByRole("heading", { name: "Login to your account", exact: true }),
   ).toBeVisible();
 });
 
@@ -125,7 +125,7 @@ test("blocked browser storage does not prevent entry to the app", async ({
   await page.getByRole("button", { name: "Skip introduction" }).click();
   await expect(page.locator(".onboarding")).toHaveCount(0);
   await expect(
-    page.getByRole("heading", { name: "Welcome back.", exact: true }),
+    page.getByRole("heading", { name: "Login to your account", exact: true }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Show password" }).click();
   await expect(page.getByLabel(/^Password/)).toHaveAttribute("type", "text");

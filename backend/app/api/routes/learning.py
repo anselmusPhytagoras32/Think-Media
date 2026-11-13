@@ -122,4 +122,4 @@ def assistant(
 ):
     return AssistantService(
         db, request.app.state.assistant_provider, request.app.state.assistant_throttle
-    ).answer(payload.question, user.id)
+    ).answer(payload.question, user.id, payload.previous_questions)

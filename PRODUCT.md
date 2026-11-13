@@ -41,18 +41,39 @@ Implementation assumption: first-use orientation is optional and browser-local, 
 
 The user's latest direction replaces the desktop breadcrumb/date bar with sidebar-local collapse and lock controls. Automatic mode starts compact, expands over the page on mouse entry or keyboard focus, and collapses when those interactions leave. Locking preserves either width across reload; unlocking restores automatic expansion. Previous v1 width preferences do not lock the new rail. Mobile retains a small menu/brand header, drawer and bottom task navigation.
 
-Opportunity browsing prioritizes actual results with keyword search, grouped filters, compact listing summaries and pagination. Personalized suggestions occupy a separate For you view; returning from its listing details preserves that view. Preparation links connect profile, resume and application tracking, and saving a student profile offers Continue to opportunities. The presentation-data notice stays available below the work. This latest layout supersedes the earlier topbar/manual-only rail description; details and checks are in docs/ux/job-search-navigation.md.
+Opportunity browsing prioritizes actual results with keyword search, grouped filters, compact listing summaries and pagination. Personalized suggestions occupy a separate For you view; returning from its listing details preserves that view. Preparation links connect profile, resume and application tracking, and saving a student profile offers Continue to opportunities. Following the November 13 request, the repeated presentation disclaimer footer is removed; registration retains visible data-use text without a dropdown. This latest layout supersedes the earlier topbar/manual-only rail description; details and checks are in docs/ux/job-search-navigation.md.
 
 ## Runtime guidance decision
 User chose to keep external AI disabled and use approved-resource lookup for now. The local development API explicitly enables retrieval; the code default remains disabled. Research effectiveness is not asserted without genuine supplied datasets.
 
 ## Learning and company artwork refinement — November 8, 2026
 
-The learning library now prioritizes illustrated published-resource cards, actual topic shortcuts and a separate For you view. Coding/data, portfolio and application-preparation scenes are matched semantically across home previews, cards and resource details. Recently posted uses the actual company's identity: the fictional Demo Practice Studio has one original DP logo shared with opportunity results and details, while other companies have name-derived fallback marks. This replaces alternating generic task illustrations on job cards. No resource-to-company authorship is inferred. Details and exact image prompt records are linked in docs/ux/learning-company-identity.md.
+The learning library prioritizes illustrated published-resource cards, actual topic shortcuts and a separate For you view. Coding/data, portfolio and application-preparation scenes are matched semantically across home previews, cards and resource details. Company marks use initials derived from the actual stored organization name across home, results and details. The November 14 cleanup removed the special fictional-company logo and every seeded presentation record. Normal startup does not seed data. No resource-to-company authorship is inferred. Historical artwork decisions are recorded in docs/ux/learning-company-identity.md; current reset behavior is documented in docs/LOCAL_RESET.md.
 
 ## Suggestions refinement — November 8, 2026
 
 Suggestions use compact category views, consistent company logos and semantic learning artwork. Profile guidance follows recommendation groups on mobile. Match explanations reflect actual recommendation reasons; ratings are an optional disclosure and submit only through Share rating. Failed refresh clears stale results and provides retry/browse actions. The implementation and verification record is docs/ux/suggestions-direction.md.
 
 ## Workspace refinement
+
+### Company and administrator refinement — November 14, 2026
+
+The user requested that these roles match the student side. Role homes now use
+the shared typography, pastel task destinations and custom SVG marks with actual
+queues and owned work. Verification uses a responsive queue/detail flow with
+required reason, confirmation, deep links and stale-decision recovery. Verified
+companies can open the first-listing editor directly; unverified accounts remain
+blocked. [The role workspace record](docs/ux/role-workspaces.md) supersedes the
+older assumption that all non-student dashboard structures remain unchanged.
+
+### Guidance refinement — November 13, 2026
+
+The guidance panel now prioritizes conversation with a fixed composer, suggested
+questions and the existing learning artwork. Desktop supports a nonmodal,
+expandable panel; mobile uses a focus-contained sheet sized to the visual
+viewport. Source links, uncertainty, explicit optional ratings, retry and bounded
+page-memory history remain. The user subsequently authorized live Gemini setup
+and selected Gemini 3.5 Flash-Lite; the earlier retrieval-only decision above is
+historical. [The guidance record](docs/ux/guidance-conversation.md) describes this
+surface's interaction and verification.
 Existing Intent and Impeccable skills guide the local MVP. The approved illustrated direction is recorded in docs/ux/thinkmedia-illustrated-direction.md, with the responsive-shell and welcoming sign-in refinement in docs/ux/thinkmedia-layout-signin-direction.md; DESIGN.md captures its implemented visual system. The student account now opens a consumer discovery home with distinct illustrated category destinations, recent published opportunities, approved learning previews and the student’s own application pocket. Search and type/skill/location filters use real API parameters retained in the URL through reload and detail/back navigation. Preserve real role work, stable URLs, clear application confirmation, mobile task navigation and direct feed actions within the illustrated identity; company, instructor and administrator workflows retain their role-specific structure. The sidebar supports expanded and compact desktop modes with accessible destination names and labels; mobile retains the full drawer and bottom navigation. Discovery adapts to available workspace width, including the space recovered by collapsing the sidebar. Sign-in pairs an original campus illustration with the existing real account form, registration roles and password visibility; phones retain a compact illustrated header. Workflow choices follow the SRS; no participant research findings are asserted.

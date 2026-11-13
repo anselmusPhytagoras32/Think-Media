@@ -13,8 +13,17 @@ if [[ "${1:-}" == "--browser-tests" ]]; then
   # Repeated synthetic browser runs must not consume presentation auth quotas.
   # This setting is limited to the separate disposable browser database/API.
   export APP_REGISTER_MAX_ATTEMPTS=1000
+  # FR10/NFR02: browser QA must never use a presentation provider credential.
+  export APP_ASSISTANT_MODE=retrieval APP_ASSISTANT_API_KEY='' APP_ASSISTANT_CALL_BUDGET=0
   port=8001
 else
+  # FR10/NFR02: override launcher defaults with the private backend dotenv file.
+  # Normalize Windows line endings; dotenv values must use shell-safe quoting.
+  if [[ -f .env.local ]]; then
+    set -a
+    source <(sed 's/\r$//' .env.local)
+    set +a
+  fi
   port=8000
 fi
 pg_data="$HOME/.local/share/thinkmedia/pgdata"

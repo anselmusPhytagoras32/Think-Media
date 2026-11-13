@@ -1,5 +1,12 @@
 # Local ThinkMedia demo
 
+**Current setup (November 14):** the owner requested an empty local workspace.
+All non-administrator data has been reset. Use your existing administrator
+credentials and register fresh accounts to test real workflows. Follow
+[Local reset instructions](LOCAL_RESET.md) for the repeatable wipe command.
+The demo account/seed instructions below describe the previous fixture setup;
+do not run them to start the clean app.
+
 The local consumer setup uses real PostgreSQL and the FastAPI API. It supports FR01–04, FR06, FR08 and FR10–11 with synthetic demonstration records. It does not provide research observations or real vacancies.
 
 For the workspace prepared on November 7, 2026, run `bash .local/start-backend.sh` from the repository root, then run `npm run dev -- --host 127.0.0.1` in `frontend`. Open http://127.0.0.1:5173 and sign in with `student@example.test`. The locally supplied password is kept in the private runtime environment as `LOCAL_DEMO_STUDENT_PASSWORD`. This account is Alex Student with the student role; it cannot open administrator tools. Three clearly labeled demo opportunities and three approved demo learning guides are stored in the database. Each guide includes a practice quiz. Application and saved-resource history begins empty and records your actual local actions.

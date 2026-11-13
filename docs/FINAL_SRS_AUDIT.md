@@ -1,5 +1,8 @@
 # SRS completion audit — November 8, 2026
 
+Updated verification: [November 13 whole-app QA and requirement coverage](QA_PRESENTATION_2026-11-13.md).
+The evidence below records the earlier run.
+
 The root `Requirements Software Engineering.docx` and bundled original still
 match SHA256 `C3A07844558595B05867EDFC05211C53E99279CACAB3EE3E269006BC979A57F9`.
 The latest cumulative PD7 requirements govern this audit. The owner selected a

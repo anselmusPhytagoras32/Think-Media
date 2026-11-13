@@ -1,6 +1,6 @@
 """Runtime configuration.
 
-Secrets are read from the environment (or a local, git-ignored ``.env`` file).
+Secrets are read from the environment (or local, git-ignored dotenv files).
 The defaults below are safe for local HTTP development only; nothing here is a
 deployment secret.
 """
@@ -29,7 +29,8 @@ class Settings(BaseSettings):
     """
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        # FR10/NFR02: local server-only overrides; process variables still win.
+        env_file=(".env", ".env.local"),
         env_file_encoding="utf-8",
         extra="ignore",
         case_sensitive=False,

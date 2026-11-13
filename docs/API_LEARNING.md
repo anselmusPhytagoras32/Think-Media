@@ -1,6 +1,6 @@
 # Learning and guidance contract — FR03/10/11
 
-Proposed next-phase contract. Implement only after marketplace acceptance.
+Implemented learning and assistant contract, following marketplace acceptance.
 
 Existing auth/CSRF/error conventions. Published approved resources only in student/instructor feeds and assistant retrieval. All lists paginated. Administration requires server-side administrator role.
 
@@ -15,7 +15,7 @@ Content: id, title, summary, body, tags, status (draft/published/archived), crea
 - POST `/content/{id}/quiz`: validate complete option IDs and score using stored answer key; authenticated attempt retained.
 - POST `/reports`: authenticated report on published content, bounded reason. GET/PATCH `/admin/reports`: queue and audited resolution.
 
-Assistant: POST `/assistant` with bounded question only, authenticated/throttled. Approved published resources retrieved on server. Provider adapter accepts only question + approved resource snippets; no session/user/application/profile/attachment data. External provider is disabled by default with clear 503 ASSISTANT_UNAVAILABLE. Real provider only when independently configured server-side. Grounded local retrieval can list sources but must not pretend to be an external LLM. Response answer, sources [{id,title}], uncertainty. Failures leave application endpoints operational. Never expose credentials, accept arbitrary provider URL from client, or mutate hiring decisions.
+Assistant: POST `/assistant` with bounded question and optional `previous_questions`, authenticated/throttled. Approved published resources retrieved on server. Provider adapter accepts only the current question, bounded preceding questions and approved resource snippets; no session/user/application/profile/attachment data. External provider is disabled by default with clear 503 ASSISTANT_UNAVAILABLE. Real provider only when independently configured server-side. Grounded local retrieval can list sources but must not pretend to be an external LLM. Response answer, sources [{id,title}], uncertainty. Failures leave application endpoints operational. Never expose credentials, accept arbitrary provider URL from client, or mutate hiring decisions.
 
 Test unpublished hidden, role denial, quiz answer-key non-disclosure/scoring, invalid options, report isolation, audited moderation rollback, assistant unavailable and independent application health.
 
@@ -29,3 +29,11 @@ Admin list GET `/admin/content?status=&limit=&offset=`; PATCH content supports t
 POST `/reports` body `{content_id,reason}`; admin queue GET `/admin/reports?status=pending|resolved&limit=&offset=`; PATCH `/admin/reports/{id}` body `{status:'resolved',resolution}`. Store actor/time/history, deny unknown targets and repeated final resolution.
 
 Assistant response `{answer,sources:[{id,title}],uncertainty,mode}`. Default provider `disabled` returns503 with clear ASSISTANT_UNAVAILABLE. Implement provider Protocol and optional explicitly configured `retrieval` mode: deterministic approved-resource excerpts with mode='retrieval', explicitly described as resource lookup, never represented as a live LLM. Actual external LLM provider remains a documented pre-pilot dependency. Local retrieval must return uncertainty without matching sources. Max question2000, bounded retrieved snippets/results, per-user request limit; never query profiles/applications/attachments. Tests may inject provider stub for failure/citation validation, clearly test-only.
+
+## November 14 functional correction — FR03/10/11, NFR03/06/11
+
+`previous_questions` is optional, at most three strings of 1–1000 characters each. The frontend sends preceding successful user questions from page memory only, excluding later exchanges on retry. No model answers, account objects or private application data are included. History resolves short follow-ups and overlapping topics; a new unrelated subject does not inherit old retrieval sources.
+
+Retrieval removes common words, normalizes topic variants and ranks a bounded pool of at most 200 published resources by title, tags, summary and body. It returns up to three relevant passages, at most 1600 characters per resource, including actual illustrations when an example is requested. No match returns uncertainty without an external call. Source IDs remain checked against the selected published context.
+
+`backend/knowledge/*.json` contains useful editorial OJT guides and instructions for the actual platform workflows. `python -m ops.guidance_knowledge` validates and previews them; adding `--publish` uses the existing local administrator API and its audited publication transaction. It is local-only, creates no accounts/listings/feedback, skips identical records, and preserves resources changed by an editor. These resources are learning content, never evidence of pilot activity.

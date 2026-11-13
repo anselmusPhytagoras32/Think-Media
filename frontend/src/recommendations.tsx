@@ -1,5 +1,6 @@
 // FR08/09; NFR05/09: real suggestions with opt-in relevance feedback.
 import { FormEvent, useEffect, useRef, useState } from "react";
+import { useDataRevision } from "./live-data";
 import {
   ArrowLeft,
   ArrowRight,
@@ -153,14 +154,15 @@ export function Recommendations({
       id: string;
     } | null>(null);
   const request = useRef(0);
-  async function load() {
+  const liveRevision = useDataRevision(["recommendations", "marketplace", "accounts", "learning"]);
+  const loaded = useRef(false);
+  async function load(background = false) {
     const current = ++request.current;
-    setBusy(true);
+    if (!background) setBusy(true);
     setError("");
-    setData(null);
     try {
       const response = await api<Suggestions>("/recommendations?limit=10");
-      if (current === request.current) setData(response);
+      if (current === request.current) { setData(response); loaded.current = true; }
     } catch (failure) {
       if (current === request.current) setError((failure as Error).message);
     } finally {
@@ -168,11 +170,11 @@ export function Recommendations({
     }
   }
   useEffect(() => {
-    void load();
+    void load(loaded.current);
     return () => {
       request.current++;
     };
-  }, []);
+  }, [liveRevision]);
   function open(kind: "listing" | "content", id: string) {
     void api("/interactions", "POST", {
       item_type: kind,

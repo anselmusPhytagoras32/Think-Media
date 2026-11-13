@@ -1,6 +1,6 @@
 {
   "requirement": "FR12/NFR08",
-  "generated_at": "2026-11-06T11:36:20.540970+00:00",
+  "generated_at": "2026-11-13T14:29:13.140379+00:00",
   "recommender": {
     "status": "not_measured",
     "reason": "No genuine explicit-rating dataset supplied.",

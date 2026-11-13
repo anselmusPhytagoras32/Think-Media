@@ -1,4 +1,5 @@
 // FR01–02, FR11 / NFR02–03: same-origin HttpOnly session + session-bound CSRF.
+import { notifyMutation } from "./live-data";
 export type Role = "student" | "instructor" | "company" | "administrator";
 export type Profile = {
   kind: Role;
@@ -86,7 +87,10 @@ export async function api<T>(
       "Cannot reach ThinkMedia. Check your connection and try again.",
     );
   }
-  if (response.status === 204) return undefined as T;
+  if (response.status === 204) {
+    if (method !== "GET") notifyMutation(path);
+    return undefined as T;
+  }
   const data = await response.json().catch(() => null);
   if (!response.ok)
     throw new ApiError(
@@ -94,6 +98,7 @@ export async function api<T>(
       data?.error?.message || "The service is unavailable. Please try again.",
       data?.error?.fields,
     );
+  if (method !== "GET") notifyMutation(path);
   return data as T;
 }
 export const manila = (value: string) =>

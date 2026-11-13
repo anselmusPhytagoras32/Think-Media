@@ -29,4 +29,5 @@ agent/
 .impeccable/
 .monitor-update/
 .ai-team/monitor-backups/
+.omo/
 *.bak

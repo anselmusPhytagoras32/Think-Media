@@ -1,5 +1,15 @@
 # ThinkMedia local presentation acceptance
 
+**Current data state — November 14:** at the owner's request, all local data
+except administrator accounts has been reset after a private backup. Earlier
+seed accounts, listings and published guides are no longer in the active
+presentation database. Normal startup stays empty. See [Local reset](LOCAL_RESET.md)
+for the wipe script and how to begin testing with your own accounts and content.
+
+Latest whole-app QA: [November 13 requirements and presentation acceptance](QA_PRESENTATION_2026-11-13.md).
+Latest functional correction: [November 14 cross-role sync and useful Guidance](QA_FUNCTIONAL_SYNC_2026-11-14.md), with 245 backend checks, 48 browser checks and four live source-grounded answers passing.
+The dated results below remain historical; use the latest report for current checks and limitations.
+
 Scope confirmed by the project owner: local presentation, fictional accounts,
 fictional applications and sample PDFs; no cloud deployment or real participant
 data. The developers/presenters control the demo database. External AI integration
@@ -59,7 +69,7 @@ It contains fictional data and can be reproduced with
 
 ## Demonstration sequence
 
-1. Show the fictional-data notice and student registration/profile validation.
+1. Show student registration/profile validation and the visible registration data-use notice.
 2. Sign in as the demonstration company; explain pending verification. As the
    separately provisioned administrator, verify the company with a reason.
 3. Create a draft OJT listing, publish it, and find it from student search.

@@ -1,0 +1,140 @@
+{
+  "checked_at": "2026-11-13T16:50:20.973856+00:00",
+  "requirements": [
+    "FR01-FR11",
+    "NFR03",
+    "NFR04",
+    "NFR05",
+    "NFR06",
+    "NFR09",
+    "NFR11"
+  ],
+  "scope": "Local engineering verification; not pilot research, CSAT or a production performance claim.",
+  "backend": {
+    "command": "wsl -d Ubuntu -- bash scripts/verify-local.sh",
+    "passed": 245,
+    "seconds": 118.83,
+    "migration_drift": false,
+    "evaluation_pipeline_tests_passed": 8
+  },
+  "frontend": {
+    "production_build": "passed",
+    "browser": {
+      "startTime": "2026-11-13T16:46:37.774Z",
+      "duration": 161569.782,
+      "expected": 48,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    }
+  },
+  "presentation_data": {
+    "registered_company_count": 3,
+    "pending_company_count": 1,
+    "frontend_proxy_matches_presentation_records": true,
+    "public_listing_count": 3,
+    "public_companies_match_admin_records": true,
+    "learning_feed_matches_published_records": true,
+    "operator_company_owned_count": 0,
+    "owned_ids_match_company_profile": true,
+    "owned_published_records_match_student_records": true,
+    "passed": true
+  },
+  "knowledge": {
+    "new_published_guides": 7,
+    "idempotent_second_run": "7 unchanged",
+    "new_presentation_accounts": 0,
+    "new_presentation_listings": 0
+  },
+  "live_guidance": {
+    "model": "gemini-3.5-flash-lite",
+    "passed": true,
+    "checks": [
+      {
+        "question": "How can I prepare for an OJT interview using STAR?",
+        "http_status": 200,
+        "latency_ms": 2369,
+        "answer": "To prepare for an OJT interview using the STAR method, build your story notes by organizing your behavioral answers into four parts: Situation (provide enough context to understand the event), Task (state your responsibility), Action (explain the steps you personally took), and Result (describe what happened and what you learned). Additionally, confirm your interview time, location or meeting link, and any requested materials, and ask your school about any institution-specific interview or endorsement requirements.",
+        "sources": [
+          {
+            "id": "4edb0ec1-994a-4dbd-a3a0-158cec158ec6",
+            "title": "Practice OJT interview answers with truthful STAR stories"
+          }
+        ],
+        "uncertainty": false,
+        "mode": "external",
+        "sources_resolve": true,
+        "topic_check": true,
+        "passed": true
+      },
+      {
+        "question": "Can you give me a concrete example?",
+        "http_status": 200,
+        "latency_ms": 1820,
+        "answer": "Here is a concrete example of a STAR interview response: \"Our class presentation used conflicting document versions. I was responsible for assembling the final slides. I asked teammates to identify the latest files, put agreed versions in one folder, and reviewed the combined presentation with them. We submitted the agreed deck. I learned to establish a shared editing process earlier.\"",
+        "sources": [
+          {
+            "id": "4edb0ec1-994a-4dbd-a3a0-158cec158ec6",
+            "title": "Practice OJT interview answers with truthful STAR stories"
+          }
+        ],
+        "uncertainty": false,
+        "mode": "external",
+        "sources_resolve": true,
+        "topic_check": true,
+        "passed": true
+      },
+      {
+        "question": "I created a company locally. How do I make its opportunity visible to students?",
+        "http_status": 200,
+        "latency_ms": 1800,
+        "answer": "To make your company's opportunity visible to students, you first need to wait for your newly registered company account to be verified by an administrator. Once verified, follow these practical steps: 1. Open 'My listings' in your company account and choose 'New listing'. 2. Enter the role title, opportunity type, location, skills, description, and requirements, then save the draft. 3. Review the details, select 'Publish listing', and confirm publish. Example: Publishing a listing for a local marketing intern makes it eligible for student discovery and suggestions on the platform.",
+        "sources": [
+          {
+            "id": "d311b7fc-deba-4e86-86fd-4523529fc6b3",
+            "title": "From a new company account to a visible opportunity"
+          }
+        ],
+        "uncertainty": false,
+        "mode": "external",
+        "sources_resolve": true,
+        "topic_check": true,
+        "passed": true
+      },
+      {
+        "question": "What can I put in my OJT resume when I have no work experience?",
+        "http_status": 200,
+        "latency_ms": 2319,
+        "answer": "When you have no work experience for an OJT resume, list your program, relevant skills, and a few projects using clear headings for education, relevant projects or experience, and skills. Connect your activities to their purpose and results, and include class and personal projects as suitable material. For example, you can describe a course project by explaining your specific contribution, such as implementing field validation and writing a setup guide. Make sure to tailor your resume to the skills asked for in the actual listing.",
+        "sources": [
+          {
+            "id": "6b4326cd-6d08-4cdc-96c3-01dccfdbc7b2",
+            "title": "Build an OJT résumé from experience you already have"
+          },
+          {
+            "id": "4604a0e9-61fe-41a3-bf72-8f05e0b0a1fd",
+            "title": "Show your work in a focused OJT project portfolio"
+          },
+          {
+            "id": "63a82c0e-0f9f-4b5d-8133-375e9b0ff36c",
+            "title": "Demo guide: Prepare your OJT application"
+          }
+        ],
+        "uncertainty": false,
+        "mode": "external",
+        "sources_resolve": true,
+        "topic_check": true,
+        "passed": true
+      }
+    ],
+    "limits": {
+      "timeout_seconds": 20,
+      "max_completion_tokens": 1024,
+      "process_call_budget": 25
+    }
+  },
+  "limitations": [
+    "Engineering topic markers and source-resolution checks do not establish factual accuracy for arbitrary questions.",
+    "Existing pilot-data and physical-device verification limitations remain."
+  ]
+}

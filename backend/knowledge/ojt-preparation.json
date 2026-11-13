@@ -1,0 +1,117 @@
+[
+  {
+    "slug": "ojt-resume-from-real-experience",
+    "title": "Build an OJT résumé from experience you already have",
+    "summary": "Turn class projects, volunteer work and responsibilities into truthful evidence for a specific OJT role. Finish with a tailored résumé and a checklist for checking every claim.",
+    "tags": [
+      "ojt",
+      "resume",
+      "cv",
+      "applications",
+      "career-preparation"
+    ],
+    "sources": [
+      {
+        "title": "MIT CAPD — Resumes: Writing about your skills",
+        "url": "https://capd.mit.edu/resources/resumes-writing-about-your-skills/"
+      },
+      {
+        "title": "Harvard MCS — Harvard College Guide to Creating a Strong Resume",
+        "url": "https://careerservices.fas.harvard.edu/resources/create-a-strong-resume/"
+      }
+    ],
+    "body": "## Start with the role\nRead the actual listing and mark the skills it asks for. Harvard MCS recommends a concise, tailored résumé; MIT CAPD explains how to connect an activity to its purpose and result. Use those principles to choose evidence instead of listing every subject you have taken.\n\n## Make an evidence sheet\n1. Write a role requirement, such as organizing information or testing software.\n2. Beside it, name something you actually did in a class project, student organization, volunteer activity or job.\n3. Record your own contribution, the tool or method you used, and the outcome you can verify. A completed deliverable is a valid outcome; you do not need an impressive percentage.\n4. Select the examples most relevant to this application.\n\n## Turn evidence into bullets\nUse this drafting pattern: action + task and context + purpose or observable outcome.\n\nIllustrative wording only: “Created a spreadsheet to track the student organization's supply requests and shared a categorized list with the event lead.” Use it only as a model; replace every detail with your experience. If you cannot verify a claim about time saved, revenue or users, leave that claim out.\n\n## Assemble and check\nUse clear headings for education, relevant projects or experience, and skills. Put the strongest relevant material where a reader will find it quickly. Keep formatting consistent, check spelling, and reopen the exported file to inspect line breaks and working links. Follow the employer's requested file format.\n\nAsk a reviewer: “Which requirement does this bullet demonstrate?” If the answer is unclear, add concrete context or remove it. Save the résumé beside the listing so you can explain its claims during an interview.\n\n## Before submitting\nConfirm school-specific OJT eligibility, documents and approval steps with your coordinator. These general writing guidelines do not establish required hours, placement approval or an employer's selection rules.\n\n## Sources\n- MIT CAPD: https://capd.mit.edu/resources/resumes-writing-about-your-skills/\n- Harvard MCS: https://careerservices.fas.harvard.edu/resources/create-a-strong-resume/"
+  },
+  {
+    "slug": "ojt-project-portfolio",
+    "title": "Show your work in a focused OJT project portfolio",
+    "summary": "Build a small portfolio that explains your contribution, decisions and evidence. Use class or personal projects without pretending they were professional client work.",
+    "tags": [
+      "ojt",
+      "portfolio",
+      "projects",
+      "skills",
+      "career-preparation"
+    ],
+    "sources": [
+      {
+        "title": "MIT CAPD — Tools and resources for creating portfolios",
+        "url": "https://capd.mit.edu/tools-and-resources-for-creating-portfolios/"
+      },
+      {
+        "title": "Virginia Tech Career and Professional Development — Portfolios",
+        "url": "https://career.vt.edu/resources/portfolios/"
+      }
+    ],
+    "body": "## Choose evidence before choosing a platform\nA portfolio helps someone inspect your work. Virginia Tech includes class and personal projects among suitable material; MIT CAPD discusses portfolios as a way to demonstrate skills and reflect on experience. Start with a document or simple page you can maintain. An elaborate website is not necessary for this exercise.\n\n## Select a small set of projects\nChoose projects that show skills relevant to the role. A programming applicant might show a tested feature; a communications applicant might show a writing sample and its revision process. Label coursework and personal practice honestly. Include only work you are allowed to share.\n\n## Build a case page\nFor each selected project, answer:\n1. Context: What problem were you trying to address, and for whom?\n2. Contribution: What did you personally create? Which parts belonged to teammates?\n3. Decisions: What approach did you choose, and what alternative did you consider?\n4. Evidence: What artifact can the reader inspect, such as a screenshot, sample, demo or code excerpt?\n5. Reflection: What worked, what remains unfinished, and what would you change?\n\nIllustrative wording only: “Course project: appointment-form prototype. I implemented field validation and wrote the setup guide; teammates designed the screens. The demo uses sample information.” This distinguishes your contribution from the team's work without claiming a real deployment.\n\n## Make the evidence usable\nCaption images so readers understand what they demonstrate. Check links in a signed-out browser. Provide a readable explanation if a live demo is unavailable. Remove credentials, personal records and confidential client material; ask the owner before sharing workplace artifacts.\n\n## Finish with a review\nAsk someone unfamiliar with the project to identify your role and one decision you made. Revise anything they cannot locate. Check whether the employer wants a portfolio and which format it accepts. Your school may require a separate OJT submission; this portfolio does not replace it.\n\n## Sources\n- MIT CAPD: https://capd.mit.edu/tools-and-resources-for-creating-portfolios/\n- Virginia Tech: https://career.vt.edu/resources/portfolios/"
+  },
+  {
+    "slug": "ojt-interview-star-practice",
+    "title": "Practice OJT interview answers with truthful STAR stories",
+    "summary": "Prepare a short introduction, outline examples from your own experience, and rehearse clear answers about teamwork, problems and learning. Includes an illustrative STAR example.",
+    "tags": [
+      "ojt",
+      "interview",
+      "star",
+      "communication",
+      "career-preparation"
+    ],
+    "sources": [
+      {
+        "title": "MIT CAPD — Career toolkit: Interviewing",
+        "url": "https://capd.mit.edu/resources/career-toolkit-interviewing/"
+      },
+      {
+        "title": "Harvard MCS — Interviewing",
+        "url": "https://careerservices.fas.harvard.edu/resources/interviewing/"
+      }
+    ],
+    "body": "## Prepare for this opportunity\nRead the listing and the organization's own website. Identify the work you would support and a skill you can demonstrate. Harvard MCS emphasizes understanding the role and explaining your contribution. Prepare questions about tasks, supervision and how interns receive feedback.\n\n## Introduce yourself briefly\nOutline what you study, one relevant project or responsibility, and why this role interests you. Choose details the interviewer needs rather than reciting your entire résumé.\n\n## Build your story notes\nMIT CAPD uses STAR to organize behavioral answers:\n- Situation: Give enough context to understand the event.\n- Task: State your responsibility.\n- Action: Explain the steps you personally took.\n- Result: Describe what happened and what you learned.\n\nUse real examples from coursework, volunteering, organizations or employment. Credit teammates while making your contribution clear. Spend more attention on your actions than on the background.\n\n## Try this example\nIllustrative example only, not a claim about your experience: “Our class presentation used conflicting document versions. I was responsible for assembling the final slides. I asked teammates to identify the latest files, put agreed versions in one folder, and reviewed the combined presentation with them. We submitted the agreed deck. I learned to establish a shared editing process earlier.”\n\nThe example shows a specific action and observable outcome without inventing a performance metric. Substitute a real event. If the outcome was disappointing, explain it honestly and describe a change you would make.\n\n## Rehearse and improve\nAsk a friend to choose a question about teamwork, a challenge or receiving feedback. Answer aloud from brief notes. Then ask: Did I answer the question? Was my responsibility clear? Could I explain a follow-up detail? Revise and try again without memorizing every sentence.\n\nConfirm interview time, location or meeting link and any requested materials. Ask your school about institution-specific interview or endorsement requirements.\n\n## Sources\n- MIT CAPD: https://capd.mit.edu/resources/career-toolkit-interviewing/\n- Harvard MCS: https://careerservices.fas.harvard.edu/resources/interviewing/"
+  },
+  {
+    "slug": "ojt-first-week-communication",
+    "title": "Make your first OJT week clear and manageable",
+    "summary": "Agree on tasks, communication channels and feedback with your supervisor. Use practical question and progress-update templates when work is unclear or blocked.",
+    "tags": [
+      "ojt",
+      "workplace-readiness",
+      "first-week",
+      "communication",
+      "professionalism"
+    ],
+    "sources": [
+      {
+        "title": "MIT CAPD — Get the most out of your micro-internship experience",
+        "url": "https://capd.mit.edu/blog/2024/12/06/get-the-most-out-of-your-micro-internship-experience/"
+      },
+      {
+        "title": "Temple University Career Center — Internships",
+        "url": "https://careercenter.temple.edu/students/grow/internships"
+      }
+    ],
+    "body": "## Confirm the basics\nBefore starting, ask your contact to confirm when and where to report, who will meet you, and which equipment or preparation is needed. Record the agreed details. Consult your school's OJT coordinator about required approvals and reporting; this guide does not define those requirements.\n\n## Agree on expectations\nMIT CAPD recommends clarifying goals, expectations and communication channels early. In your first supervisor conversation, ask:\n- What should I work on first?\n- What would a completed task look like?\n- When should I share a draft?\n- Which channel should I use for questions, and whom should I contact if you are unavailable?\n\nWrite down the answers and briefly repeat your understanding. Check the deadline and time zone when working with people in different locations.\n\n## Ask a useful question\nTemple's Career Center encourages listening, asking questions and taking notes. Before asking, identify the task, what you tried and the specific decision you need.\n\nIllustrative message: “I am preparing the draft inventory sheet. I checked the sample, but I cannot tell whether returned items belong in the available total. Could you confirm the rule before I finish the draft?” Replace the details with your actual situation.\n\n## Report progress and blockers\nUse a simple update: completed work, next step, blocker, and help needed. Agree with your supervisor on when updates are useful rather than assuming constant messages are expected.\n\nIf a mistake could affect other work, tell your supervisor promptly. Describe what you know, what may be affected, and ask how to correct it. Do not quietly change someone else's work to conceal the issue.\n\n## End the week with feedback\nShow the deliverable and ask what to continue or improve. Keep factual notes about tasks and learning for your reflection. Follow workplace rules for storing information; do not move confidential documents into a personal portfolio. If a concern remains unresolved, ask your coordinator which support route applies.\n\n## Sources\n- MIT CAPD: https://capd.mit.edu/blog/2024/12/06/get-the-most-out-of-your-micro-internship-experience/\n- Temple University: https://careercenter.temple.edu/students/grow/internships"
+  },
+  {
+    "slug": "ojt-search-and-evaluate",
+    "title": "Find and evaluate an OJT opportunity before committing",
+    "summary": "Build a search plan, compare learning and practical conditions, and collect unanswered questions before accepting an offer. Confirm school approval separately.",
+    "tags": [
+      "ojt",
+      "internship-search",
+      "opportunities",
+      "career-planning",
+      "applications"
+    ],
+    "sources": [
+      {
+        "title": "Harvard MCS — Summer Experiences (College)",
+        "url": "https://careerservices.fas.harvard.edu/channels/find-an-internship/"
+      },
+      {
+        "title": "Harvard MCS — Evaluating and Negotiating Job and Internship Offers",
+        "url": "https://careerservices.fas.harvard.edu/resources/harvard-college-evaluating-and-negotiating-job-and-internship-offers/"
+      }
+    ],
+    "body": "## Define a useful opportunity\nStart with the work you want to explore, skills you can offer, and skills you hope to learn. Harvard MCS recommends connecting your strengths and values to an organized internship search. Add practical constraints such as travel, schedule and equipment.\n\nConfirm school eligibility, approved placement arrangements and required documentation with your OJT coordinator before committing. A listing's presence on a platform does not itself establish academic approval.\n\n## Search with a record\nUse your school's career resources, employer websites and relevant published listings. Ask people in the field about the work and where opportunities are advertised. Keep a simple tracker with the source link, role, deadline, application status and next action. Record the employer's stated conditions rather than filling gaps with assumptions.\n\n## Compare the actual work\nFor each opportunity, make notes under:\n1. Learning: What tasks would you do, and which skills would they develop?\n2. Support: Who supervises you, and how is feedback provided?\n3. Practical fit: What are the location, schedule, equipment needs, costs and stated compensation?\n4. Unanswered questions: What must be clarified before deciding?\n\nHarvard's offer guidance emphasizes considering learning, relationships and personal priorities and obtaining written details. Use that approach to prepare specific questions rather than judging only a job title.\n\n## Ask before accepting\nIllustrative inquiry: “Thank you for the offer. Could you confirm the main assignments, supervisor, work schedule and start date in writing? I also need to check my school's placement requirements. When do you need my decision?”\n\nThis is a drafting example, not a promise that an employer will extend a deadline. If the timeline is difficult, explain your situation and ask what is possible.\n\n## Make the decision\nSeparate confirmed facts from unknowns. Bring unresolved questions to your coordinator or career adviser. Read the proposed arrangements before committing and retain the agreed details. These sources provide general career guidance, not Philippine legal advice, a guaranteed vacancy or an endorsement of any employer.\n\n## Sources\n- Harvard MCS search guidance: https://careerservices.fas.harvard.edu/channels/find-an-internship/\n- Harvard MCS offer guidance: https://careerservices.fas.harvard.edu/resources/harvard-college-evaluating-and-negotiating-job-and-internship-offers/"
+  }
+]

@@ -1,4 +1,5 @@
 import { openApp } from "./open-app";
+import { reviewCompany } from "./company-queue";
 // FR01/02/11, NFR05/09/10 — browser checks against real FastAPI + PostgreSQL.
 import { test, expect } from "@playwright/test";
 const password = "Local-browser-test-42";
@@ -138,8 +139,7 @@ test("company profile and administrator verification use real role-protected end
   await admin
     .getByRole("link", { name: "Review companies", exact: true })
     .click();
-  const row = admin.locator("article").filter({ hasText: name });
-  await row.getByRole("button", { name: "Review", exact: true }).click();
+  await reviewCompany(admin, name);
   await expect(admin.getByLabel("Decision", { exact: true })).toHaveValue("");
   expect(await admin.getByLabel("Decision", { exact: true }).evaluate((element: HTMLSelectElement) => element.checkValidity())).toBe(false);
   await admin.getByLabel("Decision", { exact: true }).selectOption("verified");

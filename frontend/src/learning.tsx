@@ -1,6 +1,7 @@
 import { ThinkIcon } from "./brand";
 import { Artwork } from "./artwork";
 import { ResourceArtwork } from "./resource-artwork";
+import { useDataRevision } from "./live-data";
 // FR03/10/11 / NFR02–03,05,09–11: published resources, moderation and bounded guidance.
 import { FormEvent, useEffect, useRef, useState } from "react";
 import {
@@ -12,7 +13,6 @@ import {
   Flag,
   Heart,
   Plus,
-  Send,
   Sparkles,
   Search,
 } from "lucide-react";
@@ -393,6 +393,7 @@ export function Learning({
   const publicationHeading = useRef<HTMLHeadingElement>(null);
   const resolutionHeading = useRef<HTMLHeadingElement>(null);
   const editorHeading = useRef<HTMLHeadingElement>(null);
+  const liveRevision = useDataRevision(["learning"], !editing && !pendingPublication && !resolving && !quiz && !reporting);
   useEffect(() => {
     if (pendingPublication) publicationHeading.current?.focus();
   }, [pendingPublication]);
@@ -405,9 +406,9 @@ export function Learning({
     },
     [],
   );
-  async function load() {
+  async function load(background = false) {
     const current = ++sequence.current;
-    setBusy(true);
+    if (!background) setBusy(true);
     setError("");
     try {
       const path = reports
@@ -440,6 +441,15 @@ export function Learning({
   useEffect(() => {
     void load();
   }, [offset, filter]);
+  useEffect(() => {
+    if (!liveRevision) return;
+    let active = true;
+    void load(true);
+    if (selected) api<Content>(`/content/${selected.id}`)
+      .then((fresh) => { if (active) setSelected(fresh); })
+      .catch((failure) => { if (active) { setSelected(null); setError(failure.message); } });
+    return () => { active = false; };
+  }, [liveRevision]);
   useEffect(() => {
     setSelected(null);
     setQuiz(null);
@@ -1271,287 +1281,6 @@ export function Learning({
           )}
         </>
       )}
-    </>
-  );
-}
-function Satisfaction() {
-  const [value, setValue] = useState(""),
-    [busy, setBusy] = useState(false),
-    [error, setError] = useState(""),
-    [saved, setSaved] = useState(false);
-  async function submit(e: FormEvent) {
-    e.preventDefault();
-    setBusy(true);
-    setError("");
-    try {
-      await api("/feedback/csat", "POST", { rating: Number(value) });
-      setSaved(true);
-    } catch (e) {
-      setError((e as Error).message);
-    } finally {
-      setBusy(false);
-    }
-  }
-  return (
-    <form className="satisfaction-form" onSubmit={submit}>
-      <h3>Was this guidance helpful?</h3>
-      <p className="muted">
-        This optional satisfaction rating helps improve guidance. It does not
-        affect your applications.
-      </p>
-      <div className="field">
-        <label htmlFor="guidance-satisfaction">
-          Helpfulness rating (optional)
-        </label>
-        <select
-          id="guidance-satisfaction"
-          required
-          value={value}
-          onChange={(e) => {
-            setValue(e.target.value);
-            setSaved(false);
-          }}
-        >
-          <option value="">Choose a rating</option>
-          <option value="1">1 · Very unhelpful</option>
-          <option value="2">2 · Unhelpful</option>
-          <option value="3">3 · Neutral</option>
-          <option value="4">4 · Helpful</option>
-          <option value="5">5 · Very helpful</option>
-        </select>
-      </div>
-      <button className="secondary" disabled={busy || !value}>
-        Share satisfaction rating
-      </button>
-      {saved && (
-        <p className="rating-saved" role="status">
-          Thank you. Your satisfaction rating was saved.
-        </p>
-      )}
-      {error && (
-        <p className="field-error" role="alert">
-          {error}
-        </p>
-      )}
-    </form>
-  );
-}
-export function Assistant() {
-  const [sourceContent, setSourceContent] = useState<Content | null>(null);
-  type GuidanceAnswer = {
-    answer: string;
-    sources: { id: string; title: string }[];
-    uncertainty: string | boolean;
-    mode: string;
-  };
-  type Exchange = {
-    id: number;
-    question: string;
-    answer?: GuidanceAnswer;
-    error?: string;
-  };
-  // FR10/W07, NFR03/11: bounded page-memory history, never browser persistence.
-  const [exchanges, setExchanges] = useState<Exchange[]>([]);
-  const [sourceExchange, setSourceExchange] = useState<number | null>(null);
-  const nextExchange = useRef(0);
-  const [announcement, setAnnouncement] = useState("");
-  const [question, setQuestion] = useState(""),
-    [busy, setBusy] = useState(false),
-    [error, setError] = useState("");
-  async function ask(e?: FormEvent, retry?: Exchange) {
-    e?.preventDefault();
-    const submittedQuestion = retry?.question || question.trim();
-    if (!submittedQuestion || busy) return;
-    const id = retry?.id ?? ++nextExchange.current;
-    const exchange: Exchange = { id, question: submittedQuestion };
-    setExchanges((old) =>
-      retry
-        ? old.map((item) => (item.id === id ? exchange : item))
-        : [...old, exchange].slice(-10),
-    );
-    setBusy(true);
-    setError("");
-    setAnnouncement("Checking approved resources…");
-    setSourceContent(null);
-    try {
-      const answer = await api<GuidanceAnswer>("/assistant", "POST", {
-        question: submittedQuestion,
-      });
-      setExchanges((old) =>
-        old.map((item) => (item.id === id ? { ...item, answer } : item)),
-      );
-      setAnnouncement(
-        "Guidance is ready. Read the response and its sources in the conversation.",
-      );
-      if (!retry)
-        setQuestion((current) =>
-          current.trim() === submittedQuestion ? "" : current,
-        );
-    } catch (e) {
-      setExchanges((old) =>
-        old.map((item) =>
-          item.id === id ? { ...item, error: (e as Error).message } : item,
-        ),
-      );
-      setAnnouncement("Guidance is unavailable. You can retry this question.");
-    } finally {
-      setBusy(false);
-    }
-  }
-  return (
-    <>
-      <header className="page-heading">
-        <div>
-          <h1>OJT preparation guidance</h1>
-          <p>
-            Explore career and platform questions using approved learning
-            resources.
-          </p>
-        </div>
-      </header>
-      <section className="assistant-panel panel">
-        <div className="assistant-intro">
-          <BookOpen size={28} />
-          <h2>Ask about preparing for OJT</h2>
-          <p>
-            Ask about OJT preparation, workplace skills or using ThinkMedia.
-            Guidance supports your preparation; companies make application
-            decisions.
-          </p>
-        </div>
-        <p className="privacy">
-          Keep personal details, resumes and private application information out
-          of your question.
-        </p>
-        <p className="muted">
-          The latest 10 exchanges stay on this page until you leave or clear
-          them. Each question is answered from approved resources.
-        </p>
-        {exchanges.length > 0 && (
-          <button
-            className="secondary"
-            disabled={busy}
-            onClick={() => {
-              setExchanges([]);
-              setSourceContent(null);
-              setError("");
-              setAnnouncement("Conversation cleared.");
-            }}
-          >
-            Clear conversation
-          </button>
-        )}
-        <form onSubmit={ask}>
-          <div className="field">
-            <label htmlFor="assistant-question">Your question</label>
-            <textarea
-              id="assistant-question"
-              required
-              maxLength={2000}
-              rows={4}
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              placeholder="How can I prepare for an OJT interview?"
-            />
-          </div>
-          <button className="primary" disabled={busy || !question.trim()}>
-            {busy ? "Looking for guidance…" : "Ask for guidance"}
-            <Send size={16} />
-          </button>
-        </form>
-        <p
-          className="muted"
-          role="status"
-          aria-live="polite"
-          aria-atomic="true"
-        >
-          {announcement}
-        </p>
-        <Messages error={error} />
-        <section aria-label="Guidance conversation">
-          {exchanges.map((exchange) => {
-            const answer = exchange.answer;
-            return (
-              <article
-                className="assistant-answer"
-                key={exchange.id}
-                aria-labelledby={`exchange-${exchange.id}`}
-              >
-                <h2 id={`exchange-${exchange.id}`}>Your question</h2>
-                <p className="preserve-lines">{exchange.question}</p>
-                {exchange.error && (
-                  <div className="assistant-recovery">
-                    <p role="alert">{exchange.error}</p>
-                    <p>Your applications and opportunities remain available.</p>
-                    <button
-                      className="secondary"
-                      disabled={busy}
-                      onClick={() => void ask(undefined, exchange)}
-                    >
-                      Try again
-                    </button>
-                  </div>
-                )}
-                {answer && (
-                  <>
-                    <span className="badge">
-                      {answer.mode === "retrieval"
-                        ? "Approved resource lookup"
-                        : "Grounded guidance"}
-                    </span>
-                    <h3>Guidance from your resources</h3>
-                    <p className="preserve-lines">{answer.answer}</p>
-                    {answer.uncertainty && (
-                      <p className="notice">
-                        {typeof answer.uncertainty === "string"
-                          ? answer.uncertainty
-                          : "The available resources may not fully answer your question."}
-                      </p>
-                    )}
-                    <h3>Sources</h3>
-                    {answer.sources.length ? (
-                      <ul>
-                        {answer.sources.map((source) => (
-                          <li key={source.id}>
-                            <button
-                              className="text-button"
-                              onClick={async () => {
-                                try {
-                                  setSourceContent(
-                                    await api<Content>(`/content/${source.id}`),
-                                  );
-                                  setSourceExchange(exchange.id);
-                                } catch (e) {
-                                  setError((e as Error).message);
-                                }
-                              }}
-                            >
-                              {source.title}
-                            </button>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p className="muted">
-                        No matching approved sources were found.
-                      </p>
-                    )}
-                    {exchange.id === exchanges[exchanges.length - 1]?.id && (
-                      <Satisfaction key={exchange.id} />
-                    )}
-                    {sourceContent && sourceExchange === exchange.id && (
-                      <article className="source-preview">
-                        <h3>{sourceContent.title}</h3>
-                        <p className="preserve-lines">{sourceContent.body}</p>
-                      </article>
-                    )}
-                  </>
-                )}
-              </article>
-            );
-          })}
-        </section>
-      </section>
     </>
   );
 }

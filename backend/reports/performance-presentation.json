@@ -1,6 +1,6 @@
 {
   "requirement": "NFR01",
-  "measured_at": "2026-11-07T16:04:12.655769+00:00",
+  "measured_at": "2026-11-13T14:39:53.082846+00:00",
   "environment": {
     "python": "3.14.4",
     "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
@@ -23,27 +23,27 @@
     "applications": 0,
     "interactions": 0
   },
-  "elapsed_seconds": 4.869,
+  "elapsed_seconds": 3.377,
   "p95_method": "nearest-rank on all measured request durations",
-  "p95_ms": 729.553,
-  "max_ms": 862.396,
+  "p95_ms": 518.21,
+  "max_ms": 646.231,
   "failures": 0,
   "per_path": {
     "/profiles/me": {
       "requests": 50,
-      "p95_ms": 400.987
+      "p95_ms": 392.679
     },
     "/listings?limit=20": {
       "requests": 50,
-      "p95_ms": 662.368
+      "p95_ms": 472.838
     },
     "/content?limit=20": {
       "requests": 50,
-      "p95_ms": 645.018
+      "p95_ms": 379.154
     },
     "/recommendations?limit=10": {
       "requests": 50,
-      "p95_ms": 809.298
+      "p95_ms": 575.903
     }
   },
   "target_ms": 2000,

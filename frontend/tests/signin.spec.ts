@@ -8,10 +8,10 @@ test("illustrated sign-in is readable on desktop, tablet and phone", async ({
   test.setTimeout(90000);
   await openApp(page);
   await expect(
-    page.getByRole("heading", { name: "Welcome back.", level: 1 }),
+    page.getByRole("heading", { name: "Login to your account", level: 1 }),
   ).toBeVisible();
   await page
-    .locator(".signin-scene")
+    .locator(".auth-illustration img")
     .evaluate((img) => (img as HTMLImageElement).decode());
   await page.evaluate(() => document.fonts.ready);
   for (const width of [1440, 768, 390, 360]) {
@@ -28,7 +28,8 @@ test("illustrated sign-in is readable on desktop, tablet and phone", async ({
       const mobileLayout = await page.evaluate(() => {
         const main = document.querySelector<HTMLElement>(".auth-main")!;
         const footer = document.querySelector<HTMLElement>(".auth-foot")!;
-        const artwork = document.querySelector<HTMLElement>(".auth-illustration")!;
+        const artwork =
+          document.querySelector<HTMLElement>(".auth-illustration")!;
         const card = main.getBoundingClientRect();
         const footerBox = footer.getBoundingClientRect();
         const artBox = artwork.getBoundingClientRect();
@@ -69,20 +70,26 @@ test("sign-in preserves role registration, password visibility and real student 
   await page.setViewportSize({ width: 390, height: 844 });
   await openApp(page);
   await page
-    .getByRole("button", { name: "Create account", exact: true })
+    .getByRole("button", { name: "Create an account", exact: true })
     .click();
   await expect(
     page.getByRole("heading", { name: "Create your account", level: 1 }),
   ).toBeVisible();
   await page.getByLabel("I’m joining as").selectOption("company");
   await expect(page.getByLabel("Company name")).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: "How demo data is used" }),
+  ).toContainText("Use fictional account details and sample PDFs only.");
+  await expect(page.locator("details.privacy-disclosure")).toHaveCount(0);
   expect(
     await page.evaluate(
       () => document.documentElement.scrollHeight > window.innerHeight,
     ),
   ).toBeTruthy();
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-  await expect(page.getByRole("button", { name: "Getting started" })).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Getting started" }),
+  ).toBeVisible();
   await page.getByLabel("I’m joining as").selectOption("student");
   await expect(page.getByLabel("Company name")).toHaveCount(0);
   await page

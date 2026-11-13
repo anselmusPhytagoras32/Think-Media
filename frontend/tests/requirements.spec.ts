@@ -177,20 +177,14 @@ test("publication requires confirmation, preserves edits on cancellation and rec
   ).toBe("published");
 });
 
-test("custom profile fields expose server errors and presentation data notice stays available", async ({
+test("custom profile fields expose server errors without a repeated disclaimer footer", async ({
   page,
   context,
 }) => {
   await student(context.request);
   await openApp(page, "/#/profile");
-  await page
-    .getByText("Local presentation: how demo data is used", { exact: true })
-    .click();
-  await expect(
-    page.getByText("Use fictional account details and sample PDFs only.", {
-      exact: false,
-    }),
-  ).toBeVisible();
+  await expect(page.locator(".workspace-demo-note")).toHaveCount(0);
+  await expect(page.locator("details.privacy-disclosure")).toHaveCount(0);
   await page.route("**/api/v1/profiles/me", async (route) => {
     if (route.request().method() === "PATCH")
       await route.fulfill({

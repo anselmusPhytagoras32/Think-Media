@@ -16,10 +16,16 @@ import { href } from "./navigation";
 import { StatusBadge } from "./status";
 import { StudentHome } from "./student-home";
 import { WelcomeArt, ThinkIcon, type IconName } from "./brand";
+import { RoleHome } from "./role-home";
 type Resource = { id: string; title: string; summary: string; tags: string[] };
 type Report = { id: string; reason: string; created_at: string };
 type Page<T> = { items: T[]; total: number };
 export function Home({ account }: { account: Account }) {
+  if (account.user.role === "student") return <StudentHome account={account} />;
+  if (account.user.role === "company" || account.user.role === "administrator") return <RoleHome account={account} />;
+  return <InstructorHome account={account} />;
+}
+function InstructorHome({ account }: { account: Account }) {
   const [applications, setApplications] = useState<Page<Application> | null>(
       null,
     ),

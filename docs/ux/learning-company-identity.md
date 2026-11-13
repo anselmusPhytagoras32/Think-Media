@@ -1,5 +1,11 @@
 # Learning library and company identity
 
+November 14 update: this is a historical design record. The owner requested
+removal of all placeholders. The special demo-company logo and mock labeling
+described below have been removed; every company now uses its saved name and
+derived initials. The local database has been reset except for administrator
+accounts. See [Local reset](../LOCAL_RESET.md).
+
 FR03/04/08; W02/W03; NFR05/09/10.
 
 ## Learning

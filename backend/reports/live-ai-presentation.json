@@ -1,0 +1,28 @@
+{
+  "requirement": "FR10/NFR02/03",
+  "checked_at": "2026-11-13T15:13:13.895742+00:00",
+  "before": {
+    "mode": "external",
+    "calls_used": 0,
+    "call_budget": 25
+  },
+  "http_status": 200,
+  "latency_ms": 9900.4,
+  "mode": "external",
+  "answer_present": true,
+  "source_count": 1,
+  "sources_resolve": true,
+  "uncertainty": false,
+  "marketplace_http_status": 200,
+  "after": {
+    "mode": "external",
+    "calls_used": 1,
+    "call_budget": 25
+  },
+  "passed": true,
+  "model": "gemini-3.5-flash-lite",
+  "limitations": [
+    "One live smoke test; no latency distribution or availability guarantee.",
+    "Source references resolve to approved resources; human factual review and genuine research evaluation remain pending."
+  ]
+}

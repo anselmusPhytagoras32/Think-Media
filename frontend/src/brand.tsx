@@ -12,7 +12,10 @@ export type IconName =
   | "content"
   | "reports"
   | "audit"
-  | "profile";
+  | "profile"
+  | "organization"
+  | "applicants"
+  | "listing-board";
 
 type MarkProps = { size?: number; className?: string };
 
@@ -48,6 +51,59 @@ export function BrandMark({ size = 36, className = "" }: MarkProps) {
 }
 
 const marks: Record<IconName, ReactNode> = {
+  organization: (
+    <>
+      <path
+        d="M5 28V10l11-6 11 6v18H5Z"
+        fill="currentColor"
+        fillOpacity=".08"
+      />
+      <path d="M5 28V10l11-6 11 6v18M3 28h26M11 14h2M19 14h2M11 19h2M19 19h2M13 28v-5h6v5" />
+      <path
+        d="m12 10 4-2 4 2"
+        stroke="var(--icon-accent, #72C7D0)"
+        strokeWidth="3"
+      />
+    </>
+  ),
+  applicants: (
+    <>
+      <rect
+        x="3"
+        y="6"
+        width="23"
+        height="23"
+        rx="4"
+        fill="currentColor"
+        fillOpacity=".08"
+      />
+      <rect x="3" y="6" width="23" height="23" rx="4" />
+      <path d="M10 6V3h9v3M8 23v-1a5 5 0 0 1 10 0v1M8 24h10M21 14h2M21 19h2" />
+      <circle cx="13" cy="13" r="3" fill="var(--icon-accent, #D7A3B7)" />
+      <circle cx="26" cy="25" r="5" fill="var(--icon-accent, #72C7D0)" />
+      <path d="m23.7 25 1.6 1.6 2.8-3" />
+    </>
+  ),
+  "listing-board": (
+    <>
+      <rect
+        x="4"
+        y="5"
+        width="24"
+        height="22"
+        rx="4"
+        fill="currentColor"
+        fillOpacity=".08"
+      />
+      <rect x="4" y="5" width="24" height="22" rx="4" />
+      <path d="M4 11h24M11 11v16M16 16h7M16 21h5" />
+      <path
+        d="M7 15h1v3H7zM7 21h1v2H7z"
+        stroke="var(--icon-accent, #D8789E)"
+        strokeWidth="2.5"
+      />
+    </>
+  ),
   home: (
     <>
       <path

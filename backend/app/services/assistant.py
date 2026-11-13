@@ -1,11 +1,7 @@
 """FR10 bounded approved-only retrieval and provider output validation."""
 
-import re
-
-from sqlalchemy import or_, select
-
 from app.errors import ApiError
-from app.models import LearningContent
+from app.services.guidance_retrieval import retrieve_sources
 
 
 class AssistantService:
@@ -14,7 +10,7 @@ class AssistantService:
         self.provider = provider
         self.throttle = throttle
 
-    def answer(self, question, user_id):
+    def answer(self, question, user_id, previous_questions=None):
         question = question.strip()
         if not question:
             raise ApiError(422, "VALIDATION_ERROR", "Enter a question.")
@@ -28,27 +24,10 @@ class AssistantService:
             )
         self.throttle.record_attempt(str(user_id))
         # The provider receives no actor, profile, session or marketplace records.
-        words = list(dict.fromkeys(re.findall(r"[\w]{3,}", question.casefold())))[:12]
-        sources = []
-        if words:
-            matches = [
-                LearningContent.title.icontains(word, autoescape=True)
-                | LearningContent.summary.icontains(word, autoescape=True)
-                | LearningContent.body.icontains(word, autoescape=True)
-                for word in words
-            ]
-            rows = self.db.scalars(
-                select(LearningContent)
-                .where(LearningContent.status == "published", or_(*matches))
-                .order_by(LearningContent.created_at.desc(), LearningContent.id)
-                .limit(3)
-            )
-            sources = [
-                dict(id=str(row.id), title=row.title, excerpt=row.body[:800])
-                for row in rows
-            ]
+        history = previous_questions or []
+        sources = retrieve_sources(self.db, question, history)
         try:
-            output = self.provider.respond(question, sources)
+            output = self.provider.respond(question, sources, previous_questions=history) if history else self.provider.respond(question, sources)
             if (
                 not isinstance(output, dict)
                 or not isinstance(output.get("answer"), str)

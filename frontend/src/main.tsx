@@ -14,6 +14,8 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
+  Maximize2,
+  Minimize2,
   PanelLeftClose,
   PanelLeftOpen,
   Pin,
@@ -23,15 +25,17 @@ import {
   UserRound,
   X,
 } from "lucide-react";
-import { api, ApiError, Account, Company, manila } from "./api";
+import { api, ApiError, Account, manila } from "./api";
+import { useDataRevision } from "./live-data";
 import "@fontsource-variable/manrope";
 import "@fontsource-variable/dm-sans";
 import { Marketplace } from "./marketplace";
-import { Learning, Assistant } from "./learning";
+import { Learning } from "./learning";
+import { Assistant } from "./guidance";
 import { Recommendations } from "./recommendations";
 import { Operations } from "./operations";
 import { Home } from "./home";
-import { CompanyLogo } from "./company-brand";
+import { CompanyVerification } from "./company-verification";
 import { BrandMark, ThinkIcon, type IconName } from "./brand";
 import { Onboarding } from "./onboarding";
 import { hasSeenWelcome, markWelcomeSeen } from "./welcome-state";
@@ -48,6 +52,7 @@ import "./content-identity.css";
 import "./suggestions.css";
 import "./guidance-bubble.css";
 import "./role-workspace.css";
+import "./role-dashboards.css";
 import {
   readSidebarPreference,
   saveSidebarPreference,
@@ -170,11 +175,10 @@ function Notice({ error, success }: { error?: string; success?: string }) {
     </>
   );
 }
-// W01 / NFR03: presentation policy approved for fictional local data only.
+// W01 / NFR03: show data use at registration, without a repeated page footer.
 function LocalDemoNotice() {
   return (
-    <details className="privacy-disclosure">
-      <summary>Local presentation: how demo data is used</summary>
+    <section className="privacy-notice" aria-label="How demo data is used">
       <p>
         Use fictional account details and sample PDFs only. Account details,
         activity, ratings and applications are kept in the local demo database.
@@ -189,7 +193,7 @@ function LocalDemoNotice() {
         private application information out of questions. This demonstration is
         not ready to collect real personal data.
       </p>
-    </details>
+    </section>
   );
 }
 function Auth({
@@ -622,208 +626,6 @@ function Profile({
     </>
   );
 }
-function Admin() {
-  const sequence = useRef(0);
-  const reviewHeading = useRef<HTMLHeadingElement>(null);
-  useEffect(
-    () => () => {
-      sequence.current++;
-    },
-    [],
-  );
-  const [items, setItems] = useState<Company[]>([]),
-    [total, setTotal] = useState(0),
-    [offset, setOffset] = useState(0),
-    [status, setStatus] = useState("pending"),
-    [error, setError] = useState(""),
-    [loadError, setLoadError] = useState(false),
-    [busy, setBusy] = useState(false),
-    [selected, setSelected] = useState<Company | null>(null),
-    [success, setSuccess] = useState("");
-  useEffect(() => { if (selected) reviewHeading.current?.focus(); }, [selected]);
-  async function load() {
-    const request = ++sequence.current;
-    setBusy(true);
-    setError("");
-    setLoadError(false);
-    try {
-      const data = await api<{ items: Company[]; total: number }>(
-        `/admin/companies?status=${status}&limit=20&offset=${offset}`,
-      );
-      if (request !== sequence.current) return;
-      setItems(data.items);
-      setTotal(data.total);
-    } catch (e) {
-      if (request === sequence.current) {
-        setError((e as Error).message);
-        setLoadError(true);
-      }
-    } finally {
-      if (request === sequence.current) setBusy(false);
-    }
-  }
-  useEffect(() => {
-    void load();
-  }, [status, offset]);
-  async function review(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    if (!selected) return;
-    const data = Object.fromEntries(new FormData(e.currentTarget));
-    setBusy(true);
-    setError("");
-    try {
-      await api(`/admin/companies/${selected.id}/verification`, "PATCH", {
-        ...data,
-        expected_version: selected.verification_version,
-      });
-      setSelected(null);
-      setSuccess("Verification decision recorded.");
-      await load();
-    } catch (e) {
-      setError((e as Error).message);
-      setBusy(false);
-    }
-  }
-  return (
-    <>
-      <header className="page-heading role-page-heading">
-        <div>
-          <h1>Company verification</h1>
-          <p>Review organizations before they publish opportunities.</p>
-        </div>
-      </header>
-      <Notice error={error} success={success} />
-      <section className="panel">
-        <div className="list-toolbar">
-          <h2>
-            Organizations {!busy && !loadError && <span className="count">{total}</span>}
-          </h2>
-          <label>
-            Verification status{" "}
-            <select
-              value={status}
-              onChange={(e) => {
-                setStatus(e.target.value);
-                setOffset(0);
-                setSelected(null);
-                setSuccess("");
-              }}
-            >
-              <option value="pending">Pending</option>
-              <option value="verified">Verified</option>
-              <option value="rejected">Rejected</option>
-            </select>
-          </label>
-        </div>
-        {busy ? (
-          <p role="status">Loading organizations…</p>
-        ) : loadError ? (
-          <div className="empty">
-            <h3>Could not load organizations</h3>
-            <p>Try again to see the current verification queue.</p>
-            <button className="secondary" onClick={() => void load()}>Retry loading</button>
-          </div>
-        ) : items.length === 0 ? (
-          <div className="empty">
-            <ShieldCheck />
-            <h3>No {status} organizations</h3>
-            <p>Companies with this verification status will appear here.</p>
-          </div>
-        ) : (
-          items.map((c) => (
-            <article className="company-row verification-row" key={c.id}>
-              <CompanyLogo companyId={c.id} companyName={c.company_name} />
-              <div>
-                <h3>{c.company_name}</h3>
-                <p>{c.location || "Location not provided"}</p>
-                <p>{c.description || "No company description yet."}</p>
-                {c.website && (
-                  <a href={c.website} target="_blank" rel="noreferrer">
-                    Company website
-                  </a>
-                )}
-              </div>
-              {status === "pending" ? (
-                <button className="secondary" onClick={() => setSelected(c)}>
-                  Review
-                  <ChevronRight size={16} />
-                </button>
-              ) : (
-                <span className="badge">{c.verification_status}</span>
-              )}
-            </article>
-          ))
-        )}
-        <div className="pagination">
-          <button
-            disabled={!offset || busy || loadError}
-            onClick={() => { setSelected(null); setOffset(offset - 20); }}
-          >
-            Previous
-          </button>
-          <span>
-            {loadError ? "Results unavailable" : total
-              ? `${offset + 1}–${Math.min(offset + 20, total)} of ${total}`
-              : "0 organizations"}
-          </span>
-          <button
-            disabled={offset + 20 >= total || busy || loadError}
-            onClick={() => { setSelected(null); setOffset(offset + 20); }}
-          >
-            Next
-          </button>
-        </div>
-      </section>
-      {selected && (
-        <section className="panel review-panel">
-          <h2 ref={reviewHeading} tabIndex={-1}>Review {selected.company_name}</h2>
-          <p className="preserve-lines">
-            {selected.description || "No description supplied."}
-          </p>
-          <dl className="receipt">
-            <dt>Location</dt>
-            <dd>{selected.location || "Not supplied"}</dd>
-            <dt>Contact email</dt>
-            <dd>{selected.contact_email || "Not supplied"}</dd>
-            <dt>Contact phone</dt>
-            <dd>{selected.contact_phone || "Not supplied"}</dd>
-          </dl>
-          <p>
-            Confirm the evidence under your verification procedure before
-            recording a decision.
-          </p>
-          <form onSubmit={review}>
-            <Field label="Decision" name="status">
-              <select id="status" name="status" defaultValue="" required>
-                <option value="" disabled>Choose a decision</option>
-                <option value="verified">Verify company</option>
-                <option value="rejected">Reject verification</option>
-              </select>
-            </Field>
-            <Field
-              label="Reason for decision"
-              name="reason"
-              required
-              hint="This reason is retained in the audit history."
-            />
-            <div className="actions">
-              <button
-                type="button"
-                className="secondary"
-                onClick={() => setSelected(null)}
-              >
-                Cancel
-              </button>
-              <button disabled={busy} className="primary">
-                Confirm decision
-              </button>
-            </div>
-          </form>
-        </section>
-      )}
-    </>
-  );
-}
 function Audit() {
   type Event = {
     id: string;
@@ -918,25 +720,129 @@ function navIcon(page: string): IconName {
   return names[page] || "home";
 }
 // FR10 / NFR05,09: keep guidance available throughout the signed-in workspace.
-function GuidanceBubble() {
+function GuidanceBubble({ compact = false }: { compact?: boolean }) {
   const [open, setOpen] = useState(false);
   const [started, setStarted] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const trigger = useRef<HTMLButtonElement>(null);
+  const panel = useRef<HTMLDialogElement>(null);
+  const title = useRef<HTMLHeadingElement>(null);
   const close = () => {
     setOpen(false);
     trigger.current?.focus();
   };
+  useEffect(() => {
+    const dialog = panel.current;
+    if (!open || !dialog) return;
+    const mobile = window.matchMedia("(max-width: 720px)");
+    const previousOverflow = document.body.style.overflow;
+    const viewport = window.visualViewport;
+    const position = () => {
+      dialog.style.setProperty(
+        "--guidance-viewport-height",
+        `${viewport?.height ?? innerHeight}px`,
+      );
+      dialog.style.setProperty(
+        "--guidance-viewport-top",
+        `${viewport?.offsetTop ?? 0}px`,
+      );
+    };
+    const adapt = () => {
+      const active = dialog.contains(document.activeElement)
+        ? (document.activeElement as HTMLElement)
+        : null;
+      if (dialog.open && dialog.matches(":modal") !== mobile.matches)
+        dialog.close();
+      if (!dialog.open) {
+        if (mobile.matches) dialog.showModal();
+        else dialog.show();
+      }
+      dialog.setAttribute("aria-modal", String(mobile.matches));
+      document.body.style.overflow = mobile.matches
+        ? "hidden"
+        : previousOverflow;
+      position();
+      (active || title.current)?.focus({ preventScroll: true });
+    };
+    adapt();
+    mobile.addEventListener("change", adapt);
+    viewport?.addEventListener("resize", position);
+    viewport?.addEventListener("scroll", position);
+    return () => {
+      mobile.removeEventListener("change", adapt);
+      viewport?.removeEventListener("resize", position);
+      viewport?.removeEventListener("scroll", position);
+      dialog.close();
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [open]);
   return (
-    <div className="guidance-bubble" onKeyDown={(event) => { if (event.key === "Escape" && open) close(); }}>
-      <section id="floating-guidance" className="guidance-bubble-panel" aria-label="OJT guidance" hidden={!open}>
+    <div className={`guidance-bubble ${compact ? "guidance-bubble-compact" : ""}`}>
+      <dialog
+        ref={panel}
+        id="floating-guidance"
+        className={`guidance-bubble-panel ${expanded ? "is-expanded" : ""}`}
+        aria-label="OJT guidance"
+        onCancel={(event) => {
+          event.preventDefault();
+          close();
+        }}
+        onClose={() => {
+          if (!panel.current?.open) close();
+        }}
+        onKeyDown={(event) => {
+          if (event.key === "Escape") {
+            event.preventDefault();
+            event.stopPropagation();
+            close();
+          }
+        }}
+      >
         <div className="guidance-bubble-header">
-          <strong>OJT guidance</strong>
-          <button type="button" aria-label="Close guidance" onClick={close}><X size={20} /></button>
+          <BrandMark size={38} />
+          <div className="guidance-header-copy">
+            <h2 ref={title} tabIndex={-1}>
+              Your OJT guide
+            </h2>
+            <p>A little prep for your next step.</p>
+          </div>
+          <button
+            className="guidance-expand"
+            type="button"
+            aria-label={
+              expanded ? "Reduce guidance panel" : "Expand guidance panel"
+            }
+            aria-pressed={expanded}
+            onClick={() => setExpanded(!expanded)}
+          >
+            {expanded ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
+          </button>
+          <button type="button" aria-label="Close guidance" onClick={close}>
+            <X size={20} aria-hidden="true" />
+          </button>
         </div>
-        <div className="guidance-bubble-content">{started && <Assistant />}</div>
-      </section>
-      <button ref={trigger} type="button" className="guidance-bubble-trigger" aria-expanded={open} aria-controls="floating-guidance" onClick={() => { setStarted(true); setOpen(!open); }}>
-        <ThinkIcon name="guidance" size={24} /> <span>{open ? "Close guidance" : "Ask guidance"}</span>
+        <div className="guidance-bubble-content">
+          {started && <Assistant embedded />}
+        </div>
+      </dialog>
+      <button
+        ref={trigger}
+        type="button"
+        className="guidance-bubble-trigger"
+        aria-label={open ? "Close guidance" : "Ask guidance"}
+        aria-expanded={open}
+        aria-controls="floating-guidance"
+        aria-haspopup="dialog"
+        onClick={() => {
+          if (open) close();
+          else {
+            setStarted(true);
+            setOpen(true);
+          }
+        }}
+      >
+        <ThinkIcon name="guidance" size={24} />{" "}
+        <span>{open ? "Close guidance" : "Guidance"}</span>
       </button>
     </div>
   );
@@ -972,6 +878,8 @@ function App() {
     [startupError, setStartupError] = useState(""),
     [menu, setMenu] = useState(false),
     [error, setError] = useState("");
+  const accountRevision = useDataRevision(["accounts"], !!account);
+  const sessionSequence = useRef(0);
   const automaticSidebar =
     sidebarPreference === null || sidebarPreference === "auto";
   const railCollapsed =
@@ -1034,21 +942,27 @@ function App() {
       media.removeEventListener("change", update);
     };
   }, []);
-  async function session() {
-    setLoading(true);
-    setStartupError("");
+  async function session(background = false) {
+    const current = ++sessionSequence.current;
+    if (!background) { setLoading(true); setStartupError(""); }
     try {
-      setAccount(await api<Account>("/auth/me"));
+      const fresh = await api<Account>("/auth/me");
+      if (current !== sessionSequence.current) return;
+      setAccount((previous) => JSON.stringify(previous) === JSON.stringify(fresh) ? previous : fresh);
     } catch (e) {
-      if (!(e instanceof ApiError && e.status === 401))
-        setStartupError((e as Error).message);
+      if (current !== sessionSequence.current) return;
+      if (e instanceof ApiError && e.status === 401) setAccount(null);
+      else if (!background) setStartupError((e as Error).message);
     } finally {
-      setLoading(false);
+      if (!background && current === sessionSequence.current) setLoading(false);
     }
   }
   useEffect(() => {
     void session();
   }, []);
+  useEffect(() => {
+    if (accountRevision > 0) void session(true);
+  }, [accountRevision]);
   useEffect(() => {
     if (!railTooltip) return;
     const dismiss = (event: KeyboardEvent) => {
@@ -1095,9 +1009,7 @@ function App() {
     if (account)
       requestAnimationFrame(() => {
         window.scrollTo(0, 0);
-        document
-          .getElementById("main")
-          ?.focus({ preventScroll: true });
+        document.getElementById("main")?.focus({ preventScroll: true });
       });
   }, [route.page, route.id]);
   if (welcomeOpen)
@@ -1124,7 +1036,7 @@ function App() {
         <GraduationCap size={36} />
         <h1>ThinkMedia could not connect</h1>
         <Notice error={startupError} />
-        <button className="primary" onClick={session}>
+          <button className="primary" onClick={() => void session()}>
           Try again
         </button>
       </main>
@@ -1136,6 +1048,7 @@ function App() {
         initialMode={authMode}
         onReplay={replayWelcome}
         onLogin={(a) => {
+          sessionSequence.current++;
           setAccount(a);
           setMenu(false);
           navigate("overview");
@@ -1236,6 +1149,7 @@ function App() {
   async function logout() {
     try {
       await api("/auth/logout", "POST");
+      sessionSequence.current++;
       setAccount(null);
       setMenu(false);
       navigate("overview");
@@ -1439,7 +1353,11 @@ function App() {
             ThinkMedia<span>.</span>
           </a>
         </header>
-        <main id="main" className={`main-content ${admin || company ? "role-workspace" : ""}`} tabIndex={-1}>
+        <main
+          id="main"
+          className={`main-content ${admin || company ? "role-workspace" : ""}`}
+          tabIndex={-1}
+        >
           <Notice error={error} />
           {page === "more" ? (
             <section className="more-page" aria-labelledby="more-title">
@@ -1499,7 +1417,7 @@ function App() {
           ) : page === "profile" ? (
             <Profile account={account} onSave={setAccount} />
           ) : page === "verification" ? (
-            <Admin />
+            <CompanyVerification initialId={route.id} onCompany={(id) => navigate("verification", id)} />
           ) : page === "audit" ? (
             <Audit />
           ) : page === "suggestions" ? (
@@ -1535,6 +1453,7 @@ function App() {
                       : "browse"
               }
               initialId={page === "opportunities" ? route.id : undefined}
+              initialCreate={page === "opportunities" && route.create}
               initialFilters={route.filters}
               onFilters={(filters) => {
                 window.location.hash =
@@ -1544,9 +1463,11 @@ function App() {
                 page !== "opportunities" ? route.id : undefined
               }
               onListing={(id) => {
+                const query = new URLSearchParams(route.query);
+                query.delete("new");
                 window.location.hash =
                   href("opportunities", id) +
-                  (route.query ? "?" + route.query : "");
+                  (query.size ? "?" + query.toString() : "");
               }}
               onApplication={(id) =>
                 navigate(company ? "review" : "applications", id)
@@ -1555,9 +1476,6 @@ function App() {
           ) : (
             <Home account={account} />
           )}
-          <div className="workspace-demo-note">
-            <LocalDemoNotice />
-          </div>
         </main>
         <nav className="mobile-task-nav" aria-label="Quick navigation">
           {quick.map((n) => (
@@ -1566,7 +1484,9 @@ function App() {
               aria-label={
                 n.id === "opportunities" && !company
                   ? "OJT opportunities"
-                  : n.label
+                  : n.id === "verification"
+                    ? "Verify company accounts"
+                    : n.label
               }
               key={n.id}
               aria-current={page === n.id ? "page" : undefined}
@@ -1586,7 +1506,7 @@ function App() {
             <span>More</span>
           </a>
         </nav>
-        {page !== "assistant" && <GuidanceBubble />}
+        {page !== "assistant" && <GuidanceBubble compact={page === "verification" || (company && route.create)} />}
       </div>
     </div>
   );

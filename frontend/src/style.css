@@ -1719,18 +1719,13 @@ textarea::placeholder {
   line-height: 1.6;
   margin: -10px 0 24px;
 }
-.privacy-disclosure {
+.privacy-notice {
   font-size: 12px;
   margin: 24px 0;
   line-height: 1.7;
   color: #6b567c;
 }
-.privacy-disclosure summary {
-  cursor: pointer;
-  color: #584080;
-  min-height: 28px;
-}
-.privacy-disclosure p {
+.privacy-notice p {
   margin: 8px 0;
 }
 .auth-layout {

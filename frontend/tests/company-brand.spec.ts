@@ -15,39 +15,46 @@ async function signIn(page: import("@playwright/test").Page) {
     ).status(),
   ).toBe(200);
 }
-test("mock company logo is shared across home, opportunity details and results", async ({
+test("saved company identity is shared across home, opportunity details and results", async ({
   page,
 }) => {
   await signIn(page);
+  const catalog = await (await page.request.get('/api/v1/listings?limit=1')).json();
+  const saved = catalog.items[0];
+  expect(saved).toBeTruthy();
+  const initials = saved.company_name.trim().split(/\s+/).slice(0, 2).map((word: string) => Array.from(word)[0]).join('').toUpperCase();
   await page.setViewportSize({ width: 1440, height: 1000 });
   await openApp(page);
   const card = page
     .locator(".opportunity-card")
-    .filter({ hasText: "Demo Practice Studio (synthetic)" })
+    .filter({ hasText: saved.title })
     .first();
   const logo = card.locator(".company-logo");
   await expect(logo).toBeVisible();
   const companyId = await logo.getAttribute("data-company-id");
-  const src = await logo.getAttribute("src");
   expect(companyId).toBeTruthy();
-  expect(src).toContain("demo-practice-studio.svg");
+  expect(companyId).toBe(saved.company_id);
+  await expect(logo).toHaveText(initials);
+  await expect(card.locator('img.company-logo')).toHaveCount(0);
+  await expect(card.locator('.consumer-company')).toHaveText(saved.company_name);
   await expect(card.locator(".opportunity-cover .product-artwork")).toHaveCount(
     0,
   );
-  expect((await page.request.get(src!)).ok()).toBeTruthy();
   await card.locator("a").click();
   const detailLogo = page.locator(".company-detail-cover .company-logo");
   await expect(detailLogo).toHaveAttribute("data-company-id", companyId!);
-  await expect(detailLogo).toHaveAttribute("src", src!);
+  await expect(detailLogo).toHaveText(initials);
   await page
     .getByRole("button", { name: "Back to opportunities", exact: true })
     .click();
+  await page.getByLabel('Keyword', { exact: true }).fill(saved.title);
+  await page.getByRole('button', { name: 'Search', exact: true }).click();
   const rowLogo = page
     .locator(
       `.opportunity-company .company-logo[data-company-id="${companyId}"]`,
     )
     .first();
-  await expect(rowLogo).toHaveAttribute("src", src!);
+  await expect(rowLogo).toHaveText(initials);
   await expect(page.locator(".company-detail-cover")).toHaveCount(0);
 });
 test("other company identities get a named fallback rather than another mock employer logo", async ({

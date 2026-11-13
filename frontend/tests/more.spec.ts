@@ -39,9 +39,15 @@ test("More opens a full page from a scrolled mobile home and keeps normal naviga
   await expect(
     menu.getByRole("link", { name: "Suggestions", exact: true }),
   ).toHaveAttribute("href", "#/suggestions");
+  // FR10: guidance now opens in place from every workspace destination.
+  const guidance = page.locator(".guidance-bubble-trigger");
+  await guidance.click();
   await expect(
-    menu.getByRole("link", { name: "Guidance", exact: true }),
-  ).toHaveAttribute("href", "#/assistant");
+    page.getByRole("dialog", { name: "OJT guidance", exact: true }),
+  ).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(guidance).toBeFocused();
+  await expect(guidance).toHaveAttribute("aria-expanded", "false");
   await expect(
     menu.getByRole("link", { name: "Company verification", exact: true }),
   ).toHaveCount(0);
@@ -78,7 +84,7 @@ test("More opens a full page from a scrolled mobile home and keeps normal naviga
     .getByRole("button", { name: "Sign out", exact: true })
     .click();
   await expect(
-    page.getByRole("heading", { name: "Welcome back.", exact: true }),
+    page.getByRole("heading", { name: "Login to your account", exact: true }),
   ).toBeVisible();
 });
 test("administrator More shows administration destinations and omits student-only work", async ({

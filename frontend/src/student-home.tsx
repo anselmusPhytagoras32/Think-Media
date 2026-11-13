@@ -1,5 +1,6 @@
 // FR02–05/08, W02–W04/W06: mobile discovery backed by published, authorized API data.
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useDataRevision } from "./live-data";
 import { ArrowRight, MapPin, Search, SlidersHorizontal } from "lucide-react";
 import { api, type Account } from "./api";
 import { href } from "./navigation";
@@ -18,6 +19,8 @@ type Resource = {
   has_quiz: boolean;
 };
 export function StudentHome({ account }: { account: Account }) {
+  const liveRevision = useDataRevision(["marketplace", "learning"]);
+  const loaded = useRef(false);
   const [listings, setListings] = useState<Page<Listing> | null>(null);
   const [resources, setResources] = useState<Page<Resource> | null>(null);
   const [applications, setApplications] = useState<Page<Application> | null>(
@@ -28,18 +31,19 @@ export function StudentHome({ account }: { account: Account }) {
     [revision, setRevision] = useState(0);
   useEffect(() => {
     let active = true;
-    setBusy(true);
+    setBusy(!loaded.current);
     setError("");
-    const get = <T,>(path: string, update: (value: Page<T>) => void) =>
+    const get = <T,>(path: string, update: (value: Page<T> | null) => void) =>
       api<Page<T>>(path).then((data) => {
         if (active) update(data);
-      });
+      }).catch((failure) => { if (active) update(null); throw failure; });
     Promise.allSettled([
       get<Listing>("/listings?limit=4", setListings),
       get<Resource>("/content?limit=3", setResources),
       get<Application>("/applications/me?limit=4", setApplications),
     ]).then((result) => {
       if (!active) return;
+      loaded.current = true;
       setBusy(false);
       if (result.some((x) => x.status === "rejected"))
         setError(
@@ -49,7 +53,7 @@ export function StudentHome({ account }: { account: Account }) {
     return () => {
       active = false;
     };
-  }, [revision]);
+  }, [revision, liveRevision]);
   function search(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const keyword = String(
