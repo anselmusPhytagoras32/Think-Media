@@ -129,7 +129,7 @@ test("suggestions, pending answers, sources, retry and clearing work inside the 
     .getByRole("button", { name: "Ask for guidance", exact: true })
     .click();
   await expect(
-    panel.getByText("Looking through your resources…", { exact: true }),
+    panel.locator(".guidance-thinking").getByText("Checking approved resources…", { exact: true }),
   ).toBeVisible();
   await expect(
     panel.getByRole("button", { name: "Looking for guidance", exact: true }),
@@ -184,6 +184,40 @@ test("suggestions, pending answers, sources, retry and clearing work inside the 
       .locator("article"),
   ).toHaveCount(0);
   await expect(input).toBeFocused();
+});
+
+test("a bundled guide citation opens its read-only source in guidance", async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 800 });
+  await signIn(page);
+  const guideId = "guide:ojt-resume-from-real-experience";
+  const guideTitle = "Build an OJT résumé from experience you already have";
+  let sourceRequests = 0;
+  await page.route("**/api/v1/assistant", (route) => route.fulfill({
+    json: {
+      answer: "Include truthful education, relevant skills and project evidence.",
+      sources: [{ id: guideId, title: guideTitle }],
+      uncertainty: false,
+      mode: "external",
+    },
+  }));
+  await page.route("**/api/v1/assistant/sources/ojt-resume-from-real-experience", (route) => {
+    sourceRequests++;
+    return route.fulfill({ json: {
+      id: guideId,
+      title: guideTitle,
+      body: "Use real class projects and relevant skills.",
+      status: "published",
+      read_only: true,
+    } });
+  });
+  await page.locator(".guidance-bubble-trigger").click();
+  const panel = page.getByRole("dialog", { name: "OJT guidance", exact: true });
+  await panel.getByRole("textbox", { name: "Your question" }).fill("What should I include in my OJT resume?");
+  await panel.getByRole("button", { name: "Ask for guidance" }).click();
+  await panel.getByRole("button", { name: guideTitle }).click();
+  await expect(panel.locator(".source-preview h3")).toHaveText(guideTitle);
+  await expect(panel.getByText("Use real class projects and relevant skills.")).toBeVisible();
+  expect(sourceRequests).toBe(1);
 });
 
 test("mobile sheet contains keyboard focus and closing restores the page and draft", async ({

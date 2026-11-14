@@ -35,7 +35,7 @@ These public university resources support general career preparation. Their loca
 
 School-specific OJT hours, eligibility, endorsements, agreements, document requirements and placement approval remain questions for the student's actual coordinator. The guides do not assert Philippine employment law, guarantee hiring, endorse an employer or claim that ThinkMedia has a university partnership. Confidentiality reminders are editorial precautions consistent with this repository's privacy requirements.
 
-The JSON file is a source artifact. Creating it does not publish a learning record or change a database. Integration must follow the existing authorized publication workflow, preserve source information, and avoid treating slugs or external sources as unrecognized fields in the current `ContentInput` API payload.
+The JSON file is a source artifact. Creating it does not publish a learning record or change a database. The app now allowlists these reviewed files as versioned, read-only guidance sources so an empty local database can still answer matching OJT questions. Administrator publication remains the workflow for editable learning records and feed visibility. Bundled sources use `guide:<slug>` IDs and a separate authenticated read-only preview endpoint; their metadata is never passed as unrecognized fields to `ContentInput`.
 
 ## Verification
 

@@ -626,58 +626,133 @@ function Profile({
     </>
   );
 }
-function Audit() {
-  type Event = {
-    id: string;
-    action: string;
-    reason?: string;
-    detail?: string;
-    created_at: string;
-    actor_id: string;
+type AuditEvent = {
+  id: string;
+  action: string;
+  reason?: string;
+  detail?: string;
+  created_at: string;
+  actor_id: string;
+};
+
+// FR11, NFR05/09/11: each audit stream has its own bounded server page.
+function AuditSection({
+  title,
+  path,
+  id,
+}: {
+  title: string;
+  path: string;
+  id: string;
+}) {
+  const pageSize = 20;
+  const [offset, setOffset] = useState(0);
+  const [page, setPage] = useState<{
+    items: AuditEvent[];
+    total: number;
+  } | null>(null);
+  const [busy, setBusy] = useState(true);
+  const [error, setError] = useState("");
+  const [revision, setRevision] = useState(0);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+
+  const changePage = (nextOffset: number) => {
+    setOffset(nextOffset);
+    headingRef.current?.focus({ preventScroll: true });
+    headingRef.current?.scrollIntoView({ block: "start" });
   };
-  const [verification, setVerification] = useState<Event[]>([]),
-    [content, setContent] = useState<Event[]>([]),
-    [error, setError] = useState(""),
-    [busy, setBusy] = useState(true),
-    [revision, setRevision] = useState(0);
+
   useEffect(() => {
     let active = true;
     setBusy(true);
     setError("");
-    setVerification([]);
-    setContent([]);
-    Promise.allSettled([
-      api<{ items: Event[] }>("/admin/audit-events"),
-      api<{ items: Event[] }>("/admin/content-events"),
-    ]).then((results) => {
-      if (!active) return;
-      results.forEach((result, i) => {
-        if (result.status === "fulfilled")
-          (i === 0 ? setVerification : setContent)(result.value.items);
-        else setError(result.reason.message);
+    api<{ items: AuditEvent[]; total: number }>(
+      `${path}?limit=${pageSize}&offset=${offset}`,
+    )
+      .then((result) => {
+        if (!active) return;
+        if (offset > 0 && offset >= result.total) {
+          setOffset(
+            Math.max(0, Math.ceil(result.total / pageSize) - 1) * pageSize,
+          );
+          return;
+        }
+        setPage(result);
+      })
+      .catch((failure: Error) => {
+        if (active) setError(failure.message);
+      })
+      .finally(() => {
+        if (active) setBusy(false);
       });
-      setBusy(false);
-    });
     return () => {
       active = false;
     };
-  }, [revision]);
-  const events = (rows: Event[]) =>
-    rows.length ? (
-      rows.map((r) => (
-        <article className="company-row" key={r.id}>
-          <div>
-            <h3>{r.action}</h3>
-            <p>{r.reason || r.detail}</p>
-            <small>
-              {manila(r.created_at)} · Actor {r.actor_id}
-            </small>
-          </div>
-        </article>
-      ))
-    ) : (
-      <p className="muted">No recent events to display.</p>
-    );
+  }, [path, offset, revision]);
+
+  return (
+    <section className="panel review-panel" aria-labelledby={id}>
+      <h2 id={id} ref={headingRef} className="audit-section-heading" tabIndex={-1}>
+        {title}
+      </h2>
+      {error && (
+        <div className="notice error" role="alert">
+          Could not load {title.toLowerCase()}: {error}
+          <button
+            type="button"
+            className="secondary"
+            onClick={() => setRevision((value) => value + 1)}
+          >
+            Retry {title.toLowerCase()}
+          </button>
+        </div>
+      )}
+      {busy && <p role="status">Loading {title.toLowerCase()}…</p>}
+      {!busy && !error && page && (
+        <>
+          {page.items.length ? (
+            page.items.map((event) => (
+              <article className="company-row" key={event.id}>
+                <div>
+                  <h3>{event.action}</h3>
+                  <p>{event.reason || event.detail}</p>
+                  <small>
+                    {manila(event.created_at)} · Actor {event.actor_id}
+                  </small>
+                </div>
+              </article>
+            ))
+          ) : (
+            <p className="muted">No events to display.</p>
+          )}
+          <nav className="pagination" aria-label={`${title} pages`}>
+            <button
+              type="button"
+              disabled={offset === 0}
+              onClick={() => changePage(offset - pageSize)}
+            >
+              Previous
+            </button>
+            <span aria-live="polite">
+              {page.total
+                ? `${offset + 1}–${Math.min(offset + pageSize, page.total)} of ${page.total}`
+                : "0 events"}
+            </span>
+            <button
+              type="button"
+              disabled={offset + pageSize >= page.total}
+              onClick={() => changePage(offset + pageSize)}
+            >
+              Next
+            </button>
+          </nav>
+        </>
+      )}
+    </section>
+  );
+}
+
+function Audit() {
   return (
     <>
       <header className="page-heading role-page-heading">
@@ -686,19 +761,16 @@ function Audit() {
           <p>Recent privileged actions. Times shown in Asia/Manila.</p>
         </div>
       </header>
-      <Notice error={error} />
-      {error && <button className="secondary" onClick={() => setRevision((value) => value + 1)}>Retry audit history</button>}
-      {busy && <p role="status">Loading audit history…</p>}
-      {!busy && !error && <>
-      <section className="panel">
-        <h2>Company verification</h2>
-        {events(verification)}
-      </section>
-      <section className="panel review-panel">
-        <h2>Content and moderation</h2>
-        {events(content)}
-      </section>
-      </>}
+      <AuditSection
+        title="Company verification"
+        path="/admin/audit-events"
+        id="verification-audit-heading"
+      />
+      <AuditSection
+        title="Content and moderation"
+        path="/admin/content-events"
+        id="content-audit-heading"
+      />
       <Operations />
     </>
   );

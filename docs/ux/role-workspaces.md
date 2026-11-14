@@ -9,10 +9,11 @@ review companies/resources/reports, or manage listings/applicants/profile.
 The earlier review-tools sidebar and role-explanation footer no longer appear
 on these homes. No generic performance metrics or invented activity replace them.
 
-`workspace-art.tsx` supplies original decorative SVG compositions around the
-existing ThinkMedia marks. `brand.tsx` adds organization, listing-board and
-applicant marks to the same stroke/fill system. Their colors come from the
-student palette; their labels remain native HTML. There are no new raster assets.
+`workspace-art.tsx` displays six original, transparent 3D illustrations for
+verification, learning, reports, listings, applicants and company profile.
+They follow the student artwork's soft rounded materials and palette.
+`brand.tsx` retains the organization, listing-board and applicant marks for
+navigation and compact controls. Card labels remain native HTML.
 
 ## Dashboard behavior
 

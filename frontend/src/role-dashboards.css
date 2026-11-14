@@ -8,6 +8,9 @@
   color: var(--role-ink);
   min-width: 0;
 }
+.audit-section-heading {
+  scroll-margin-top: 96px;
+}
 .role-home-header {
   display: flex;
   align-items: flex-start;
@@ -353,6 +356,7 @@
   max-width: 100%;
   display: block;
   flex-shrink: 0;
+  object-fit: contain;
 }
 
 .verification-page-heading {

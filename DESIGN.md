@@ -355,8 +355,8 @@ Copy arrives with a brief vertical movement (0.35s, cubic-bezier(0.16, 1, 0.3, 1
 ### Company and administration workspaces — November 14
 
 Role homes now share the student discovery header scale, rose emphasis and
-peach/aqua/pink task destinations. Their custom SVG artwork extends the existing
-book-and-task marks with organization, applicant and listing-board motifs.
+peach/aqua/pink task destinations. Their transparent 3D illustrations depict
+verification, learning, reports, listings, applicants and organization tasks.
 Live review queues and listing/applicant records replace the former generic
 tool-list sidebar and role tutorial. Counts always come from the corresponding API.
 

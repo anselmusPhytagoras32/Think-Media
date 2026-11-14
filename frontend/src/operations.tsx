@@ -35,15 +35,24 @@ const modes = {
 };
 
 export function Operations() {
+  const routePageSize = 20;
   const [snapshot, setSnapshot] = useState<OperationsSnapshot | null>(null);
+  const [routeOffset, setRouteOffset] = useState(0);
   const [busy, setBusy] = useState(true);
   const [error, setError] = useState("");
   const [revision, setRevision] = useState(0);
   const requestSequence = useRef(0);
+  const routeSummary = useRef<HTMLElement>(null);
+  const changeRoutePage = (nextOffset: number) => {
+    setRouteOffset(nextOffset);
+    routeSummary.current?.focus({ preventScroll: true });
+    routeSummary.current?.scrollIntoView({ block: "start" });
+  };
   useEffect(() => {
     const current = ++requestSequence.current;
     setBusy(true);
     setSnapshot(null);
+    setRouteOffset(0);
     setError("");
     api<OperationsSnapshot>("/admin/operations")
       .then((data) => {
@@ -151,25 +160,53 @@ export function Operations() {
             <dd>{number(snapshot.assistant.call_budget)}</dd>
           </dl>
           <details>
-            <summary>Request counts by route</summary>
+            <summary ref={routeSummary} className="audit-section-heading">
+              Request counts by route
+            </summary>
             <p className="muted">
               Route templates only. Personal identifiers, query strings and
               request contents are excluded.
             </p>
             {snapshot.routes.length ? (
-              snapshot.routes.map((route) => (
-                <article
-                  className="company-row"
-                  key={`${route.method}:${route.route}`}
-                >
-                  <p>
-                    {route.method} {route.route} — {number(route.count)}{" "}
-                    requests
-                  </p>
-                </article>
-              ))
+              snapshot.routes
+                .slice(routeOffset, routeOffset + routePageSize)
+                .map((route) => (
+                  <article
+                    className="company-row"
+                    key={`${route.method}:${route.route}`}
+                  >
+                    <p>
+                      {route.method} {route.route} — {number(route.count)}{" "}
+                      requests
+                    </p>
+                  </article>
+                ))
             ) : (
               <p>No completed routes recorded in this process yet.</p>
+            )}
+            {snapshot.routes.length > routePageSize && (
+              <nav className="pagination" aria-label="Request route pages">
+                <button
+                  type="button"
+                  disabled={routeOffset === 0}
+                  onClick={() => changeRoutePage(routeOffset - routePageSize)}
+                >
+                  Previous
+                </button>
+                <span aria-live="polite">
+                  {routeOffset + 1}–
+                  {Math.min(routeOffset + routePageSize, snapshot.routes.length)}
+                  {" of "}
+                  {snapshot.routes.length}
+                </span>
+                <button
+                  type="button"
+                  disabled={routeOffset + routePageSize >= snapshot.routes.length}
+                  onClick={() => changeRoutePage(routeOffset + routePageSize)}
+                >
+                  Next
+                </button>
+              </nav>
             )}
           </details>
         </>

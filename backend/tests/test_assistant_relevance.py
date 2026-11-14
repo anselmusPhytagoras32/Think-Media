@@ -79,3 +79,65 @@ def test_example_follow_up_extracts_an_actual_illustration(app):
     })
     assert result.status_code == 200
     assert 'conflicting slide versions' in result.json()['answer']
+
+
+def test_resume_question_has_cited_guidance_after_empty_local_reset(app):
+    app.state.assistant_provider = RetrievalProvider()
+    student = learner(app)
+    response = post_json(student, '/api/v1/assistant', {
+        'question': 'What should I include in my OJT resume?',
+    })
+    assert response.status_code == 200
+    answer = response.json()
+    assert answer['sources'], answer
+    assert 'resume' in answer['answer'].casefold() or 'résumé' in answer['answer'].casefold()
+    source_id = answer['sources'][0]['id']
+    assert source_id.startswith('guide:')
+    source = student.get(f"/api/v1/assistant/sources/{source_id.removeprefix('guide:')}")
+    assert source.status_code == 200
+    assert source.json()['status'] == 'published'
+
+
+def test_bundled_guidance_is_relevant_and_does_not_invent_unrelated_sources(app, client):
+    app.state.assistant_provider = RetrievalProvider()
+    student = learner(app)
+    product = post_json(student, '/api/v1/assistant', {
+        'question': 'How do I find opportunities in this app?',
+    }).json()
+    assert product['sources']
+    assert any(source['id'].startswith('guide:thinkmedia-') for source in product['sources'])
+    basics = post_json(student, '/api/v1/assistant', {
+        'question': 'What is OJT?',
+    }).json()
+    assert basics['sources'][0]['id'] == 'guide:ojt-basics-and-school-requirements'
+    unrelated = post_json(student, '/api/v1/assistant', {
+        'question': 'What is the capital of Mars?',
+    }).json()
+    assert unrelated['sources'] == []
+    assert unrelated['uncertainty'] is True
+    assert student.get('/api/v1/assistant/sources/not-approved').status_code == 404
+    assert client.get('/api/v1/assistant/sources/thinkmedia-workspace-basics').status_code == 401
+
+
+def test_empty_database_still_sends_approved_resume_context_to_external_adapter(app):
+    class CapturingProvider:
+        def __init__(self):
+            self.sources = None
+
+        def respond(self, question, sources, *, previous_questions=None):
+            self.sources = sources
+            return {
+                'answer': 'Use truthful education, relevant skills and project evidence.',
+                'sources': [{'id': sources[0]['id']}],
+                'uncertainty': False,
+                'mode': 'external',
+            }
+
+    provider = CapturingProvider()
+    app.state.assistant_provider = provider
+    result = post_json(learner(app), '/api/v1/assistant', {
+        'question': 'What should I include in my OJT resume?',
+    })
+    assert result.status_code == 200
+    assert provider.sources and provider.sources[0]['id'].startswith('guide:')
+    assert result.json()['sources'][0]['id'] == provider.sources[0]['id']

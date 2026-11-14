@@ -3,8 +3,10 @@
 The normal app launcher does not seed accounts, listings or learning content.
 Register new student, instructor and company accounts through the app. An
 existing administrator can verify companies and publish the resources you want
-to use. Guidance has no approved sources until learning resources are published;
-it reports that honestly instead of generating placeholder knowledge.
+to use. Guidance still has access to the versioned public OJT and product guides
+bundled with the app; the reset does not create learning records or user data.
+Questions outside those guides and published learning resources still receive
+an uncertainty response.
 
 From the repository root in PowerShell, preview the reset:
 

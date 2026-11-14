@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, Query, Request
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user, get_db, require_csrf
+from app.errors import ApiError
 from app.models import User
 from app.schemas.learning import (
     AssistantInput,
@@ -19,6 +20,7 @@ from app.schemas.learning import (
     SaveInput,
 )
 from app.services.assistant import AssistantService
+from app.services.bundled_guidance import guide_detail
 from app.services.learning import LearningService
 
 router = APIRouter(tags=["learning"])
@@ -111,6 +113,15 @@ def resolve(id: UUID, payload: ResolveInput, s=Depends(service)):
 @router.get("/admin/content-events")
 def events(limit: Limit = 20, offset: Offset = 0, s=Depends(service)):
     return s.events(limit, offset)
+
+
+@router.get("/assistant/sources/{slug}")
+def bundled_source(slug: str, _user: User = Depends(get_current_user)):
+    # Versioned public editorial help is available after local data resets.
+    source = guide_detail(slug)
+    if source is None:
+        raise ApiError(404, "NOT_FOUND", "Resource not found.")
+    return source
 
 
 @router.post("/assistant", dependencies=[Depends(require_csrf)])

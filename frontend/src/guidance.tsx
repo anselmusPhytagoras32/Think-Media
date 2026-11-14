@@ -302,7 +302,7 @@ export function Assistant({ embedded = false }: { embedded?: boolean }) {
                     {!exchange.answer && !exchange.error && (
                       <div className="guidance-thinking">
                         <LoaderCircle size={16} aria-hidden="true" />
-                        <span>Looking through your resources…</span>
+                        <span>Checking approved resources…</span>
                       </div>
                     )}
                     {exchange.error && (
@@ -329,7 +329,7 @@ export function Assistant({ embedded = false }: { embedded?: boolean }) {
                             : "Grounded guidance"}
                         </span>
                         <h3 className="sr-only">
-                          Guidance from your resources
+                          Guidance from approved resources
                         </h3>
                         <p className="preserve-lines guidance-answer-text">
                           {exchange.answer.answer}
@@ -360,7 +360,9 @@ export function Assistant({ embedded = false }: { embedded?: boolean }) {
                                   try {
                                     setSource({
                                       content: await api<Source>(
-                                        `/content/${citation.id}`,
+                                        citation.id.startsWith("guide:")
+                                          ? `/assistant/sources/${encodeURIComponent(citation.id.slice(6))}`
+                                          : `/content/${citation.id}`,
                                       ),
                                       exchangeId: exchange.id,
                                     });

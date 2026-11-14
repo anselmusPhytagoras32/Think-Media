@@ -5,10 +5,10 @@ import { ArrowRight, Plus } from "lucide-react";
 import { api, manila, type Account, type Company } from "./api";
 import type { Application, Listing } from "./marketplace";
 import { href } from "./navigation";
-import { ThinkIcon, type IconName } from "./brand";
+import { ThinkIcon } from "./brand";
 import { CompanyLogo } from "./company-brand";
 import { StatusBadge } from "./status";
-import { WorkspaceArt } from "./workspace-art";
+import { WorkspaceArt, type WorkspaceArtKind } from "./workspace-art";
 
 type Page<T> = { items: T[]; total: number };
 type Report = { id: string; reason: string; created_at: string };
@@ -70,7 +70,7 @@ export function RoleHome({ account }: { account: Account }) {
     title: string;
     detail: string;
     path: string;
-    icon: IconName;
+    icon: WorkspaceArtKind;
     tone: string;
   }[] = admin
     ? [

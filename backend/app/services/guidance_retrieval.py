@@ -7,9 +7,11 @@ import unicodedata
 from sqlalchemy import case, or_, select
 
 from app.models import LearningContent
+from app.services.bundled_guidance import GUIDES
 
-STOP = frozenset('a an and are as at be been being can could did do does for from give had has have help how i in into is it its me more my of on or our please should so some tell than that the their them then there these they this those to use want was we were what when where which who why will with would you your about example examples first next also'.split())
+STOP = frozenset('a an and are as at be been being can could did do does for from give had has have help how i in include into is it its me more my of on or our please should so some tell than that the their them then there these they this those to use want was we were what when where which who why will with would you your about example examples first next also'.split())
 ALIASES = {
+    'app':'thinkmedia', 'platform':'thinkmedia',
     'cv':'resume', 'resumes':'resume', 'interviews':'interview', 'interviewing':'interview',
     'preparation':'prepare', 'preparing':'prepare', 'prepared':'prepare',
     'applications':'apply', 'application':'apply', 'applying':'apply', 'applied':'apply',
@@ -57,7 +59,7 @@ def retrieve_sources(db, question, previous_questions=()):
     if not contextual:
         previous = []
     weights = {term: 1.0 for term in previous}
-    weights.update({term: 3.0 for term in current})
+    weights.update({term: (0.5 if term in {'ojt', 'thinkmedia'} and len(current) > 1 else 3.0) for term in current})
     if not weights:
         return []
     matches = []
@@ -73,16 +75,29 @@ def retrieve_sources(db, question, previous_questions=()):
     rows = list(db.scalars(select(LearningContent).where(
         LearningContent.status == 'published', or_(*matches),
     ).order_by(sql_score.desc(), LearningContent.created_at.desc(), LearningContent.id).limit(200)))
-    documents = [set(tokens(' '.join([row.title, row.summary, ' '.join(row.tags), row.body]))) for row in rows]
+    candidates = [dict(id=str(row.id), title=row.title, summary=row.summary,
+                       tags=row.tags, body=row.body, database=True) for row in rows]
+    published_titles = {row.title.casefold() for row in rows}
+    for guide in GUIDES.values():
+        if guide['title'].casefold() not in published_titles:
+            candidates.append({**guide, 'database': False})
+    documents = [set(tokens(' '.join([row['title'], row['summary'], ' '.join(row['tags']), row['body']]))) for row in candidates]
     frequency = Counter(term for words in documents for term in weights if term in words)
-    weighted = {term: weight * (1 + math.log((len(rows) + 1) / (frequency[term] + 1))) for term, weight in weights.items()}
+    weighted = {term: weight * (1 + math.log((len(candidates) + 1) / (frequency[term] + 1))) for term, weight in weights.items()}
     def rank(pair):
         index, row = pair
-        title = set(tokens(row.title))
-        summary = set(tokens(row.summary))
-        tags = set(tokens(' '.join(row.tags)))
+        title = set(tokens(row['title']))
+        summary = set(tokens(row['summary']))
+        tags = set(tokens(' '.join(row['tags'])))
         words = documents[index]
-        return sum(weight * (12 * (term in title) + 7 * (term in tags) + 4 * (term in summary) + (term in words)) for term, weight in weighted.items())
-    ranked = sorted(enumerate(rows), key=rank, reverse=True)
-    return [dict(id=str(row.id), title=row.title, excerpt=excerpt(row.body, weighted, question))
-            for index, row in ranked[:3] if rank((index, row)) > 0]
+        if not row['database'] and not any(term in title | summary | tags for term in weights):
+            return 0
+        score = sum(weight * (12 * (term in title) + 7 * (term in tags) + 4 * (term in summary) + (term in words)) for term, weight in weighted.items())
+        definition = bool(re.search(r'\b(what is|what does|meaning of|define)\b', question, re.I))
+        return score + (20 if score and definition and 'basics' in tags else 0)
+    ranked = sorted(
+        (pair for pair in enumerate(candidates) if rank(pair) > 0),
+        key=lambda pair: (not pair[1]['database'], -rank(pair)),
+    )
+    return [dict(id=row['id'], title=row['title'], excerpt=excerpt(row['body'], weighted, question))
+            for _, row in ranked[:3]]

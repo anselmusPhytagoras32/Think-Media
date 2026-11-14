@@ -2,7 +2,7 @@
 
 Implemented learning and assistant contract, following marketplace acceptance.
 
-Existing auth/CSRF/error conventions. Published approved resources only in student/instructor feeds and assistant retrieval. All lists paginated. Administration requires server-side administrator role.
+Existing auth/CSRF/error conventions. Student/instructor feeds contain database resources published by an administrator. Assistant retrieval may also use the versioned, read-only public guides allowlisted in `backend/app/services/bundled_guidance.py`; these are not database records or user data. All lists paginated. Administration requires server-side administrator role.
 
 Content: id, title, summary, body, tags, status (draft/published/archived), created_at, updated_at. Plain text rendering; never arbitrary HTML.
 
@@ -15,7 +15,7 @@ Content: id, title, summary, body, tags, status (draft/published/archived), crea
 - POST `/content/{id}/quiz`: validate complete option IDs and score using stored answer key; authenticated attempt retained.
 - POST `/reports`: authenticated report on published content, bounded reason. GET/PATCH `/admin/reports`: queue and audited resolution.
 
-Assistant: POST `/assistant` with bounded question and optional `previous_questions`, authenticated/throttled. Approved published resources retrieved on server. Provider adapter accepts only the current question, bounded preceding questions and approved resource snippets; no session/user/application/profile/attachment data. External provider is disabled by default with clear 503 ASSISTANT_UNAVAILABLE. Real provider only when independently configured server-side. Grounded local retrieval can list sources but must not pretend to be an external LLM. Response answer, sources [{id,title}], uncertainty. Failures leave application endpoints operational. Never expose credentials, accept arbitrary provider URL from client, or mutate hiring decisions.
+Assistant: POST `/assistant` with bounded question and optional `previous_questions`, authenticated/throttled. Approved published database resources and allowlisted public guides are retrieved on the server. A bundled guide citation has ID `guide:<slug>` and resolves through authenticated read-only GET `/assistant/sources/{slug}`; it cannot be saved, edited or reported as a database record. Provider adapter accepts only the current question, bounded preceding questions and approved resource snippets; no session/user/application/profile/attachment data. External provider is disabled by default with clear 503 ASSISTANT_UNAVAILABLE. Real provider only when independently configured server-side. Grounded local retrieval can list sources but must not pretend to be an external LLM. Response answer, sources [{id,title}], uncertainty. Failures leave application endpoints operational. Never expose credentials, accept arbitrary provider URL from client, or mutate hiring decisions.
 
 Test unpublished hidden, role denial, quiz answer-key non-disclosure/scoring, invalid options, report isolation, audited moderation rollback, assistant unavailable and independent application health.
 

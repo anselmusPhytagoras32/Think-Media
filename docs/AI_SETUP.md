@@ -61,7 +61,7 @@ All external attempts, including failures, consume the configured process-lifeti
 
 ## What to demonstrate
 
-Publish a guide with actual resume preparation text through the administrator workspace. Ask a matching question such as “What should I include in my OJT resume?” The service retrieves matching published excerpts and validates every returned source ID against that approved context. The UI should show the answer, matching resource links and uncertainty when appropriate. A schematic provider response is:
+Ask a matching question such as “What should I include in my OJT resume?” The service can retrieve the versioned public resume guide even after local data is reset. Administrator-published learning resources remain available as additional, preferred sources when relevant. Every returned source ID is validated against the retrieved context; bundled guide IDs resolve through the read-only guidance source endpoint. The UI should show the answer, matching source previews and uncertainty when appropriate. A schematic provider response is:
 
 ```json
 {
