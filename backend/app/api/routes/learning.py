@@ -22,6 +22,7 @@ from app.schemas.learning import (
 from app.services.assistant import AssistantService
 from app.services.bundled_guidance import guide_detail
 from app.services.learning import LearningService
+from app.services.learning_submissions import SubmissionService
 
 router = APIRouter(tags=["learning"])
 Limit = Annotated[int, Query(ge=1, le=100)]
@@ -45,7 +46,11 @@ def feed(
 
 @router.get("/content/{id}")
 def detail(id: UUID, s=Depends(service)):
-    return s.out(s.content(id))
+    output = s.out(s.content(id))
+    materials = SubmissionService(s.db, s.user).published_materials(id)
+    if materials:
+        output.update(links=materials.payload["links"], attachment_name=materials.attachment_name)
+    return output
 
 
 @router.get("/admin/content")

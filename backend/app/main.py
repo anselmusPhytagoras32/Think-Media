@@ -9,7 +9,7 @@ import uuid
 from fastapi import FastAPI, Request
 
 from app.api.responses import HEALTH_ERRORS
-from app.api.routes import admin, auth, learning, marketplace, profiles, recommendations
+from app.api.routes import admin, auth, learning, learning_submissions, marketplace, profiles, recommendations
 from app.api.routes import feedback
 from app.config import Settings, get_settings
 from app.db import build_engine, build_session_factory
@@ -30,8 +30,16 @@ API_PREFIX = "/api/v1"
 
 
 def _request_body_cap(request: Request, settings: Settings) -> int:
+    path = request.url.path
+    if (
+        request.method == "POST" and path == f"{API_PREFIX}/instructor/learning"
+        or request.method == "PUT" and re.fullmatch(
+            r"/api/v1/instructor/learning/[0-9a-fA-F-]{36}", path
+        )
+    ):
+        return 6 * 1024 * 1024
     if request.method == "POST" and re.fullmatch(
-        r"/api/v1/listings/[0-9a-fA-F-]{36}/applications", request.url.path
+        r"/api/v1/listings/[0-9a-fA-F-]{36}/applications", path
     ):
         return 6 * 1024 * 1024
     return settings.max_request_body_bytes
@@ -155,6 +163,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(admin.router, prefix=API_PREFIX)
     app.include_router(marketplace.router, prefix=API_PREFIX)
     app.include_router(learning.router, prefix=API_PREFIX)
+    app.include_router(learning_submissions.router, prefix=API_PREFIX)
     app.include_router(recommendations.router, prefix=API_PREFIX)
 
     @app.get(

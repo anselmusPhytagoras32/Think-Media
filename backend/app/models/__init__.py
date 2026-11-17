@@ -8,6 +8,8 @@ from app.models.user import User
 
 __all__ = [
     "LearningContent",
+    "LearningSubmission",
+    "LearningReview",
     "QuizQuestion",
     "QuizAttempt",
     "ContentState",
@@ -35,6 +37,7 @@ from app.models.learning import (
     QuizAttempt,
     QuizQuestion,
 )
+from app.models.learning_submission import LearningReview, LearningSubmission
 from app.models.marketplace import (
     Application,
     ApplicationStatusHistory,

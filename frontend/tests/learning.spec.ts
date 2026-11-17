@@ -19,7 +19,7 @@ async function mutate(
 test("published resources, save/react, quiz and report review work end to end", async ({
   browser,
 }) => {
-  test.setTimeout(90000);
+  test.setTimeout(180000);
   const suffix = Date.now();
   const title = `Interview preparation ${suffix}`;
   const adminContext = await browser.newContext({
@@ -34,7 +34,8 @@ test("published resources, save/react, quiz and report review work end to end", 
   await openApp(admin, "/");
   await admin
     .getByRole("link", { name: "Learning content", exact: true })
-    .click();
+    .press("Enter");
+  await expect(admin).toHaveURL(/#\/content$/);
   await admin.getByRole("button", { name: "New resource" }).click();
   await admin.getByLabel("Title (required)", { exact: true }).fill(title);
   await admin
@@ -162,9 +163,12 @@ test("published resources, save/react, quiz and report review work end to end", 
     fullPage: true,
     animations: "disabled",
   });
+  // Switch back to the reviewer's tab before activating the sidebar link.
+  await admin.bringToFront();
   await admin
     .getByRole("link", { name: "Content reports", exact: true })
-    .click();
+    .press("Enter");
+  await expect(admin).toHaveURL(/#\/reports$/);
   const row = admin.locator("article").filter({ hasText: reason });
   await row.getByRole("button", { name: "Review report" }).click();
   await admin

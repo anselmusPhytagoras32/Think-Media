@@ -56,6 +56,7 @@ class QuizQuestion(Base):
     question: Mapped[str] = mapped_column(String(1000))
     options: Mapped[list[str]] = mapped_column(ARRAY(Text))
     correct_index: Mapped[int] = mapped_column(Integer)
+    feedback: Mapped[str | None] = mapped_column(String(1000))
     __table_args__ = (
         CheckConstraint("cardinality(options) BETWEEN 2 AND 6", name="options_count"),
         CheckConstraint(

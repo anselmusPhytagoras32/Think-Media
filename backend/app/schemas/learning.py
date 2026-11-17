@@ -13,6 +13,7 @@ class QuestionInput(ApiModel):
     question: str = Field(min_length=1, max_length=1000)
     options: list[str] = Field(min_length=2, max_length=6)
     correct_index: StrictInt = Field(ge=0, le=5)
+    feedback: str | None = Field(default=None, max_length=1000)
 
     @model_validator(mode="after")
     def check_options(self):

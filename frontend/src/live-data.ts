@@ -16,7 +16,7 @@ export function notifyMutation(path: string) {
   let topics: DataTopic[] = [];
   if (/^\/(auth|profiles|admin\/companies)(\/|$)/.test(path)) topics = ["accounts", "marketplace", "recommendations"];
   else if (/^\/(company\/listings|listings|applications)(\/|$)/.test(path)) topics = ["marketplace", "recommendations"];
-  else if (/^\/(content|admin\/content|reports|admin\/reports)(\/|$)/.test(path)) topics = ["learning", "recommendations"];
+  else if (/^\/(content|admin\/content|instructor\/learning|admin\/learning-submissions|reports|admin\/reports)(\/|$)/.test(path)) topics = ["learning", "recommendations"];
   else if (path === "/interactions") topics = ["recommendations"];
   if (!topics.length) return;
   // Let the initiating form finish its own successful transition first.

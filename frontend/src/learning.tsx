@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import { api, manila } from "./api";
 import { SuggestionsPreview } from "./suggestions-preview";
+import { ResourceMaterials } from "./learning-authoring";
+import { href } from "./navigation";
 type Content = {
   id: string;
   title: string;
@@ -30,6 +32,8 @@ type Content = {
   reacted: boolean;
   created_at: string;
   updated_at: string;
+  links?: { label: string; url: string }[];
+  attachment_name?: string | null;
 };
 type Report = {
   id: string;
@@ -40,6 +44,7 @@ type Report = {
   resolution?: string;
 };
 type Question = { id: string; question: string; options: string[] };
+type QuizResult = { correct: number; total: number; feedback?: { question_id: string; text: string }[] };
 type Page<T> = { items: T[]; total: number; limit: number; offset: number };
 function Messages({ error, success }: { error: string; success?: string }) {
   return (
@@ -67,6 +72,7 @@ function LearningLibrary({
   error,
   filter,
   topics,
+  skillTopics,
   personalized,
   view,
   onView,
@@ -83,6 +89,7 @@ function LearningLibrary({
   error: string;
   filter: string;
   topics: string[];
+  skillTopics: string[];
   personalized: boolean;
   view: "all" | "suggested";
   onView: (view: "all" | "suggested") => void;
@@ -128,7 +135,13 @@ function LearningLibrary({
             name="tag"
             defaultValue={activeTopic}
             placeholder="Any topic"
+            list={skillTopics.length ? "learning-skill-categories" : undefined}
           />
+          {skillTopics.length > 0 && (
+            <datalist id="learning-skill-categories">
+              {skillTopics.map((name) => <option key={name} value={name} />)}
+            </datalist>
+          )}
         </div>
         <button className="primary" disabled={busy}>
           Search <ArrowRight size={16} />
@@ -376,14 +389,13 @@ export function Learning({
     [error, setError] = useState(""),
     [success, setSuccess] = useState(""),
     [quiz, setQuiz] = useState<Question[] | null>(null),
-    [result, setResult] = useState<{ correct: number; total: number } | null>(
-      null,
-    ),
+    [result, setResult] = useState<QuizResult | null>(null),
     [reporting, setReporting] = useState(false),
     [resolving, setResolving] = useState<Report | null>(null),
     [addQuiz, setAddQuiz] = useState(false);
   const [detailRevision, setDetailRevision] = useState(0);
   const [catalogTopics, setCatalogTopics] = useState<string[]>([]);
+  const [skillTopics, setSkillTopics] = useState<string[]>([]);
   const [libraryView, setLibraryView] = useState<"all" | "suggested">("all");
   // FR11/W08: publication requires a separate review before the API mutation.
   const [pendingPublication, setPendingPublication] = useState<Record<
@@ -400,6 +412,14 @@ export function Learning({
   useEffect(() => { if (resolving) resolutionHeading.current?.focus(); }, [resolving]);
   useEffect(() => { if (editing) editorHeading.current?.focus(); }, [editing]);
   const sequence = useRef(0);
+  useEffect(() => {
+    if (admin || reports) return;
+    let active = true;
+    api<Page<{ name: string }>>("/learning-skills?limit=100")
+      .then((data) => { if (active) setSkillTopics(data.items.map((skill) => skill.name)); })
+      .catch(() => { if (active) setSkillTopics([]); });
+    return () => { active = false; };
+  }, [admin, reports, liveRevision]);
   useEffect(
     () => () => {
       sequence.current++;
@@ -553,7 +573,7 @@ export function Learning({
     setError("");
     try {
       setResult(
-        await api<{ correct: number; total: number }>(
+        await api<QuizResult>(
           `/content/${selected.id}/quiz`,
           "POST",
           { answers },
@@ -683,20 +703,23 @@ export function Learning({
           <Artwork kind="learning" className="learning-hero-art" priority />
         )}
         {admin && !reports && !editing && (
-          <button
-            className="primary"
-            onClick={() => {
-              setEditing("new");
-              setPendingPublication(null);
-              setSelected(null);
-              setAddQuiz(false);
-              setError("");
-              setSuccess("");
-            }}
-          >
-            <Plus size={17} />
-            New resource
-          </button>
+          <div className="authoring-actions">
+            <a className="secondary" href={href("learning-review")}>Review instructor submissions</a>
+            <button
+              className="primary"
+              onClick={() => {
+                setEditing("new");
+                setPendingPublication(null);
+                setSelected(null);
+                setAddQuiz(false);
+                setError("");
+                setSuccess("");
+              }}
+            >
+              <Plus size={17} />
+              New resource
+            </button>
+          </div>
         )}
       </header>
       <Messages error={error} success={success} />
@@ -916,6 +939,7 @@ export function Learning({
           </div>
           <p className="resource-summary">{selected.summary}</p>
           <div className="resource-body preserve-lines">{selected.body}</div>
+          <ResourceMaterials links={selected.links ?? []} attachment={selected.attachment_name} path={"/content/" + selected.id} />
           {admin ? (
             <button className="primary" onClick={() => setEditing(selected)}>
               Edit resource
@@ -1003,6 +1027,12 @@ export function Learning({
                       You answered {result.correct} of {result.total} correctly.
                     </p>
                   )}
+                  {result?.feedback?.length ? (
+                    <section aria-label="Quiz feedback">
+                      <h3>Quiz feedback</h3>
+                      <ul>{result.feedback.map((item) => <li key={item.question_id}>{item.text}</li>)}</ul>
+                    </section>
+                  ) : null}
                 </form>
               )}
             </>
@@ -1017,7 +1047,8 @@ export function Learning({
           busy={busy}
           error={error}
           filter={filter}
-          topics={catalogTopics}
+            topics={catalogTopics}
+            skillTopics={skillTopics}
           personalized={personalized}
           view={libraryView}
           onView={setLibraryView}

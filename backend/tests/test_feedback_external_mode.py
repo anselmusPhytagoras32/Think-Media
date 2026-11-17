@@ -32,12 +32,14 @@ def test_external_mode_feedback_does_not_break_when_gemini_is_enabled(settings):
 
 def test_feedback_downgrade_refuses_to_reclassify_external_observations(settings, database_url):
     external_feedback(settings)
-    with pytest.raises(RuntimeError, match='external-mode satisfaction feedback'):
-        command.downgrade(alembic_config(database_url), '0007_attachment_retention')
     engine = create_engine(database_url)
     try:
         with engine.connect() as db:
-            assert db.scalar(text('SELECT version_num FROM alembic_version')) == '0008_feedback_external_mode'
+            initial_revision = db.scalar(text('SELECT version_num FROM alembic_version'))
+        with pytest.raises(RuntimeError, match='external-mode satisfaction feedback'):
+            command.downgrade(alembic_config(database_url), '0007_attachment_retention')
+        with engine.connect() as db:
+            assert db.scalar(text('SELECT version_num FROM alembic_version')) == initial_revision
             assert db.scalar(text("SELECT count(*) FROM satisfaction_feedback WHERE mode='external'")) == 1
     finally:
         engine.dispose()

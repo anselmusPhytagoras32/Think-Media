@@ -31,6 +31,7 @@ import "@fontsource-variable/manrope";
 import "@fontsource-variable/dm-sans";
 import { Marketplace } from "./marketplace";
 import { Learning } from "./learning";
+import { LearningAuthoring } from "./learning-authoring";
 import { Assistant } from "./guidance";
 import { Recommendations } from "./recommendations";
 import { Operations } from "./operations";
@@ -781,6 +782,7 @@ function navIcon(page: string): IconName {
     review: "applications",
     assistant: "guidance",
     learning: "learning",
+    authoring: "content",
     opportunities: "opportunities",
     applications: "applications",
     suggestions: "suggestions",
@@ -1129,7 +1131,8 @@ function App() {
     );
   const admin = account.user.role === "administrator",
     company = account.user.role === "company",
-    student = account.user.role === "student";
+    student = account.user.role === "student",
+    instructor = account.user.role === "instructor";
   const nav = [
     { id: "overview", label: "Home", short: "Home", icon: LayoutDashboard },
     ...(!company && !admin
@@ -1141,6 +1144,9 @@ function App() {
             icon: BookOpen,
           },
         ]
+      : []),
+    ...(instructor
+      ? [{ id: "authoring", label: "Teaching materials", short: "Teach", icon: BookOpen }]
       : []),
     ...(!admin
       ? [
@@ -1209,14 +1215,16 @@ function App() {
   ];
   const profileLabel = company ? "Company profile" : "My profile";
   const allowed = [...nav.map((n) => n.id), "profile", "more", "assistant"];
+  if (admin) allowed.push("learning-review");
   const page = allowed.includes(route.page) ? route.page : "overview";
+  const navPage = page === "learning-review" ? "content" : page;
   const quickIds = admin
     ? ["overview", "verification", "content", "reports"]
     : company
       ? ["overview", "opportunities", "review"]
       : student
         ? ["overview", "learning", "opportunities", "applications"]
-        : ["overview", "learning", "opportunities"];
+        : ["overview", "learning", "authoring", "opportunities"];
   const quick = nav.filter((n) => quickIds.includes(n.id));
   async function logout() {
     try {
@@ -1350,8 +1358,8 @@ function App() {
               aria-label={n.label}
               data-rail-label={n.label}
               href={href(n.id)}
-              className={page === n.id ? "active" : ""}
-              aria-current={page === n.id ? "page" : undefined}
+              className={navPage === n.id ? "active" : ""}
+              aria-current={page === n.id ? "page" : navPage === n.id ? "location" : undefined}
               onClick={() => setMenu(false)}
             >
               <ThinkIcon name={navIcon(n.id)} size={22} />
@@ -1502,6 +1510,9 @@ function App() {
             />
           ) : page === "assistant" ? (
             <Assistant />
+          ) : page === "authoring" || page === "learning-review" ? (
+            <LearningAuthoring key={page} admin={admin} initialId={route.id}
+              onSelect={(id) => navigate(page, id)} />
           ) : ["learning", "content", "reports"].includes(page) ? (
             <Learning
               key={page}

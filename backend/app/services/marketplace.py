@@ -1,7 +1,5 @@
 """FR04–07 marketplace authorization, serialization and atomic workflows."""
 
-import re
-
 from pydantic import ValidationError
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
@@ -13,6 +11,7 @@ from app.repositories.profiles import ProfileRepository
 from app.schemas.marketplace import ListingInput
 from app.services.verification import load_verified_company
 from app.time_utils import iso_manila
+from app.uploads import pdf_filename
 
 
 class MarketplaceService:
@@ -228,16 +227,7 @@ class MarketplaceService:
             raise ApiError(
                 422, "VALIDATION_ERROR", "Cover letter must be at most 5000 characters."
             )
-        if len(data) > 5 * 1024 * 1024:
-            raise ApiError(413, "PAYLOAD_TOO_LARGE", "PDF must be at most 5 MiB.")
-        if (
-            not name
-            or not name.lower().endswith(".pdf")
-            or content_type != "application/pdf"
-            or not data.startswith(b"%PDF-")
-            or b"%%EOF" not in data[-1024:]
-        ):
-            raise ApiError(422, "INVALID_UPLOAD", "Attach a valid PDF document.")
+        name = pdf_filename(name, content_type, data)
         row = self.repo.listing(id, lock=True)
         if row is None:
             raise ApiError(404, "NOT_FOUND", "Listing not found.")
@@ -246,11 +236,6 @@ class MarketplaceService:
             raise ApiError(
                 409, "LISTING_CLOSED", "This listing is not accepting applications."
             )
-        name = re.sub(r"[^A-Za-z0-9._ -]", "_", name.replace("\\", "/").split("/")[-1])[
-            :196
-        ]
-        if not name.lower().endswith(".pdf"):
-            name += ".pdf"
         application = Application(
             listing_id=id,
             student_id=self.user.id,

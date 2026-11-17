@@ -8,7 +8,7 @@ web
 React, TypeScript and Vite client; existing Python FastAPI modular monolith; PostgreSQL. Preserve the backend and its cookie/CSRF protocol.
 
 ## Users
-College students preparing for OJT use phones and desktops to find placements, submit requirements and track decisions. Companies manage their own listings and applicants. Instructors browse public opportunities and approved resources. Separately provisioned administrators verify companies and moderate content.
+College students preparing for OJT use phones and desktops to find placements, submit requirements and track decisions. Companies manage their own listings and applicants. Instructors browse public opportunities and approved resources and submit lessons and skill categories for review. Separately provisioned administrators verify companies, review instructor submissions, and moderate content.
 
 ## Product Purpose
 Connect preparation, opportunity discovery and accountable application review in one workspace. Success means a verified company can publish, a student can apply once, and both can track an authorized decision.

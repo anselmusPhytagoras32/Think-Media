@@ -106,8 +106,14 @@ class LearningService:
 
     def create(self, payload):
         self.admin()
+        row = self.add_content(payload, self.user.id)
+        self.db.commit()
+        return self.out(row)
+
+    def add_content(self, payload, author_id):
+        """Add content and its event inside the caller's transaction."""
         row = LearningContent(
-            author_id=self.user.id, **payload.model_dump(exclude={"questions"})
+            author_id=author_id, **payload.model_dump(exclude={"questions"})
         )
         self.db.add(row)
         self.db.flush()
@@ -116,8 +122,7 @@ class LearningService:
                 QuizQuestion(content_id=row.id, position=position, **item.model_dump())
             )
         self.repo.add_event(row.id, self.user.id, "created", row.status)
-        self.db.commit()
-        return self.out(row)
+        return row
 
     def edit(self, id, payload):
         self.admin()
@@ -193,7 +198,15 @@ class LearningService:
             )
         )
         self.db.commit()
-        return dict(score=round(100 * correct / total, 2), total=total, correct=correct)
+        result = dict(score=round(100 * correct / total, 2), total=total, correct=correct)
+        feedback = [
+            dict(question_id=str(q.id), text=q.feedback)
+            for q in questions
+            if q.feedback
+        ]
+        if feedback:
+            result["feedback"] = feedback
+        return result
 
     def report_out(self, row):
         return dict(

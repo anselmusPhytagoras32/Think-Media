@@ -25,6 +25,8 @@ APP_TABLES = {
     "marketplace_events",
     "learning_content",
     "quiz_questions",
+    "learning_submissions",
+    "learning_reviews",
     "quiz_attempts",
     "content_states",
     "moderation_reports",

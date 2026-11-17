@@ -8,6 +8,8 @@ export const pages = [
   "review",
   "suggestions",
   "learning",
+  "authoring",
+  "learning-review",
   "assistant",
   "verification",
   "content",
