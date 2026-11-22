@@ -157,12 +157,6 @@ test("published resources, save/react, quiz and report review work end to end", 
       () => document.documentElement.scrollWidth <= innerWidth,
     ),
   ).toBeTruthy();
-  await student.evaluate(() => window.scrollTo(0, 0));
-  await student.screenshot({
-    path: "../.impeccable/review/mobile-learning.png",
-    fullPage: true,
-    animations: "disabled",
-  });
   // Switch back to the reviewer's tab before activating the sidebar link.
   await admin.bringToFront();
   await admin
@@ -217,12 +211,6 @@ test("published resources, save/react, quiz and report review work end to end", 
   expect((await studentContext.request.get("/api/v1/listings")).status()).toBe(
     200,
   );
-  await student.evaluate(() => window.scrollTo(0, 0));
-  await student.screenshot({
-    path: "../.impeccable/review/mobile-assistant.png",
-    fullPage: true,
-    animations: "disabled",
-  });
   await studentContext.close();
   await adminContext.close();
 });

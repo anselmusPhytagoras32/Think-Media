@@ -1,5 +1,8 @@
 # ThinkMedia
 
+For hosted deployment settings, server-only AI provider configuration,
+and free-service limits, see [Render hosting](docs/RENDER_HOSTING.md).
+
 React + FastAPI + PostgreSQL career and OJT workspace. Product requirements are in [PRODUCT.md](PRODUCT.md); verified progress and remaining work are in [implementation status](docs/IMPLEMENTATION_STATUS.md).
 
 For the prepared **Windows + Ubuntu WSL local presentation**, follow the

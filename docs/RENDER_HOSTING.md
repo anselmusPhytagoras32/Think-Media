@@ -1,0 +1,81 @@
+# ThinkMedia online demo
+
+The Render demo runs the React build and FastAPI application in one Docker web
+service. PostgreSQL stores sessions, profiles, learning records, quizzes,
+applications, private PDF bytes, and review history. The service uses the free
+compute plan in Oregon.
+
+## Deployment
+
+The repository-root render.yaml describes the service. The Docker build runs
+npm ci and the TypeScript/Vite production build, then installs the Python
+runtime requirements. The runtime serves the frontend alongside /api/v1
+and /health.
+
+The container runs as an unprivileged user. Startup serializes schema migrations
+with a PostgreSQL advisory lock and starts one Uvicorn process on 0.0.0.0:$PORT.
+Render supplies HTTPS and RENDER_EXTERNAL_URL. The app uses that exact origin
+for CSRF validation and sets secure, HttpOnly session cookies.
+
+The approved free configuration uses a separate logical database and restricted
+login inside the existing PostgreSQL instance. The application login has no
+superuser, database-creation, or role-creation privileges. It owns ThinkMedia's
+database. Its bootstrap owner has the approved membership needed to create that
+database. Keep database connection URLs outside Git.
+
+## Runtime settings
+
+| Variable | Purpose |
+| --- | --- |
+| DATABASE_URL | ThinkMedia PostgreSQL URL. Standard postgres:// and postgresql:// URLs are normalized to the installed psycopg driver. |
+| APP_ENV=demo | Hosted demonstration mode with secure cookies. |
+| APP_CSRF_SECRET | Persistent, generated session-bound CSRF secret. |
+| APP_ALLOWED_ORIGINS | Additional exact origins. The Render application origin is included automatically. |
+| APP_ASSISTANT_MODE=external | Enable live source-grounded Guidance. |
+| APP_ASSISTANT_PROVIDER_PROFILE=groq_openrouter | Try Groq first, then OpenRouter. |
+| GROQ_API_KEY, OPENROUTER_API_KEY | Server-only provider credentials. |
+| GROQ_MODEL | Defaults to openai/gpt-oss-20b. |
+| OPENROUTER_MODEL | Defaults to nvidia/nemotron-3.5-super-vl:free. |
+| APP_ASSISTANT_CALL_BUDGET=100 | Shared attempt cap for both routes, per process lifetime. Failed attempts consume the cap. |
+| APP_ASSISTANT_TIMEOUT_SECONDS=30 | Combined transport deadline allocated between configured routes. |
+| APP_ASSISTANT_MAX_COMPLETION_TOKENS=1024 | Output cap for each attempt. |
+| APP_BOOTSTRAP_DEMO=true | Explicitly provision dedicated fictional accounts and learning examples at startup. |
+| APP_DEMO_ADMINISTRATOR_PASSWORD | Private password for presentation-administrator@example.test. |
+| APP_DEMO_INSTRUCTOR_PASSWORD | Private password for presentation-instructor@example.test. |
+| APP_DEMO_STUDENT_PASSWORD | Private password for presentation-student@example.test. |
+| APP_DEMO_COMPANY_PASSWORD | Private password for presentation-company@example.test. |
+
+Passwords are generated independently. Demo initialization preserves existing
+passwords and edits, verifies the dedicated account identities, and creates
+three published lessons plus three instructor drafts once. The demonstration
+company starts pending so administrator verification can be shown.
+
+Guidance receives a question, up to three preceding questions, and up to three
+approved public excerpts. Private account, profile, application, and PDF objects
+are excluded. Each returned citation must match the retrieved sources. Each
+configured provider is tried once. Unavailable providers yield a recoverable
+error while other workflows remain available.
+
+## Free-service operating limits
+
+The free web service can sleep after 15 minutes of inactivity and may take time
+to restart. Its filesystem is temporary. Database records and PDF attachments
+survive service restarts because they reside in PostgreSQL.
+
+The shared free PostgreSQL instance has a 1 GB capacity and expires on
+December 22, 2026. The workspace's free instance hours and build allowances are
+shared by its services. A free instance does not supply managed backups.
+Back up ThinkMedia before the expiry date. An always-on deployment, managed
+backup retention, and a real-data pilot require further operating decisions.
+
+The application includes explicit backup/restore and retention tools. Existing
+local-only operations intentionally reject remote targets. Hosted backup must
+use the dedicated ThinkMedia database credentials and a configured secure
+destination. Real privacy, retention, and company-verification policies require
+owner approval. The public demo should use fictional records.
+
+Sources used for this configuration are Render's
+[Blueprint specification](https://render.com/docs/blueprint-spec),
+[Docker guide](https://render.com/docs/docker),
+[environment variables](https://render.com/docs/environment-variables), and
+[free service limits](https://render.com/docs/free).

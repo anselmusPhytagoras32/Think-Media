@@ -61,16 +61,14 @@ request URL, key, or prompt. Tests inject an HTTPX transport; no live key needed
     MAX_REQUEST_BYTES = 16384
     MAX_RESPONSE_BYTES = 32768
 
-    def __init__(self, settings: Settings, *, transport=None):
+    def __init__(self, settings: Settings, *, transport=None, budget=None):
         self._settings = settings
         self._transport = transport
-        self._lock = threading.Lock()
-        self._calls = 0
+        self._budget = budget if budget is not None else CallBudget(settings.assistant_call_budget)
 
     @property
     def calls_used(self):
-        with self._lock:
-            return self._calls
+        return self._budget.calls_used
 
     async def _request(self, body, key):
         # A total deadline also stops slow headers/body trickles; HTTPX's
@@ -158,6 +156,13 @@ request URL, key, or prompt. Tests inject an HTTPX transport; no live key needed
             # Gemini 3.8 supports low/medium/high, never minimal or thinking-off.
             payload["max_tokens"] = settings.assistant_max_completion_tokens
             payload["reasoning_effort"] = settings.assistant_reasoning_effort
+        elif settings.assistant_provider_profile == "groq":
+            payload["max_completion_tokens"] = settings.assistant_max_completion_tokens
+            payload["reasoning_effort"] = settings.assistant_reasoning_effort
+        elif settings.assistant_provider_profile == "openrouter":
+            payload["max_tokens"] = settings.assistant_max_completion_tokens
+            payload["reasoning"] = {"enabled": False}
+            payload["response_format"] = {"type": "json_object"}
         else:
             payload.update(
                 store=False, n=1,
@@ -166,10 +171,7 @@ request URL, key, or prompt. Tests inject an HTTPX transport; no live key needed
         body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
         if len(body) > self.MAX_REQUEST_BYTES:
             raise AssistantUnavailable("The assistant request is outside the allowed bounds.")
-        with self._lock:
-            if self._calls >= settings.assistant_call_budget:
-                raise AssistantUnavailable("The assistant call budget has been reached.")
-            self._calls += 1
+        self._budget.reserve()
         try:
             # FastAPI invokes this synchronous service in a worker thread.
             envelope = json.loads(asyncio.run(self._request(body, key)))
@@ -197,11 +199,74 @@ request URL, key, or prompt. Tests inject an HTTPX transport; no live key needed
             raise AssistantUnavailable("The external assistant is unavailable.") from None
 
 
+class CallBudget:
+    """One thread-safe attempt budget shared by both provider routes."""
+
+    def __init__(self, limit):
+        self.limit = limit
+        self._used = 0
+        self._lock = threading.Lock()
+
+    @property
+    def calls_used(self):
+        with self._lock:
+            return self._used
+
+    def reserve(self):
+        with self._lock:
+            if self._used >= self.limit:
+                raise AssistantUnavailable("The assistant call budget has been reached.")
+            self._used += 1
+
+
+class RoutedProvider:
+    """Try each configured route once, sharing context and attempt limits."""
+
+    def __init__(self, settings, *, transport=None):
+        self.budget = CallBudget(settings.assistant_call_budget)
+        routes = [
+            ("groq", settings.groq_api_key, settings.groq_model, "https://api.groq.com/openai/v1/chat/completions"),
+            ("openrouter", settings.openrouter_api_key, settings.openrouter_model, "https://openrouter.ai/api/v1/chat/completions"),
+        ]
+        routes = [
+            route for route in routes
+            if route[1].get_secret_value().strip()
+            and settings.assistant_provider_profile in {route[0], "groq_openrouter"}
+        ]
+        self.providers = [
+            ExternalProvider(
+                settings.model_copy(update=dict(
+                    assistant_provider_profile=profile,
+                    assistant_api_key=key,
+                    assistant_model=model,
+                    assistant_endpoint=endpoint,
+                    assistant_timeout_seconds=settings.assistant_timeout_seconds / len(routes),
+                )),
+                transport=transport, budget=self.budget,
+            )
+            for profile, key, model, endpoint in routes
+        ]
+
+    @property
+    def calls_used(self):
+        return self.budget.calls_used
+
+    def respond(self, question, sources, *, previous_questions=None):
+        for provider in self.providers:
+            try:
+                return provider.respond(question, sources, previous_questions=previous_questions)
+            except AssistantUnavailable:
+                continue
+        raise AssistantUnavailable("The assistant providers are unavailable.")
+
+
 def provider_for(settings_or_mode):
     # Preserve the small mode-only helper used by local callers.
     mode = settings_or_mode if isinstance(settings_or_mode, str) else settings_or_mode.assistant_mode
     if mode == "retrieval":
         return RetrievalProvider()
     if mode == "external" and isinstance(settings_or_mode, Settings):
+        if settings_or_mode.assistant_provider_profile in {"groq", "openrouter", "groq_openrouter"}:
+            return RoutedProvider(settings_or_mode)
         return ExternalProvider(settings_or_mode)
     return DisabledProvider()

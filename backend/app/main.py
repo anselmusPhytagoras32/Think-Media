@@ -23,6 +23,7 @@ from app.providers.assistant import provider_for
 from app.observability import APIMetrics
 from app.schemas import HealthResponse
 from app.security.throttle import Throttle
+from app.web import mount_frontend
 
 logger = logging.getLogger("thinkmedia")
 
@@ -180,6 +181,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         # some versions retain router groups instead of flattening app.routes.
         allowed_routes=set(app.openapi()["paths"])
     )
+    if settings.frontend_dist:
+        mount_frontend(app, settings.frontend_dist)
     return app
 
 

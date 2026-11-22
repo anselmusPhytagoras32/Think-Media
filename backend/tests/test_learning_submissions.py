@@ -137,3 +137,22 @@ def test_rejects_invalid_materials_and_duplicate_skill_publication(app):
     draft = checked(save(instructor, LESSON, item=draft, remove=True))
     assert draft["attachment_name"] is None
     assert instructor.get(f"{INSTRUCTOR}/{draft['id']}/attachment").status_code == 404
+
+
+def test_publication_audit_failure_rolls_back_review_and_published_content(app, monkeypatch):
+    from app.errors import ApiError
+    from app.repositories.learning import ContentRepository
+    instructor = learner(app, email="rollback-author@example.test", role="instructor")
+    admin = administrator(app)
+    pending = checked(submit(instructor, checked(save(instructor, LESSON), 201)))
+
+    def unavailable(*_args, **_kwargs):
+        raise ApiError(503, "AUDIT_UNAVAILABLE", "Synthetic audit failure.")
+
+    monkeypatch.setattr(ContentRepository, "add_event", unavailable)
+    assert review(admin, pending).status_code == 503
+    unchanged = checked(instructor.get(f"{INSTRUCTOR}/{pending['id']}"))
+    assert unchanged["status"] == "pending"
+    assert unchanged["version"] == pending["version"]
+    assert unchanged["review"] is None
+    assert admin.get("/api/v1/admin/content").json()["total"] == 0

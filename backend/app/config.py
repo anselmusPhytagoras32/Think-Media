@@ -14,6 +14,7 @@ from urllib.parse import urlsplit
 
 from pydantic import AliasChoices, Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
+from sqlalchemy.engine import make_url
 
 DEFAULT_ALLOWED_ORIGINS = (
     "http://localhost:5173,http://127.0.0.1:5173,"
@@ -48,7 +49,7 @@ class Settings(BaseSettings):
     assistant_mode: Literal["disabled", "retrieval", "external"] = Field(
         default="disabled", validation_alias="APP_ASSISTANT_MODE"
     )
-    assistant_provider_profile: Literal["openai", "gemini"] = Field(
+    assistant_provider_profile: Literal["openai", "gemini", "groq", "openrouter", "groq_openrouter"] = Field(
         default="openai", validation_alias="APP_ASSISTANT_PROVIDER_PROFILE"
     )
     assistant_reasoning_effort: Literal["low", "medium", "high"] = Field(
@@ -64,6 +65,10 @@ class Settings(BaseSettings):
     assistant_api_key: SecretStr = Field(
         default=SecretStr(""), repr=False, validation_alias="APP_ASSISTANT_API_KEY"
     )
+    groq_api_key: SecretStr = Field(default=SecretStr(""), repr=False, validation_alias="GROQ_API_KEY")
+    openrouter_api_key: SecretStr = Field(default=SecretStr(""), repr=False, validation_alias="OPENROUTER_API_KEY")
+    groq_model: str = Field(default="openai/gpt-oss-20b", min_length=1, max_length=200, validation_alias="GROQ_MODEL")
+    openrouter_model: str = Field(default="nvidia/nemotron-3.5-super-vl:free", min_length=1, max_length=200, validation_alias="OPENROUTER_MODEL")
     assistant_timeout_seconds: float = Field(
         default=10, ge=1, le=30, allow_inf_nan=False,
         validation_alias="APP_ASSISTANT_TIMEOUT_SECONDS",
@@ -101,6 +106,11 @@ class Settings(BaseSettings):
         default="tm_session",
         validation_alias=AliasChoices("APP_SESSION_COOKIE_NAME"),
     )
+    public_origin: str = Field(
+        default="",
+        validation_alias=AliasChoices("APP_PUBLIC_ORIGIN", "RENDER_EXTERNAL_URL"),
+    )
+    frontend_dist: str = Field(default="", validation_alias="APP_FRONTEND_DIST")
     session_ttl_hours: int = Field(
         default=8,
         ge=1,
@@ -178,6 +188,32 @@ class Settings(BaseSettings):
             return "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
         return self.assistant_endpoint
 
+    @field_validator("database_url")
+    @classmethod
+    def _database_url(cls, value: str) -> str:
+        try:
+            url = make_url(value)
+            if url.drivername in {"postgres", "postgresql"}:
+                url = url.set(drivername="postgresql+psycopg")
+            if url.drivername != "postgresql+psycopg" or not url.database:
+                raise ValueError
+            return url.render_as_string(hide_password=False)
+        except Exception:
+            raise ValueError("Use a PostgreSQL connection URL with a database name.") from None
+
+    @field_validator("public_origin")
+    @classmethod
+    def _public_origin(cls, value: str) -> str:
+        value = value.strip().rstrip("/")
+        if value:
+            parsed = urlsplit(value)
+            if (
+                parsed.scheme != "https" or not parsed.hostname
+                or parsed.username or parsed.password or parsed.path or parsed.query or parsed.fragment
+            ):
+                raise ValueError("Use an HTTPS application origin.")
+        return value
+
     @property
     def assistant_effective_model(self) -> str:
         if self.assistant_provider_profile == "gemini" and not self.assistant_model.strip():
@@ -186,11 +222,12 @@ class Settings(BaseSettings):
 
     @property
     def origin_set(self) -> frozenset[str]:
-        return frozenset(
+        origins = frozenset(
             part.strip().rstrip("/")
             for part in self.allowed_origins.split(",")
             if part.strip()
         )
+        return origins | {self.public_origin} if self.public_origin else origins
 
     @property
     def local_http_mode(self) -> bool:

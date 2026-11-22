@@ -1,0 +1,47 @@
+# FR01–12 / NFR02/06: one origin preserves the session and CSRF contract.
+services:
+  - type: web
+    name: thinkmedia-demo
+    runtime: docker
+    plan: free
+    region: oregon
+    branch: main
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    autoDeployTrigger: commit
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: APP_ENV
+        value: demo
+      - key: APP_COOKIE_SECURE
+        value: "true"
+      - key: APP_ALLOWED_ORIGINS
+        value: ""
+      - key: APP_CSRF_SECRET
+        generateValue: true
+      - key: APP_ASSISTANT_MODE
+        value: external
+      - key: APP_ASSISTANT_PROVIDER_PROFILE
+        value: groq_openrouter
+      - key: GROQ_API_KEY
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: APP_ASSISTANT_CALL_BUDGET
+        value: "100"
+      - key: APP_ASSISTANT_TIMEOUT_SECONDS
+        value: "30"
+      - key: APP_ASSISTANT_MAX_COMPLETION_TOKENS
+        value: "1024"
+      - key: APP_BOOTSTRAP_DEMO
+        value: "true"
+      - key: APP_DEMO_ADMINISTRATOR_PASSWORD
+        generateValue: true
+      - key: APP_DEMO_INSTRUCTOR_PASSWORD
+        generateValue: true
+      - key: APP_DEMO_STUDENT_PASSWORD
+        generateValue: true
+      - key: APP_DEMO_COMPANY_PASSWORD
+        generateValue: true

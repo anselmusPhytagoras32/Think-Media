@@ -1,5 +1,11 @@
 # Optional Gemini assistant — FR10 / NFR02/03/11
 
+The November 23 online-demo configuration uses GPT OSS 20B through Groq,
+with Nemotron 3.5 Super VL through OpenRouter as fallback. See
+[Render runtime settings](RENDER_HOSTING.md). The Gemini instructions below
+record the earlier local presentation setup and remain available for that
+provider profile.
+
 The owner selected **Gemini 3.5 Flash-Lite (`gemini-3.5-flash-lite`)** for the
 current presentation runtime after Gemini 3.8 Flash returned high-demand errors.
 Set the model explicitly in the private dotenv file; the application's omitted-model
