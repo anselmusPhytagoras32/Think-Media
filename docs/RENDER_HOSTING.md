@@ -5,6 +5,11 @@ service. PostgreSQL stores sessions, profiles, learning records, quizzes,
 applications, private PDF bytes, and review history. The service uses the free
 compute plan in Oregon.
 
+**Live demo:** https://thinkmedia-demo-m74t.onrender.com.
+The first successful deployment used commit `f6ed08e`, on November 23, 2026
+(Asia/Manila). Current checks are in the
+[requirements audit](REQUIREMENTS_COVERAGE_2026-11-23.md).
+
 ## Deployment
 
 The repository-root render.yaml describes the service. The Docker build runs
@@ -50,6 +55,20 @@ passwords and edits, verifies the dedicated account identities, and creates
 three published lessons plus three instructor drafts once. The demonstration
 company starts pending so administrator verification can be shown.
 
+On the prepared workstation, the four actual hosted passwords are saved in
+`.local/render-demo-passwords.private.env`. This ignored file contains only demo
+passwords. It is separate from local presentation credentials. In Render,
+the same values are on the service's Environment page. Keep them private.
+Use separate browser profiles for each role.
+
+The Learning Library contains three published practice lessons: résumé project
+bullets, STAR interview answers, and workplace progress updates. Each includes
+a reference link and a scored quiz. The résumé lesson includes the fictional
+PDF. The instructor's **Teaching materials** page contains three editable lesson
+drafts plus a clearly labeled skill draft created by the hosted smoke test.
+Use **New skill category** or **New lesson**, save, and submit for review.
+An administrator publishes through **Learning content → Review instructor submissions**.
+
 Guidance receives a question, up to three preceding questions, and up to three
 approved public excerpts. Private account, profile, application, and PDF objects
 are excluded. Each returned citation must match the retrieved sources. Each
@@ -69,9 +88,27 @@ Back up ThinkMedia before the expiry date. An always-on deployment, managed
 backup retention, and a real-data pilot require further operating decisions.
 
 The application includes explicit backup/restore and retention tools. Existing
-local-only operations intentionally reject remote targets. Hosted backup must
-use the dedicated ThinkMedia database credentials and a configured secure
-destination. Real privacy, retention, and company-verification policies require
+local-only operations intentionally reject remote targets. On the prepared
+workstation, run the dedicated hosted export from the repository root:
+
+```powershell
+& ./scripts/backup-render.ps1
+```
+
+It reads the approved ThinkMedia-only connection from ignored local settings,
+requires TLS, and stores custom-format exports in `.local/hosted-backups`.
+Incomplete exports retain a `.partial` suffix. Completed files end in `.dump`.
+The Windows task **ThinkMedia hosted database backup** runs daily at 02:00
+UTC+8, with StartWhenAvailable for missed runs. Its manually triggered check
+returned result 0. It requires this workstation, its signed-in user, network,
+the private settings, and the local Python/PostgreSQL tools. It cannot guarantee
+a 24-hour recovery point while the workstation is unavailable. The backup was
+restored into a new disposable local database: all 22 public-table counts and
+both PDF byte fingerprints matched. Existing databases were not overwritten.
+
+The private backup log is `.local/hosted-backup.log`. Backups contain account
+hashes and private demo records; keep them outside Git and approved sharing.
+Real privacy, retention, and company-verification policies require
 owner approval. The public demo should use fictional records.
 
 Sources used for this configuration are Render's

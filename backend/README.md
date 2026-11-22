@@ -13,8 +13,9 @@ Use Python 3.12+ and the pinned requirements.lock. `APP_ASSISTANT_MODE=disabled`
 FastAPI modular monolith for accounts, role-specific profiles, company
 verification and the privileged-action audit trail. Phase 1 scope is FR01–FR02,
 the relevant part of FR11, and NFR02/03/04/06. Marketplace listings,
-applications, learning content, recommendations and the AI assistant are **not**
-implemented yet.
+applications, learning content, recommendations and the AI assistant are
+documented in the current implementation and API guides linked above. The
+foundation instructions below remain useful for initial setup.
 
 - Python 3.12+ (verified on 3.14.4; pinned NumPy/SciPy require 3.12+)
 - FastAPI + SQLAlchemy 2 + Alembic
@@ -43,6 +44,23 @@ backend/
 ```
 
 ## Local setup
+
+On native Windows, use PowerShell with an installed local PostgreSQL server:
+
+```powershell
+cd backend
+py -3.13 -m venv .venv
+& ./.venv/Scripts/python.exe -m pip install -r requirements.lock
+Copy-Item .env.example .env
+# Set DATABASE_URL and APP_CSRF_SECRET privately in .env.
+& ./.venv/Scripts/python.exe -m alembic upgrade head
+$env:APP_ASSISTANT_MODE='retrieval'
+& ./.venv/Scripts/python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+
+The database must exist before migration. This setup was verified with native
+Windows Python 3.13.7 and PostgreSQL 18.7. Linux/WSL uses the commands below;
+virtual environments are platform-specific and should be recreated when switching.
 
 ```bash
 cd backend

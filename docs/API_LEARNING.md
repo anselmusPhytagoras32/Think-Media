@@ -1,5 +1,37 @@
 # Learning and guidance contract — FR03/10/11
 
+## Instructor authoring extension
+
+Instructors manage their own submissions under /api/v1/instructor/learning.
+POST creates a draft from multipart form data containing draft JSON and an
+optional PDF file. PUT /{id} saves an editable draft and requires expected_version.
+GET lists owned submissions, GET /{id} opens one, GET /{id}/attachment downloads
+its PDF, and POST /{id}/submit moves an editable draft into review.
+
+Lessons include title, summary, body, tags, approved skill_ids, reference links,
+and optional quiz questions with feedback. Standalone skill categories contain
+a name and description. The kind field selects lesson or skill. PDFs have the
+same 5 MiB, MIME, header, and trailer validation used by application uploads.
+
+Administrators open /api/v1/admin/learning-submissions, filtered by pending,
+changes_requested, or approved. GET /{id} and /{id}/attachment provide review
+previews. PATCH /{id} accepts expected_version, a decision of approved or
+changes_requested, and review feedback. Returning for changes requires feedback.
+Instructors can revise and resubmit. Other instructors cannot access the draft.
+
+Approval publishes a lesson through the existing content service and preserves
+review history in the same transaction. Approved skills become available at
+/api/v1/learning-skills with search and pagination. Published lesson details
+include links and an attachment name. GET /api/v1/content/{id}/attachment checks
+publication before serving the PDF. Student quiz responses exclude answer keys,
+and feedback becomes available only after submission.
+
+Hosted Guidance can use the Groq/OpenRouter profile described in
+[Render hosting](RENDER_HOSTING.md). The existing provider/privacy boundaries
+apply to both routes.
+
+## Existing learning and guidance endpoints
+
 Implemented learning and assistant contract, following marketplace acceptance.
 
 Existing auth/CSRF/error conventions. Student/instructor feeds contain database resources published by an administrator. Assistant retrieval may also use the versioned, read-only public guides allowlisted in `backend/app/services/bundled_guidance.py`; these are not database records or user data. All lists paginated. Administration requires server-side administrator role.

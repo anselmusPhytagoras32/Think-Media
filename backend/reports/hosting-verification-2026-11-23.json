@@ -1,0 +1,109 @@
+{
+  "date_asia_manila": "2026-11-23",
+  "initial_deployed_commit": "f6ed08eab340c94e3c423dcbc4ac8ba7c57b8ee8",
+  "demo_url": "https://thinkmedia-demo-m74t.onrender.com",
+  "backend_suite": {
+    "passed": 266,
+    "failures": 0,
+    "errors": 0,
+    "seconds": 385.863
+  },
+  "additional_backend_rollback_test": {
+    "passed": 1,
+    "seconds": 1.99
+  },
+  "browser_suite": {
+    "passed": 51,
+    "minutes": 3.7,
+    "channel": "msedge",
+    "target": "isolated local API and PostgreSQL"
+  },
+  "evaluation_integrity_tests": {
+    "passed": 8
+  },
+  "frontend_production_build": "passed",
+  "alembic_schema_drift": "no new upgrade operations",
+  "render_docker_deployment": "live",
+  "hosted_http_checks": {
+    "passed": 38,
+    "scope": "Hosted four-role authentication, secure sessions, authorization, samples, PDF, quiz, suggestions, instructor skill creation, logout.",
+    "provider_requests": 0
+  },
+  "live_provider_checks": {
+    "groq": "validated cited answer",
+    "openrouter": "validated cited answer",
+    "scope": "generic OJT resume question and public approved guide excerpt; no private account/profile/application/PDF context"
+  },
+  "backup_restore": {
+    "all_public_tables_matched": 22,
+    "pdf_sha256_matches": 2,
+    "restored_to": "new disposable local database",
+    "scheduled_task_last_result": 0,
+    "schedule": "02:00 UTC+8; interactive workstation; StartWhenAvailable"
+  },
+  "synthetic_local_performance": {
+    "requirement": "NFR01",
+    "measured_at": "2026-11-22T18:28:32.309770+00:00",
+    "environment": {
+      "python": "3.13.7",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "target": "local loopback FastAPI + PostgreSQL"
+    },
+    "dataset_kind": "synthetic local functional benchmark; not pilot participants",
+    "concurrent_users": 20,
+    "measured_requests": 200,
+    "warmup_requests": 80,
+    "path_mix": [
+      "/profiles/me",
+      "/listings?limit=20",
+      "/content?limit=20",
+      "/recommendations?limit=10"
+    ],
+    "database_row_counts": {
+      "users": 27,
+      "listings": 10,
+      "learning_content": 13,
+      "applications": 0,
+      "interactions": 0
+    },
+    "elapsed_seconds": 5.468,
+    "p95_method": "nearest-rank on all measured request durations",
+    "p95_ms": 764.759,
+    "max_ms": 905.219,
+    "failures": 0,
+    "per_path": {
+      "/profiles/me": {
+        "requests": 50,
+        "p95_ms": 492.506
+      },
+      "/listings?limit=20": {
+        "requests": 50,
+        "p95_ms": 693.778
+      },
+      "/content?limit=20": {
+        "requests": 50,
+        "p95_ms": 755.412
+      },
+      "/recommendations?limit=10": {
+        "requests": 50,
+        "p95_ms": 808.998
+      }
+    },
+    "target_ms": 2000,
+    "limitations": [
+      "Warmed local runtime and synthetic accounts; not a production or pilot load result.",
+      "AI latency excluded. No external AI provider is called.",
+      "Synthetic actors are preserved; no existing data is removed."
+    ],
+    "target_met": true
+  },
+  "remaining_conditions": [
+    "Genuine pilot ratings and consented CSAT data",
+    "Fixed reviewed reference answers and human factual assessment",
+    "Real assistive-technology user evaluation",
+    "Real-data privacy, retention and company-verification policies",
+    "Free service sleep and shared PostgreSQL expiry on December 22, 2026",
+    "Workstation availability limits backup recovery point"
+  ],
+  "evidence_note": "Aggregates only. Secrets, JUnit, raw smoke reports, and backups remain in ignored private local state."
+}

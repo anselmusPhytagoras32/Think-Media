@@ -1,5 +1,10 @@
 # ThinkMedia — verified local implementation
 
+The current hosted-demo changes, requirement coverage, and remaining sign-off
+conditions are documented in [the November 23 audit](REQUIREMENTS_COVERAGE_2026-11-23.md)
+and [Render hosting](RENDER_HOSTING.md). The entries below retain their original
+local verification dates and deployment scope.
+
 DeepSeek’s existing FastAPI backend is preserved and extended. React/TypeScript
 connects to actual FastAPI endpoints and PostgreSQL, using HttpOnly sessions and
 CSRF. No functioning endpoint is replaced with frontend mock data. Clearly

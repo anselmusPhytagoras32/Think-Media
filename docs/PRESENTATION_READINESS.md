@@ -1,5 +1,13 @@
 # ThinkMedia local presentation acceptance
 
+**November 23 update:** the approved fictional-data demo is available at
+https://thinkmedia-demo-m74t.onrender.com. See [Render hosting](RENDER_HOSTING.md)
+for credentials, prepared lessons, provider configuration, backups, and free-plan
+limits, and [current requirements coverage](REQUIREMENTS_COVERAGE_2026-11-23.md)
+for rerun evidence. Native Windows Python/PostgreSQL and Edge were used for the
+current checks. The WSL launcher instructions, empty-data state, local-only scope,
+and dated results below describe the earlier November presentation setup.
+
 **Current data state — November 14:** at the owner's request, all local data
 except administrator accounts has been reset after a private backup. Earlier
 seed accounts, listings and published guides are no longer in the active

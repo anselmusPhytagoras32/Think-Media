@@ -1,5 +1,10 @@
 # Local recovery and performance — NFR01/07
 
+The approved November 23 hosted demo has a dedicated database, a private
+workstation backup task, and a verified local restoration. See
+[hosted operations](RENDER_HOSTING.md) and [current evidence](REQUIREMENTS_COVERAGE_2026-11-23.md).
+The local/WSL procedures and earlier deployment scope below are historical.
+
 ## Private backups
 
 Run from backend with an explicitly configured loopback PostgreSQL DATABASE_URL:

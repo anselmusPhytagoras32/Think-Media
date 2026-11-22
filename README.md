@@ -3,12 +3,16 @@
 For hosted deployment settings, server-only AI provider configuration,
 and free-service limits, see [Render hosting](docs/RENDER_HOSTING.md).
 
+Online fictional-data demo: **https://thinkmedia-demo-m74t.onrender.com**.
+The [November 23 requirements audit](docs/REQUIREMENTS_COVERAGE_2026-11-23.md)
+records current verification and remaining pilot conditions.
+
 React + FastAPI + PostgreSQL career and OJT workspace. Product requirements are in [PRODUCT.md](PRODUCT.md); verified progress and remaining work are in [implementation status](docs/IMPLEMENTATION_STATUS.md).
 
-For the prepared **Windows + Ubuntu WSL local presentation**, follow the
+For the earlier **Windows + Ubuntu WSL local presentation**, follow the
 [presentation startup and acceptance guide](docs/PRESENTATION_READINESS.md).
-The backend virtual environment in this checkout is Linux-based; it does not
-contain Windows `Scripts/Activate.ps1` executables.
+The November 23 checks used native Windows Python/PostgreSQL and Edge. For a
+native Windows environment, follow [backend setup](backend/README.md).
 
 ## Run the application directly
 
@@ -46,7 +50,7 @@ The legacy orchestration tools below remain as historical repository material. T
 
 ## Current verified scope
 
-Accounts and profiles, company verification, published OJT/job listings, private PDF applications and applicant review, learning resources/quizzes/moderation, real suggestions/ratings and source-backed resource lookup work against FastAPI/PostgreSQL. External AI is off by user choice. Research metrics remain pending genuine datasets. See [verified status](docs/IMPLEMENTATION_STATUS.md), [operations](docs/OPERATIONS.md) and [evaluation](docs/EVALUATION.md).
+Accounts and profiles, company verification, published OJT/job listings, private PDF applications and applicant review, instructor skill/lesson authoring with administrator review, learning resources/quizzes/moderation, suggestions/ratings and source-backed guidance work against FastAPI/PostgreSQL. The hosted demo uses Groq with OpenRouter fallback; local guidance mode is configured separately. Research metrics remain pending genuine datasets. See [verified status](docs/IMPLEMENTATION_STATUS.md), [operations](docs/OPERATIONS.md) and [evaluation](docs/EVALUATION.md).
 
 ## Legacy agent-pack instructions
 
