@@ -6,6 +6,10 @@ and free-service limits, see [Render hosting](docs/RENDER_HOSTING.md).
 Online fictional-data demo: **https://thinkmedia-demo-m74t.onrender.com**.
 The [November 23 requirements audit](docs/REQUIREMENTS_COVERAGE_2026-11-23.md)
 records current verification and remaining pilot conditions.
+The [workspace assistant contract](docs/API_ASSISTANT_WORKSPACE.md) describes
+Groq tool use, confirmation and role boundaries added on November 24.
+See [November 24 verification](docs/QA_ASSISTANT_WORKSPACE_2026-11-24.md) for
+the new checks and their limits.
 
 React + FastAPI + PostgreSQL career and OJT workspace. Product requirements are in [PRODUCT.md](PRODUCT.md); verified progress and remaining work are in [implementation status](docs/IMPLEMENTATION_STATUS.md).
 

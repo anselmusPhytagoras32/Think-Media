@@ -101,13 +101,13 @@ class MarketplaceService:
             offset=offset,
         )
 
-    def create_listing(self, payload):
+    def create_listing(self, payload, *, commit=True):
         company = load_verified_company(self.db, self.user).company
         row = Listing(company_id=company.id, **payload.model_dump())
         self.db.add(row)
         self.db.flush()
         self.repo.event(row, self.user, "created", None)
-        self.db.commit()
+        self.db.commit() if commit else self.db.flush()
         return self.listing_out(row)
 
     def edit_listing(self, id, payload):

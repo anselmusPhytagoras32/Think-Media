@@ -1,5 +1,9 @@
 # ThinkMedia — verified local implementation
 
+The [November 24 assistant update](QA_ASSISTANT_WORKSPACE_2026-11-24.md)
+adds confirmed role-limited actions and fictional opportunities, with current
+verification evidence. Research effectiveness remains unmeasured.
+
 The current hosted-demo changes, requirement coverage, and remaining sign-off
 conditions are documented in [the November 23 audit](REQUIREMENTS_COVERAGE_2026-11-23.md)
 and [Render hosting](RENDER_HOSTING.md). The entries below retain their original

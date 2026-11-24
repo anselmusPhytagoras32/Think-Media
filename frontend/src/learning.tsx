@@ -947,6 +947,8 @@ export function Learning({
           ) : (
             <>
               <div className="learning-actions">
+                <a className="secondary" href={href("opportunities") + "?type=ojt"}>Explore OJT opportunities<ArrowRight size={16} aria-hidden="true" /></a>
+                <a className="text-button" href={href("profile")}>Update my profile</a>
                 <button
                   className="secondary"
                   disabled={busy}

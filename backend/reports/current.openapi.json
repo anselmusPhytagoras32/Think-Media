@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "ThinkMedia API",
-    "description": "ThinkMedia accounts, private applications, verified-company listings, approved learning, recommendations, feedback, administration and read-only resource guidance.",
+    "description": "ThinkMedia accounts, private applications, verified-company listings, approved learning, recommendations, feedback, administration, grounded guidance and confirmed role-limited workspace assistance.",
     "version": "0.4.0"
   },
   "paths": {
@@ -2560,6 +2560,107 @@
         }
       }
     },
+    "/api/v1/assistant/actions/{id}/confirm": {
+      "post": {
+        "tags": [
+          "learning"
+        ],
+        "summary": "Confirm Assistant Action",
+        "operationId": "confirm_assistant_action_api_v1_assistant_actions__id__confirm_post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assistant/actions/{id}/cancel": {
+      "post": {
+        "tags": [
+          "learning"
+        ],
+        "summary": "Cancel Assistant Action",
+        "operationId": "cancel_assistant_action_api_v1_assistant_actions__id__cancel_post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assistant/capabilities": {
+      "get": {
+        "tags": [
+          "learning"
+        ],
+        "summary": "Assistant Capabilities",
+        "operationId": "assistant_capabilities_api_v1_assistant_capabilities_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/learning-skills": {
       "get": {
         "tags": [
@@ -3281,6 +3382,30 @@
             "maxLength": 2000,
             "minLength": 1,
             "title": "Question"
+          },
+          "workspace": {
+            "type": "boolean",
+            "title": "Workspace",
+            "default": false
+          },
+          "page": {
+            "type": "string",
+            "maxLength": 40,
+            "pattern": "^[a-z-]+$",
+            "title": "Page",
+            "default": "assistant"
+          },
+          "resource_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resource Id"
           },
           "previous_questions": {
             "items": {

@@ -79,6 +79,9 @@ class ResolveInput(ApiModel):
 
 class AssistantInput(ApiModel):
     question: str = Field(min_length=1, max_length=2000)
+    workspace: bool = False
+    page: str = Field(default="assistant", max_length=40, pattern=r"^[a-z-]+$")
+    resource_id: UUID | None = None
     previous_questions: list[Annotated[str, Field(min_length=1, max_length=1000)]] = Field(default_factory=list, max_length=3)
 
     @field_validator('previous_questions')

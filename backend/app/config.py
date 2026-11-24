@@ -86,6 +86,7 @@ class Settings(BaseSettings):
     assistant_window_seconds: int = Field(
         default=60, ge=1, le=3600, validation_alias="APP_ASSISTANT_WINDOW_SECONDS"
     )
+    assistant_tools_enabled: bool = Field(default=True, validation_alias="APP_ASSISTANT_TOOLS_ENABLED")
 
     app_env: str = Field(
         default="local",

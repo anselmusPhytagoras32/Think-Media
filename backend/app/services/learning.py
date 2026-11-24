@@ -149,7 +149,7 @@ class LearningService:
         self.db.commit()
         return self.out(row)
 
-    def state(self, id, field, value):
+    def state(self, id, field, value, *, commit=True):
         self.learner()
         row = self.content(id, public_only=True, lock=True)
         statement = insert(ContentState).values(
@@ -161,7 +161,7 @@ class LearningService:
         self.db.execute(statement)
         state = self.db.get(ContentState, (self.user.id, id))
         setattr(state, field, value)
-        self.db.commit()
+        self.db.commit() if commit else self.db.flush()
         return self.out(row)
 
     def quiz(self, id):

@@ -165,6 +165,8 @@ def main():
                 instructor = db.get(User, UUID(manifest["accounts"]["instructor"]["id"]))
                 administrator = db.get(User, UUID(manifest["accounts"]["administrator"]["id"]))
                 counts = seed_examples(db, instructor, administrator)
+                from ops.demo_catalog import seed_catalog, catalog_password
+                counts.update(seed_catalog(db, administrator, catalog_password(manifest["accounts"]["company"]["password"])))
         finally:
             engine.dispose()
     except Exception as failure:

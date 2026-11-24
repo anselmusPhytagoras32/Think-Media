@@ -88,7 +88,7 @@ def test_cloud_demo_is_idempotent_and_preserves_an_instructor_edit(db, monkeypat
     db.commit()
     db.refresh(draft)
     assert draft.payload["title"] == "An instructor's saved change"
-    assert db.scalar(select(func.count()).select_from(User)) == 4
+    assert db.scalar(select(func.count()).select_from(User)) == 5
 
 
 def test_provider_failover_counts_both_attempts_and_validates_citations():

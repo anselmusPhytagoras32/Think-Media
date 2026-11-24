@@ -1,5 +1,11 @@
 # ThinkMedia requirements coverage
 
+**Subsequent November 24 extension:** see [assistant workspace verification](QA_ASSISTANT_WORKSPACE_2026-11-24.md)
+for confirmed own-profile/resource actions, instructor/company drafts, a fictional
+opportunity catalog and current checks. The figures in this November 23 report
+remain historical. Application decisions and privileged approvals retain their
+existing role-authorized review screens.
+
 This audit uses the cumulative PD7 requirements summarized in
 THINKMEDIA_AGENT_BRIEF.md and the subsequently approved instructor-authoring
 workflow. The November 23 change authorizes a free online demonstration with

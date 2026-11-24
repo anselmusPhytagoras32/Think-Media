@@ -1,5 +1,11 @@
 # ThinkMedia local presentation acceptance
 
+**November 24 update:** [assistant workspace verification](QA_ASSISTANT_WORKSPACE_2026-11-24.md)
+describes confirmed role-limited assistance, the fictional opportunity catalog,
+and the new local checks. Private Render configuration and generated access
+credentials remain outside Git. This extends the prototype; it does not revise
+the fixed proposal or constitute pilot evaluation.
+
 **November 23 update:** the approved fictional-data demo is available at
 https://thinkmedia-demo-m74t.onrender.com. See [Render hosting](RENDER_HOSTING.md)
 for credentials, prepared lessons, provider configuration, backups, and free-plan

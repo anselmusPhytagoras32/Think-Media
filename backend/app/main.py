@@ -83,7 +83,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app = FastAPI(
         title="ThinkMedia API",
         version="0.4.0",
-        description=("ThinkMedia accounts, private applications, verified-company listings, approved learning, recommendations, feedback, administration and read-only resource guidance."),
+        description=("ThinkMedia accounts, private applications, verified-company listings, approved learning, recommendations, feedback, administration, grounded guidance and confirmed role-limited workspace assistance."),
     )
 
     engine = build_engine(settings)

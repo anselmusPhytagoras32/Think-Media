@@ -49,3 +49,4 @@ from app.models.recommendations import Interaction
 __all__.append('Interaction')
 
 from app.models.feedback import SatisfactionFeedback
+from app.models.assistant_action import AssistantAction

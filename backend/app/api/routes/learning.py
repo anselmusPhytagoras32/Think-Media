@@ -23,6 +23,7 @@ from app.services.assistant import AssistantService
 from app.services.bundled_guidance import guide_detail
 from app.services.learning import LearningService
 from app.services.learning_submissions import SubmissionService
+from app.services.assistant_workspace import WorkspaceAssistant
 
 router = APIRouter(tags=["learning"])
 Limit = Annotated[int, Query(ge=1, le=100)]
@@ -136,6 +137,36 @@ def assistant(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
+    if payload.workspace:
+        return WorkspaceAssistant(
+            db, user, request.state.session_row,
+            request.app.state.assistant_provider, request.app.state.assistant_throttle,
+            request.app.state.settings,
+        ).answer(payload.question, payload.page, payload.previous_questions, payload.resource_id)
     return AssistantService(
         db, request.app.state.assistant_provider, request.app.state.assistant_throttle
     ).answer(payload.question, user.id, payload.previous_questions)
+
+
+@router.post("/assistant/actions/{id}/confirm", dependencies=[Depends(require_csrf)])
+def confirm_assistant_action(id: UUID, request: Request, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+    return WorkspaceAssistant(db, user, request.state.session_row, request.app.state.assistant_provider,
+                              request.app.state.assistant_throttle, request.app.state.settings).consume(id)
+
+
+@router.post("/assistant/actions/{id}/cancel", dependencies=[Depends(require_csrf)])
+def cancel_assistant_action(id: UUID, request: Request, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+    return WorkspaceAssistant(db, user, request.state.session_row, request.app.state.assistant_provider,
+                              request.app.state.assistant_throttle, request.app.state.settings).consume(id, cancel=True)
+
+
+@router.get("/assistant/capabilities")
+def assistant_capabilities(request: Request, user: User = Depends(get_current_user)):
+    prompts = {
+        "student": [("Find OJT", "Find published OJT opportunities"), ("Find lessons", "Find resume preparation lessons"), ("My applications", "Open my applications")],
+        "instructor": [("Draft a lesson", "Draft a short OJT interview lesson with one quiz question"), ("Draft a skill", "Draft a workplace communication skill category"), ("My materials", "Open my teaching materials")],
+        "company": [("My listings", "Open my company listings"), ("Draft a listing", "Draft a fictional React OJT listing in Legazpi City"), ("Review applicants", "Open my applicant review workspace")],
+        "administrator": [("Verify companies", "Open company verification"), ("Review learning", "Open instructor submission review"), ("Audit", "Open the audit workspace")],
+    }
+    return {"actions_available": request.app.state.settings.assistant_tools_enabled and hasattr(request.app.state.assistant_provider, "plan"),
+            "prompts": [{"label": label, "question": question} for label, question in prompts[user.role]]}

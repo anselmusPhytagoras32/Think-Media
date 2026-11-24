@@ -34,6 +34,7 @@ APP_TABLES = {
     "interactions",
     "satisfaction_feedback",
     "attachment_retention_events",
+    "assistant_actions",
 }
 
 

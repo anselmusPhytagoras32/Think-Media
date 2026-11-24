@@ -33,7 +33,7 @@ class ProfileService:
     def get_me(self, user: User) -> ProfileEnvelope:
         return envelope(self.profiles, user)
 
-    def update_me(self, user: User, payload: ProfileUpdateRequest) -> ProfileEnvelope:
+    def update_me(self, user: User, payload: ProfileUpdateRequest, *, commit=True) -> ProfileEnvelope:
         provided = set(payload.model_fields_set)
         if not provided:
             raise ApiError(
@@ -91,7 +91,7 @@ class ProfileService:
                         continue
                     setattr(profile_row, field, getattr(payload, field))
                 self.db.flush()
-            self.db.commit()
+            self.db.commit() if commit else self.db.flush()
         except Exception:
             self.db.rollback()
             raise

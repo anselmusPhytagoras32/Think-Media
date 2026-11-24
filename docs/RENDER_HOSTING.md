@@ -6,6 +6,8 @@ applications, private PDF bytes, and review history. The service uses the free
 compute plan in Oregon.
 
 **Live demo:** https://thinkmedia-demo-m74t.onrender.com.
+The November 24 refinement adds confirmed workspace assistance and a fictional
+opportunity catalog. See [assistant actions](API_ASSISTANT_WORKSPACE.md).
 The first successful deployment used commit `f6ed08e`, on November 23, 2026
 (Asia/Manila). Current checks are in the
 [requirements audit](REQUIREMENTS_COVERAGE_2026-11-23.md).
@@ -37,6 +39,7 @@ database. Keep database connection URLs outside Git.
 | APP_CSRF_SECRET | Persistent, generated session-bound CSRF secret. |
 | APP_ALLOWED_ORIGINS | Additional exact origins. The Render application origin is included automatically. |
 | APP_ASSISTANT_MODE=external | Enable live source-grounded Guidance. |
+| APP_ASSISTANT_TOOLS_ENABLED=true | Allow bounded workspace tools and confirmation previews; false retains guidance without assistant actions. |
 | APP_ASSISTANT_PROVIDER_PROFILE=groq_openrouter | Try Groq first, then OpenRouter. |
 | GROQ_API_KEY, OPENROUTER_API_KEY | Server-only provider credentials. |
 | GROQ_MODEL | Defaults to openai/gpt-oss-20b. |
@@ -60,6 +63,20 @@ On the prepared workstation, the four actual hosted passwords are saved in
 passwords. It is separate from local presentation credentials. In Render,
 the same values are on the service's Environment page. Keep them private.
 Use separate browser profiles for each role.
+
+The November 24 private access sheet is `.local/hosted-access.private.md`. It
+contains instructor and administrator access, a verified fictional catalog
+organization at `presentation-catalog-company@example.test`, and the separate
+pending company used for verification demonstrations. The catalog password is
+distinct and derived from the private company runtime secret with a fixed HMAC
+domain. No additional environment secret is needed; no existing password is
+reset. Never put the access sheet in the deck or repository.
+
+The catalog organization has six published fictional opportunities (four OJT
+and two job examples) and one editable draft. Titles, requirements and company
+description identify them as fictional. Initialization preserves changes,
+applications and later verification decisions. The original pending company's
+state is preserved for the administrator walkthrough.
 
 The Learning Library contains three published practice lessons: résumé project
 bullets, STAR interview answers, and workplace progress updates. Each includes

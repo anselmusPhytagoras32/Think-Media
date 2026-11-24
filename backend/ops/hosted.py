@@ -14,6 +14,7 @@ from app.db import build_engine, build_session_factory
 from app.models import User
 from app.validation import validate_password
 from ops.learning_demo import seed_examples
+from ops.demo_catalog import seed_catalog, catalog_password
 from ops.presentation_accounts import ROLES, create_accounts, verify_ownership
 
 
@@ -34,6 +35,7 @@ def bootstrap_demo(db):
     create_accounts(db, manifest)
     instructor = db.get(User, UUID(manifest["accounts"]["instructor"]["id"]))
     administrator = db.get(User, UUID(manifest["accounts"]["administrator"]["id"]))
+    seed_catalog(db, administrator, catalog_password(manifest["accounts"]["company"]["password"]))
     return seed_examples(db, instructor, administrator)
 
 

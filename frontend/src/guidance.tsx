@@ -23,13 +23,48 @@ type GuidanceAnswer = {
   sources: { id: string; title: string }[];
   uncertainty: string | boolean;
   mode: string;
+  results?: {
+    id: string;
+    title: string;
+    summary: string;
+    href: string;
+    kind: string;
+  }[];
+  navigation?: { label: string; href: string };
+  proposal?: {
+    id: string;
+    label: string;
+    changes: Record<string, unknown>;
+    expires_at: string;
+  };
 };
 type Exchange = {
   id: number;
   question: string;
   answer?: GuidanceAnswer;
   error?: string;
+  actionResult?: { answer: string; href?: string };
+  actionError?: string;
 };
+
+function workspaceLink(value: string) {
+  return /^#\/(overview|profile|learning|opportunities|applications|suggestions|authoring|review|verification|content|learning-review|reports|audit)(\/[0-9a-f-]{36})?$/.test(
+    value,
+  );
+}
+
+function changeText(value: unknown): string {
+  if (typeof value === "boolean") return value ? "Yes" : "No";
+  if (Array.isArray(value))
+    return value.every((item) => typeof item === "string")
+      ? value.join(", ")
+      : value.map(changeText).join("\n\n");
+  if (value && typeof value === "object")
+    return Object.entries(value)
+      .map(([key, item]) => `${key.replace(/_/g, " ")}: ${changeText(item)}`)
+      .join("\n");
+  return String(value ?? "");
+}
 type Source = { id: string; title: string; body: string };
 const starters = [
   {
@@ -125,12 +160,31 @@ export function Assistant({ embedded = false }: { embedded?: boolean }) {
   const [question, setQuestion] = useState("");
   const [busy, setBusy] = useState(false);
   const [announcement, setAnnouncement] = useState("");
+  const [workspacePrompts, setWorkspacePrompts] = useState<
+    { label: string; question: string }[]
+  >([]);
   const nextExchange = useRef(0);
   const textarea = useRef<HTMLTextAreaElement>(null);
   const scrollArea = useRef<HTMLDivElement>(null);
   const sourceHeading = useRef<HTMLHeadingElement>(null);
   const sourceOpener = useRef<HTMLButtonElement | null>(null);
   const stickToEnd = useRef(true);
+
+  useEffect(() => {
+    let current = true;
+    api<{
+      actions_available: boolean;
+      prompts: { label: string; question: string }[];
+    }>("/assistant/capabilities")
+      .then((data) => {
+        if (current && data.actions_available)
+          setWorkspacePrompts(data.prompts);
+      })
+      .catch(() => {});
+    return () => {
+      current = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (scrollArea.current && stickToEnd.current)
@@ -165,13 +219,25 @@ export function Assistant({ embedded = false }: { embedded?: boolean }) {
     try {
       const answer = await api<GuidanceAnswer>("/assistant", "POST", {
         question: submittedQuestion,
-        previous_questions: exchanges.filter((item) => item.answer && (!retry || item.id < retry.id)).slice(-3).map((item) => item.question.slice(0, 1000)),
+        workspace: true,
+        page:
+          window.location.hash.replace(/^#\/?/, "").split(/[/?]/)[0] ||
+          "overview",
+        resource_id: /^#\/learning\/[0-9a-f-]{36}$/.test(window.location.hash)
+          ? window.location.hash.split("/")[2]
+          : undefined,
+        previous_questions: exchanges
+          .filter((item) => item.answer && (!retry || item.id < retry.id))
+          .slice(-3)
+          .map((item) => item.question.slice(0, 1000)),
       });
       setExchanges((old) =>
         old.map((item) => (item.id === id ? { ...item, answer } : item)),
       );
       setAnnouncement(
-        "Guidance is ready. Read the response and its sources in the conversation.",
+        answer.proposal
+          ? "A proposed change is ready. Review it before confirming."
+          : "The response is ready. Read it in the conversation.",
       );
       if (!retry)
         setQuestion((current) =>
@@ -191,23 +257,72 @@ export function Assistant({ embedded = false }: { embedded?: boolean }) {
     }
   }
 
+  async function handleProposal(
+    exchange: Exchange,
+    operation: "confirm" | "cancel",
+  ) {
+    if (busy || !exchange.answer?.proposal || exchange.actionResult) return;
+    setBusy(true);
+    setExchanges((old) =>
+      old.map((item) =>
+        item.id === exchange.id ? { ...item, actionError: undefined } : item,
+      ),
+    );
+    try {
+      const actionResult = await api<{ answer: string; href?: string }>(
+        `/assistant/actions/${exchange.answer.proposal.id}/${operation}`,
+        "POST",
+        {},
+      );
+      setExchanges((old) =>
+        old.map((item) =>
+          item.id === exchange.id ? { ...item, actionResult } : item,
+        ),
+      );
+      setAnnouncement(actionResult.answer);
+    } catch (failure) {
+      setExchanges((old) =>
+        old.map((item) =>
+          item.id === exchange.id
+            ? { ...item, actionError: (failure as Error).message }
+            : item,
+        ),
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <>
       {!embedded && (
         <header className="page-heading">
           <div>
-            <h1>OJT preparation guidance</h1>
-            <p>A little preparation for your next step.</p>
+            <h1>
+              {workspacePrompts.length
+                ? "ThinkMedia assistant"
+                : "OJT preparation guidance"}
+            </h1>
+            <p>
+              {workspacePrompts.length
+                ? "Find resources and get help with your workspace."
+                : "A little preparation for your next step."}
+            </p>
           </div>
         </header>
       )}
       <section
         className={`assistant-panel guidance-chat ${embedded ? "guidance-chat-embedded" : "guidance-chat-page"}`}
-        aria-label="Ask about OJT"
+        aria-label={
+          workspacePrompts.length ? "ThinkMedia assistant" : "Ask about OJT"
+        }
       >
         <div className="guidance-conversation-tools">
           <span>
-            <BookOpen size={15} aria-hidden="true" /> Approved resources
+            <BookOpen size={15} aria-hidden="true" />{" "}
+            {workspacePrompts.length
+              ? "Workspace help and approved resources"
+              : "Approved resources"}
           </span>
           {exchanges.length > 0 ? (
             <button
@@ -250,14 +365,50 @@ export function Assistant({ embedded = false }: { embedded?: boolean }) {
                 <Artwork kind="learning" priority />
               </div>
               <h2>
-                Let’s get you
-                <br />
-                OJT-ready.
+                {workspacePrompts.length ? (
+                  <>
+                    What can I help
+                    <br />
+                    you do?
+                  </>
+                ) : (
+                  <>
+                    Let’s get you
+                    <br />
+                    OJT-ready.
+                  </>
+                )}
               </h2>
               <p>
-                Explore resume tips, interview prep and skills for your first
-                day.
+                {workspacePrompts.length
+                  ? "Ask for help or choose a task below. Review proposed changes before saving."
+                  : "Explore resume tips, interview prep and skills for your first day."}
               </p>
+              {workspacePrompts.length > 0 && (
+                <div
+                  className="guidance-workspace-prompts"
+                  aria-label="Workspace help"
+                >
+                  <p>
+                    Find content, open your workspace, or prepare a change to
+                    review.
+                  </p>
+                  {workspacePrompts.map((prompt) => (
+                    <button
+                      type="button"
+                      className="text-button"
+                      key={prompt.label}
+                      onClick={() => {
+                        setQuestion(prompt.question);
+                        textarea.current?.focus();
+                      }}
+                    >
+                      {prompt.label}
+                      <ArrowUpRight size={14} aria-hidden="true" />
+                    </button>
+                  ))}
+                </div>
+              )}
               <div
                 className="guidance-starters"
                 aria-label="Suggested questions"
@@ -326,7 +477,11 @@ export function Assistant({ embedded = false }: { embedded?: boolean }) {
                         <span className="guidance-mode">
                           {exchange.answer.mode === "retrieval"
                             ? "Approved resource lookup"
-                            : "Grounded guidance"}
+                            : exchange.answer.proposal ||
+                                exchange.answer.navigation ||
+                                exchange.answer.results?.length
+                              ? "Workspace help"
+                              : "Grounded guidance"}
                         </span>
                         <h3 className="sr-only">
                           Guidance from approved resources
@@ -334,6 +489,117 @@ export function Assistant({ embedded = false }: { embedded?: boolean }) {
                         <p className="preserve-lines guidance-answer-text">
                           {exchange.answer.answer}
                         </p>
+                        {!!exchange.answer.results?.length && (
+                          <ul className="guidance-workspace-results">
+                            {exchange.answer.results
+                              .filter((result) => workspaceLink(result.href))
+                              .map((result) => (
+                                <li key={result.id}>
+                                  <a href={result.href}>
+                                    {result.title}
+                                    <ArrowUpRight
+                                      size={14}
+                                      aria-hidden="true"
+                                    />
+                                  </a>
+                                  <p>{result.summary}</p>
+                                </li>
+                              ))}
+                          </ul>
+                        )}
+                        {exchange.answer.navigation &&
+                          workspaceLink(exchange.answer.navigation.href) && (
+                            <a
+                              className="secondary"
+                              href={exchange.answer.navigation.href}
+                            >
+                              {exchange.answer.navigation.label}
+                              <ArrowUpRight size={14} aria-hidden="true" />
+                            </a>
+                          )}
+                        {exchange.answer.proposal && (
+                          <section
+                            className="guidance-proposal"
+                            aria-label="Proposed change"
+                          >
+                            <h4>{exchange.answer.proposal.label}</h4>
+                            <dl>
+                              {Object.entries(
+                                exchange.answer.proposal.changes,
+                              ).map(([label, value]) => (
+                                <div key={label}>
+                                  <dt>{label}</dt>
+                                  <dd className="preserve-lines">
+                                    {changeText(value).length > 500 ? (
+                                      <details>
+                                        <summary>
+                                          Read proposed {label.toLowerCase()}
+                                        </summary>
+                                        <p className="preserve-lines">
+                                          {changeText(value)}
+                                        </p>
+                                      </details>
+                                    ) : (
+                                      changeText(value)
+                                    )}
+                                  </dd>
+                                </div>
+                              ))}
+                            </dl>
+                            {exchange.actionResult ? (
+                              <div role="status">
+                                <p>{exchange.actionResult.answer}</p>
+                                {exchange.actionResult.href &&
+                                  workspaceLink(exchange.actionResult.href) && (
+                                    <a
+                                      className="secondary"
+                                      href={exchange.actionResult.href}
+                                    >
+                                      Open updated page
+                                      <ArrowUpRight
+                                        size={14}
+                                        aria-hidden="true"
+                                      />
+                                    </a>
+                                  )}
+                              </div>
+                            ) : (
+                              <>
+                                <p>
+                                  Confirm only if these details are correct.
+                                  This preview expires after 10 minutes.
+                                </p>
+                                <div className="guidance-proposal-actions">
+                                  <button
+                                    type="button"
+                                    className="primary"
+                                    disabled={busy}
+                                    onClick={() =>
+                                      void handleProposal(exchange, "confirm")
+                                    }
+                                  >
+                                    Confirm change
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="secondary"
+                                    disabled={busy}
+                                    onClick={() =>
+                                      void handleProposal(exchange, "cancel")
+                                    }
+                                  >
+                                    Cancel change
+                                  </button>
+                                </div>
+                              </>
+                            )}
+                            {exchange.actionError && (
+                              <p className="field-error" role="alert">
+                                {exchange.actionError}
+                              </p>
+                            )}
+                          </section>
+                        )}
                         {exchange.answer.uncertainty && (
                           <p className="guidance-uncertainty">
                             {typeof exchange.answer.uncertainty === "string"
@@ -341,51 +607,58 @@ export function Assistant({ embedded = false }: { embedded?: boolean }) {
                               : "The available resources may not fully answer your question."}
                           </p>
                         )}
-                        <div className="guidance-sources">
-                          <h4>Sources</h4>
-                          {exchange.answer.sources.length ? (
-                            exchange.answer.sources.map((citation) => (
-                              <button
-                                key={citation.id}
-                                type="button"
-                                disabled={!!sourceBusy}
-                                aria-expanded={
-                                  source?.exchangeId === exchange.id &&
-                                  source.content.id === citation.id
-                                }
-                                onClick={async (event) => {
-                                  sourceOpener.current = event.currentTarget;
-                                  setSourceBusy(citation.id);
-                                  setSourceError("");
-                                  try {
-                                    setSource({
-                                      content: await api<Source>(
-                                        citation.id.startsWith("guide:")
-                                          ? `/assistant/sources/${encodeURIComponent(citation.id.slice(6))}`
-                                          : `/content/${citation.id}`,
-                                      ),
-                                      exchangeId: exchange.id,
-                                    });
-                                  } catch (failure) {
-                                    setSourceError((failure as Error).message);
-                                  } finally {
-                                    setSourceBusy("");
+                        {((!exchange.answer.proposal &&
+                          !exchange.answer.navigation &&
+                          !exchange.answer.results?.length) ||
+                          exchange.answer.sources.length > 0) && (
+                          <div className="guidance-sources">
+                            <h4>Sources</h4>
+                            {exchange.answer.sources.length ? (
+                              exchange.answer.sources.map((citation) => (
+                                <button
+                                  key={citation.id}
+                                  type="button"
+                                  disabled={!!sourceBusy}
+                                  aria-expanded={
+                                    source?.exchangeId === exchange.id &&
+                                    source.content.id === citation.id
                                   }
-                                }}
-                              >
-                                <BookOpen size={14} aria-hidden="true" />
-                                <span>
-                                  {sourceBusy === citation.id
-                                    ? "Opening resource…"
-                                    : citation.title}
-                                </span>
-                                <ArrowUpRight size={14} aria-hidden="true" />
-                              </button>
-                            ))
-                          ) : (
-                            <p>No matching approved sources were found.</p>
-                          )}
-                        </div>
+                                  onClick={async (event) => {
+                                    sourceOpener.current = event.currentTarget;
+                                    setSourceBusy(citation.id);
+                                    setSourceError("");
+                                    try {
+                                      setSource({
+                                        content: await api<Source>(
+                                          citation.id.startsWith("guide:")
+                                            ? `/assistant/sources/${encodeURIComponent(citation.id.slice(6))}`
+                                            : `/content/${citation.id}`,
+                                        ),
+                                        exchangeId: exchange.id,
+                                      });
+                                    } catch (failure) {
+                                      setSourceError(
+                                        (failure as Error).message,
+                                      );
+                                    } finally {
+                                      setSourceBusy("");
+                                    }
+                                  }}
+                                >
+                                  <BookOpen size={14} aria-hidden="true" />
+                                  <span>
+                                    {sourceBusy === citation.id
+                                      ? "Opening resource…"
+                                      : citation.title}
+                                  </span>
+                                  <ArrowUpRight size={14} aria-hidden="true" />
+                                </button>
+                              ))
+                            ) : (
+                              <p>No matching approved sources were found.</p>
+                            )}
+                          </div>
+                        )}
                         {source?.exchangeId === exchange.id && (
                           <section className="source-preview guidance-source-preview">
                             <div>

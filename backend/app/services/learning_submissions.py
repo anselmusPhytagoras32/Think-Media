@@ -117,7 +117,7 @@ class SubmissionService:
         if row.version != expected or row.status not in statuses:
             raise ApiError(409, "SUBMISSION_CONFLICT", "This submission changed. Reopen it and try again.")
 
-    def save(self, draft, attachment, *, id=None, version=None, remove_attachment=False):
+    def save(self, draft, attachment, *, id=None, version=None, remove_attachment=False, commit=True):
         self.instructor()
         if isinstance(draft, LessonDraft):
             self.selected_skills(draft.skill_ids)
@@ -138,7 +138,7 @@ class SubmissionService:
             row.attachment_name, row.attachment = attachment
         elif remove_attachment:
             row.attachment_name = row.attachment = None
-        self.db.commit()
+        self.db.commit() if commit else self.db.flush()
         return self.detail(row)
 
     def submit(self, id, expected):
