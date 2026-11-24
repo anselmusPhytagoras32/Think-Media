@@ -28,21 +28,20 @@ quizzes, links and editable instructor examples remain available.
 
 ## Local checks
 
-The final complete backend suite passed **279 tests in 305.49 seconds**.
+The final complete backend suite passed **279 tests in 375.86 seconds**.
 Alembic reported **no new upgrade operations detected** after the additive
 `0010_assistant_actions` migration. This run includes the nested-quiz schema
 regression and all existing authentication, marketplace and instructor checks.
 
-The full browser suite passed **53 tests in 2.6 minutes** using installed Edge,
+The final full browser suite passed **53 tests in 214.56 seconds** using installed Edge,
 native Windows Python/PostgreSQL, and isolated API `127.0.0.1:8003` / frontend
 `127.0.0.1:5175`. The first whole-browser attempt passed 49 checks and reached
 the disposable server's registration throttle in four later tests. Raising only
 that test server's registration allowance to the documented fixture setting
 resolved the failures; the deployed registration limit was not changed.
 
-The final assistant browser subset passed **two tests** after its final UI
-wording update. These overlap the 53 checks and are not added to that total.
-They cover preview-before-write, single confirmation, cancellation, readable
+The two assistant browser tests are included in the 53 checks. They cover
+preview-before-write, single confirmation, cancellation, readable
 long text at 360 pixels, public result links and rejection of an external result
 URL. Both preview states had no serious or critical automated axe findings.
 Desktop and mobile screenshots were inspected. The browser tests use explicit
@@ -62,6 +61,53 @@ used an unsupported answer-letter property. Inlining the nested quiz schema and
 describing the required zero-based `correct_index` resolved the observed failure;
 local validation still rejects the unsupported property. This is a functional
 check of those requests, not a guarantee about all generated lesson quality.
+
+A hosted check also caught the model choosing the current assistant page instead
+of the requested administrator destination. Tool schemas now explain each
+permitted page, and the planner distinguishes the current page from the requested
+destination. Two direct Groq checks then selected company verification and
+instructor submission review correctly. The final whole-browser run also verifies
+the restored existing screen-reader announcement for source-backed guidance.
+
+## Hosted checks
+
+Render reports application commit `6475b0d` **Live** at
+https://thinkmedia-demo-m74t.onrender.com. The existing private runtime
+configuration supplies the Groq/OpenRouter credentials and database URL. No key
+was added to source, the frontend bundle or this report.
+
+The corrected deployment passed **75 HTTP checks**. These include all five demo
+logins (student, instructor, administrator, original pending company and separate
+verified catalog company), secure sessions, role denial, three published lessons,
+three approved skill categories, six published fictional opportunities, the
+editable company draft and suggestions.
+
+Five live assistant requests exercised opportunity search, cited résumé guidance,
+an instructor lesson/quiz draft, a company listing preview and administrator
+navigation. The operations counter recorded five provider attempts for those
+five requests. The instructor draft was absent before confirmation, created as
+unpublished afterward, denied to another actor, and rejected on replay. Cancelling
+the company proposal created no listing. The original company's pending state
+remained intact.
+
+A separate hosted Edge check made one further live request for an instructor
+skill draft. It verified role prompts, the actual model-generated preview, no
+write before confirmation, server-side cancellation, teaching-material access,
+desktop rendering and 360-pixel containment. It found no serious/critical axe
+findings or browser runtime errors. Both hosted screenshots were visually
+inspected. These are functional checks with fictional requests; they are not
+user testing or research evaluation. Live-check lesson drafts remain editable
+under the fictional instructor account.
+
+After the hosted writes completed, a ThinkMedia-only backup was restored into
+a new disposable local database. All **23 public-table counts**, both PDF byte
+fingerprints and migration revision `0010_assistant_actions` matched. Existing
+databases were not overwritten. The daily workstation backup retains its
+documented availability and retention limitations.
+
+The [sanitized verification receipt](../backend/reports/assistant-workspace-2026-11-24.json)
+records the deployed application revision and aggregate results without keys,
+passwords, account records or private connection URLs.
 
 Reproduction, with private environment variables pointed at disposable local
 databases (never the hosted demo):

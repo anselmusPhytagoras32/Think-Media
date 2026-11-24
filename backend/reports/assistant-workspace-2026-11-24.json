@@ -1,0 +1,44 @@
+{
+  "verified_on": "2026-11-24",
+  "timezone": "Asia/Manila",
+  "application_commit": "6475b0df607fcb9deadeccb5db0829dbbeff9958",
+  "base_url": "https://thinkmedia-demo-m74t.onrender.com",
+  "backend": {
+    "passed": 279,
+    "failed": 0,
+    "pytest_summary_seconds": 375.86,
+    "migration_drift": false
+  },
+  "browser": {
+    "passed": 53,
+    "failed": 0,
+    "seconds": 214.56,
+    "engine": "installed Microsoft Edge",
+    "disposable_local_api": true
+  },
+  "frontend_production_build": "passed",
+  "evaluation_integrity_checks": 8,
+  "hosted": {
+    "passed": 75,
+    "live_assistant_requests": 5,
+    "provider_attempts_observed": 5,
+    "published_practice_lessons": 3,
+    "approved_skill_categories": 3,
+    "published_fictional_opportunities": 6,
+    "role_logins_verified": 5
+  },
+  "hosted_browser": {
+    "passed": true,
+    "live_assistant_requests": 1,
+    "serious_or_critical_axe_findings": 0,
+    "runtime_errors": 0,
+    "minimum_width_px": 360
+  },
+  "backup_restore": {
+    "passed": true,
+    "public_table_counts_matched": 23,
+    "pdf_fingerprints_matched": 2,
+    "migration": "0010_assistant_actions"
+  },
+  "scope": "Functional prototype checks with fictional examples; not a pilot, human factual review, user-testing study or production-readiness certification."
+}

@@ -10,7 +10,8 @@ The November 24 refinement adds confirmed workspace assistance and a fictional
 opportunity catalog. See [assistant actions](API_ASSISTANT_WORKSPACE.md).
 The first successful deployment used commit `f6ed08e`, on November 23, 2026
 (Asia/Manila). Current checks are in the
-[requirements audit](REQUIREMENTS_COVERAGE_2026-11-23.md).
+[November 24 assistant report](QA_ASSISTANT_WORKSPACE_2026-11-24.md), with the
+earlier [requirements audit](REQUIREMENTS_COVERAGE_2026-11-23.md) retained.
 
 ## Deployment
 
@@ -83,6 +84,7 @@ bullets, STAR interview answers, and workplace progress updates. Each includes
 a reference link and a scored quiz. The résumé lesson includes the fictional
 PDF. The instructor's **Teaching materials** page contains three editable lesson
 drafts plus a clearly labeled skill draft created by the hosted smoke test.
+The November 24 live checks also left editable fictional lesson drafts.
 Use **New skill category** or **New lesson**, save, and submit for review.
 An administrator publishes through **Learning content → Review instructor submissions**.
 
@@ -119,9 +121,11 @@ The Windows task **ThinkMedia hosted database backup** runs daily at 02:00
 UTC+8, with StartWhenAvailable for missed runs. Its manually triggered check
 returned result 0. It requires this workstation, its signed-in user, network,
 the private settings, and the local Python/PostgreSQL tools. It cannot guarantee
-a 24-hour recovery point while the workstation is unavailable. The backup was
-restored into a new disposable local database: all 22 public-table counts and
-both PDF byte fingerprints matched. Existing databases were not overwritten.
+a 24-hour recovery point while the workstation is unavailable. The November 23
+backup was restored into a new disposable local database: all 22 public-table
+counts and both PDF byte fingerprints matched. The November 24 backup includes
+the assistant migration; restoration matched all 23 public-table counts and both
+PDF fingerprints. Existing databases were not overwritten.
 
 The private backup log is `.local/hosted-backup.log`. Backups contain account
 hashes and private demo records; keep them outside Git and approved sharing.
