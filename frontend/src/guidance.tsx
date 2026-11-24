@@ -237,7 +237,9 @@ export function Assistant({ embedded = false }: { embedded?: boolean }) {
       setAnnouncement(
         answer.proposal
           ? "A proposed change is ready. Review it before confirming."
-          : "The response is ready. Read it in the conversation.",
+          : answer.results?.length || answer.navigation
+            ? "The response is ready. Read it in the conversation."
+            : "Guidance is ready. Read the response and its sources in the conversation.",
       );
       if (!retry)
         setQuestion((current) =>

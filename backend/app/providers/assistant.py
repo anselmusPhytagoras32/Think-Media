@@ -111,6 +111,12 @@ request URL, key, or prompt. Tests inject an HTTPX transport; no live key needed
                 {"role": "system", "content": (
                     "You are ThinkMedia's workspace assistant. Select exactly one provided local function. "
                     "Use search for requests to find lessons or opportunities, and navigate for requests to open pages. "
+                    "The supplied page is the current location, never the requested destination. "
+                    "Choose the navigation destination from the current question: company verification -> verification; "
+                    "instructor submission review -> learning-review; teaching materials -> authoring; "
+                    "company applicant review -> review; my applications -> applications; "
+                    "company listings or opportunity browsing -> opportunities; audit history -> audit. "
+                    "Only choose a destination present in the provided navigate tool. "
                     "Propose profile changes only when explicitly requested; never invent qualifications. "
                     "Drafts remain unpublished and every write needs the person's confirmation in the app. "
                     "For applications, verification, publication and hiring decisions, navigate to the permitted page; "

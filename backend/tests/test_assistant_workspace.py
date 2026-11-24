@@ -155,6 +155,8 @@ def test_model_planner_uses_one_bounded_groq_tool_call_with_no_structured_output
         assert payload['parallel_tool_calls'] is False
         assert payload['tool_choice'] == 'required'
         assert payload['max_completion_tokens'] == 512
+        assert 'page is the current location' in payload['messages'][0]['content']
+        assert 'company verification -> verification' in payload['messages'][0]['content']
         return httpx.Response(200, json={'choices':[{'finish_reason':'tool_calls','message':{'tool_calls':[{'type':'function','function':{'name':'find_lessons','arguments':'{"q":"resume"}'}}]}}]})
     settings = Settings(_env_file=None, assistant_mode='external', assistant_provider_profile='groq', groq_api_key='synthetic-key', assistant_call_budget=1)
     provider = RoutedProvider(settings, transport=httpx.MockTransport(respond))

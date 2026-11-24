@@ -35,6 +35,14 @@ PROFILE_FIELDS = {
     "instructor": {"institution"},
     "company": {"description", "location", "website"},
 }
+PAGE_PURPOSES = {
+    "overview": "home dashboard", "profile": "my profile", "learning": "published learning library",
+    "opportunities": "opportunities or my company listings", "applications": "my student applications",
+    "suggestions": "my personalized suggestions", "authoring": "my instructor teaching materials",
+    "review": "company applicant review", "verification": "administrator company verification",
+    "content": "administrator learning content", "learning-review": "administrator instructor submission review",
+    "reports": "administrator content reports", "audit": "administrator audit history", "assistant": "assistant conversation",
+}
 WRITE_TOOLS = {"save_resource", "update_profile", "draft_lesson", "draft_skill", "draft_listing"}
 
 
@@ -95,7 +103,7 @@ class WorkspaceAssistant:
     def tools(self):
         definitions = [
             function("answer_guidance", "Answer from approved excerpts with supporting source_ids; admit uncertainty when unsupported.", GroundedAnswer.model_json_schema()),
-            function("navigate", "Open a permitted ThinkMedia page. Use existing screens for applications, verification, publication, and decisions.", {"type": "object", "additionalProperties": False, "properties": {"page": {"type": "string", "enum": PAGES[self.user.role]}}, "required": ["page"]}),
+            function("navigate", "Open the destination requested in the question. Use existing screens for applications, verification, publication, and decisions.", {"type": "object", "additionalProperties": False, "properties": {"page": {"type": "string", "enum": PAGES[self.user.role], "description": "Requested destination, not the current location. " + "; ".join(f"{page}: {PAGE_PURPOSES[page]}" for page in PAGES[self.user.role])}}, "required": ["page"]}),
             function("find_lessons", "Find published learning resources by keyword or exact tag.", LessonSearch.model_json_schema()),
             function("find_opportunities", "Search published opportunities from verified companies.", OpportunitySearch.model_json_schema()),
         ]
