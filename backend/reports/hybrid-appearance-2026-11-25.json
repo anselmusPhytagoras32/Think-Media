@@ -1,0 +1,45 @@
+{
+  "verified_on": "2026-11-25",
+  "timezone": "Asia/Manila",
+  "application_commit": "4a51bb622971bdb212886795bccb2c076619e299",
+  "backend": {
+    "passed": 289,
+    "failed": 0,
+    "pytest_summary_seconds": 834.89,
+    "migration_drift": false
+  },
+  "browser": {
+    "passed": 57,
+    "failed": 0,
+    "seconds": 594.71,
+    "engine": "Microsoft Edge",
+    "isolated_local_api": true
+  },
+  "evaluation_integrity_tests": 11,
+  "production_build": "passed",
+  "hosted": {
+    "base_url": "https://thinkmedia-demo-m74t.onrender.com",
+    "passed": true,
+    "model": "hybrid-v2",
+    "configured_alpha": 0.5,
+    "actual_demo_mode": "profile",
+    "explicit_ratings": 0,
+    "published_listing_results": 6,
+    "learning_results": 3,
+    "theme_persistence": true,
+    "mobile_theme_toggle": true,
+    "serious_or_critical_axe_findings": 0,
+    "runtime_errors": 0,
+    "synthetic_ratings_added_to_hosted_demo": 0,
+    "real_data_metrics": "not_measured"
+  },
+  "synthetic_demo": {
+    "synthetic_only": true,
+    "research_findings": false,
+    "observations": 168,
+    "folds": 5,
+    "collaborative_covered_test_count": 99
+  },
+  "private_configuration_outside_git": true,
+  "scope": "Functional hybrid scoring, leakage controls, statistical pipeline and dark-mode checks. Genuine study metrics remain not_measured."
+}

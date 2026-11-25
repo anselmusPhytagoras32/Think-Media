@@ -1,5 +1,10 @@
 # ThinkMedia — verified local implementation
 
+The [November 25 hybrid/appearance verification](QA_HYBRID_APPEARANCE_2026-11-25.md)
+records the shared recommender/evaluator, chronological five-fold testing,
+browser-local dark mode and hosted checks. The six objectives' research findings
+remain pending genuine data and human review.
+
 The [November 24 assistant update](QA_ASSISTANT_WORKSPACE_2026-11-24.md)
 adds confirmed role-limited actions and fictional opportunities, with current
 verification evidence. Research effectiveness remains unmeasured.

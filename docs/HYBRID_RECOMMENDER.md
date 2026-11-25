@@ -3,6 +3,7 @@
 FR02/08/09/12, NFR03/06/08/11. The November 25 refinement connects the existing
 profile, listing, learning and feedback workflows to shared hybrid scoring and
 five-fold evaluation. It leaves the fixed proposal unchanged.
+Current functional evidence is in the [November 25 verification report](QA_HYBRID_APPEARANCE_2026-11-25.md).
 
 ## Matching behavior
 
