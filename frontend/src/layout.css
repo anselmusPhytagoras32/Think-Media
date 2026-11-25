@@ -28,12 +28,12 @@
   height: 42px;
   padding: 0;
   border-radius: 12px;
-  background: #f3edf8;
-  color: #402c75;
+  background: var(--theme-soft, #f3edf8);
+  color: var(--theme-purple-ink, #402c75);
   flex-shrink: 0;
 }
 .sidebar-toggle:hover {
-  background: #e9dff2;
+  background: var(--theme-soft, #e9dff2);
 }
 .workspace-location {
   min-width: 0;
@@ -100,7 +100,7 @@
   z-index: 60;
   pointer-events: auto;
   white-space: nowrap;
-  background: #402c75;
+  background: var(--theme-primary, #402c75);
   color: white;
   border-radius: 9px;
   padding: 9px 12px;

@@ -8,7 +8,7 @@
   margin-bottom: 26px;
   overflow: hidden;
   border-radius: 24px;
-  background: #e2eff0;
+  background: var(--theme-teal-surface, #e2eff0);
 }
 .learning-library-hero > div {
   position: relative;
@@ -24,7 +24,7 @@
   max-width: 42ch;
   font-size: 14px;
   line-height: 1.7;
-  color: #3e5767;
+  color: var(--theme-muted, #3e5767);
 }
 .learning-library-hero .learning-hero-art {
   position: absolute;
@@ -55,7 +55,7 @@
 }
 .library-search input {
   min-height: 48px;
-  background: white;
+  background: var(--theme-surface, white);
 }
 .library-search > button {
   min-height: 48px;
@@ -81,7 +81,7 @@
   padding: 16px 3px 18px;
   overflow-x: auto;
   scrollbar-width: thin;
-  scrollbar-color: #c6b8d6 transparent;
+  scrollbar-color: var(--theme-control-line, #c6b8d6) transparent;
 }
 .library-topics > span {
   font-size: 12px;
@@ -94,19 +94,19 @@
   padding: 7px 12px;
   min-height: 36px;
   font-size: 12px;
-  color: var(--purple);
-  background: white;
+  color: var(--theme-purple-ink, var(--purple));
+  background: var(--theme-surface, white);
   border: 1px solid var(--line);
   border-radius: 20px;
   white-space: nowrap;
 }
 .library-topics > button[aria-pressed="true"] {
   color: white;
-  background: var(--purple);
-  border-color: var(--purple);
+  background: var(--theme-primary, var(--purple));
+  border-color: var(--theme-control-line, var(--purple));
 }
 .library-topics > button:hover {
-  border-color: var(--purple);
+  border-color: var(--theme-control-line, var(--purple));
 }
 .library-topics > button:focus-visible {
   outline-offset: 1px;
@@ -132,8 +132,8 @@
   color: var(--muted);
 }
 .library-views > button[aria-pressed="true"] {
-  color: var(--purple);
-  border-bottom-color: var(--purple);
+  color: var(--theme-purple-ink, var(--purple));
+  border-bottom-color: var(--theme-control-line, var(--purple));
 }
 .library-results-heading {
   display: flex;
@@ -170,7 +170,7 @@
   margin: 0;
   border: 1px solid var(--line);
   border-radius: 20px;
-  background: white;
+  background: var(--theme-surface, white);
   overflow: clip;
 }
 .library-resource-visual {
@@ -181,10 +181,10 @@
   height: 170px;
   padding: 0;
   border-radius: 0;
-  background: #eee7f5;
+  background: var(--theme-soft, #eee7f5);
 }
 .library-resource-visual:hover {
-  background: #e7def0;
+  background: var(--theme-soft, #e7def0);
 }
 .library-resource-visual:focus-visible {
   outline-offset: -4px;
@@ -211,8 +211,8 @@
   border-radius: 7px;
   font-size: 10px;
   font-weight: 600;
-  background: #fffdf8;
-  color: var(--purple);
+  background: var(--theme-surface, #fffdf8);
+  color: var(--theme-purple-ink, var(--purple));
 }
 .library-resource-copy {
   display: flex;
@@ -239,7 +239,7 @@
   padding: 0;
   border: 0;
   background: transparent;
-  color: var(--purple);
+  color: var(--theme-purple-ink, var(--purple));
   font-size: 18px;
   font-weight: 700;
   line-height: 1.5;
@@ -284,9 +284,9 @@
   display: none;
 }
 .library-feedback[aria-pressed="true"] {
-  background: #f5e4eb;
-  border-color: #d7a3b7;
-  color: #8a2445;
+  background: var(--theme-rose-surface, #f5e4eb);
+  border-color: var(--theme-line, #d7a3b7);
+  color: var(--theme-rose-ink, #8a2445);
 }
 .library-pagination {
   margin: 22px 0 0;
@@ -305,7 +305,7 @@
   padding: 24px 0;
 }
 .library-suggestions .suggestions-preview {
-  background: white;
+  background: var(--theme-surface, white);
   margin-bottom: 18px;
 }
 /* The detail thumbnail must override shared fluid artwork sizing. */
@@ -317,7 +317,7 @@
   margin: 0 0 20px 28px;
   object-fit: contain;
   border-radius: 18px;
-  background: #eee7f5;
+  background: var(--theme-soft, #eee7f5);
 }
 .learning-detail .learning-actions {
   clear: both;

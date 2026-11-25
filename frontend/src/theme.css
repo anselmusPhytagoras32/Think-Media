@@ -1,0 +1,59 @@
+/* NFR05/09: shared dark palette; existing light colors remain the fallbacks. */
+:root {
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --theme-canvas: #17131e;
+  --theme-surface: #211b2b;
+  --theme-soft: #30253c;
+  --theme-ink: #f0eaf7;
+  --theme-muted: #c1b3cf;
+  --theme-purple-ink: #d3bfff;
+  --theme-rose-ink: #ffb0c8;
+  --theme-teal-ink: #a5e2e4;
+  --theme-olive-ink: #c3dfa2;
+  --theme-peach-ink: #f5c3a0;
+  --theme-rose-surface: #3b2534;
+  --theme-teal-surface: #1e353b;
+  --theme-olive-surface: #293522;
+  --theme-peach-surface: #3c2c25;
+  --theme-primary: #7653ae;
+  --theme-primary-hover: #8662be;
+  --theme-line: #4e405e;
+  --theme-control-line: #9881ac;
+  --theme-focus: #cdb4ff;
+  --theme-backdrop: #08050ab3;
+}
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--theme-surface, #fff);
+  color: var(--theme-purple-ink, #402c75);
+  white-space: nowrap;
+  font-size: 13px;
+}
+.theme-toggle:hover {
+  background: var(--theme-soft, #f3edf8);
+}
+.signin-brand-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+.illustrated-signin .signin-brand-row .theme-toggle {
+  margin-top: 0;
+}
+:root[data-theme="dark"] .brand-mark {
+  color: #7653ae;
+}
+:root[data-theme="dark"] .theme-toggle:focus-visible {
+  outline-color: var(--theme-focus);
+}

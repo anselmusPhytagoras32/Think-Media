@@ -36,17 +36,17 @@
   margin: 0 0 12px;
 }
 .consumer-intro h1 em {
-  color: #a53867;
+  color: var(--theme-rose-ink, #a53867);
   font-style: normal;
 }
 .consumer-intro p {
   font-size: 14px;
-  color: #73617c;
+  color: var(--theme-muted, #73617c);
   margin: 0;
   line-height: 1.65;
 }
 .consumer-intro p span {
-  color: #402c75;
+  color: var(--theme-purple-ink, #402c75);
   font-weight: 650;
 }
 .consumer-profile {
@@ -58,7 +58,7 @@
   height: 62px;
   border-radius: 22px;
   text-decoration: none;
-  background: #efe6f6;
+  background: var(--theme-soft, #efe6f6);
   flex-shrink: 0;
 }
 .consumer-profile > span {
@@ -72,27 +72,27 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  border: 1px solid #d6c9df;
-  background: #fff;
+  border: 1px solid var(--theme-line, #d6c9df);
+  background: var(--theme-surface, #fff);
   border-radius: 18px;
   padding: 9px 10px 9px 18px;
   margin: 0 0 30px;
   max-width: 760px;
 }
 .consumer-search > svg {
-  color: #806c8b;
+  color: var(--theme-muted, #806c8b);
 }
 .consumer-search input {
   min-width: 0;
   width: 100%;
   border: 0;
   padding: 8px 0;
-  color: #402c75;
+  color: var(--theme-purple-ink, #402c75);
   background: none;
   font-size: 15px;
 }
 .consumer-search input::placeholder {
-  color: #786484;
+  color: var(--theme-muted, #786484);
 }
 .consumer-search > button {
   width: 44px;
@@ -100,20 +100,20 @@
   border-radius: 14px;
   display: grid;
   place-items: center;
-  background: #402c75;
+  background: var(--theme-primary, #402c75);
   color: white;
   flex-shrink: 0;
 }
 .consumer-search > button:hover {
-  background: #57428b;
+  background: var(--theme-primary-hover, #57428b);
 }
 .consumer-filter {
   width: 42px;
   min-height: 44px;
   display: grid;
   place-items: center;
-  color: #402c75;
-  background: #f5ebf3;
+  color: var(--theme-purple-ink, #402c75);
+  background: var(--theme-rose-surface, #f5ebf3);
   border-radius: 13px;
   flex-shrink: 0;
 }
@@ -135,7 +135,7 @@
   line-height: 1.3;
 }
 .discovery-section-heading > a {
-  color: #a53867;
+  color: var(--theme-rose-ink, #a53867);
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -162,12 +162,12 @@
   min-width: 0;
   text-decoration: none;
   border-radius: 23px;
-  color: #402c75;
+  color: var(--theme-purple-ink, #402c75);
   overflow: hidden;
   transition: background 0.15s;
 }
 .discovery-categories > a:hover {
-  outline: 1px solid #a58abd;
+  outline: 1px solid var(--theme-focus, #a58abd);
   outline-offset: 2px;
 }
 .discovery-categories .product-artwork {
@@ -185,16 +185,16 @@
   font-size: 12px;
   margin-top: 5px;
   line-height: 1.4;
-  color: #634773;
+  color: var(--theme-muted, #634773);
 }
 .category-ojt {
-  background: #f1d2c9;
+  background: var(--theme-rose-surface, #f1d2c9);
 }
 .category-learning {
-  background: #c5e8ec;
+  background: var(--theme-teal-surface, #c5e8ec);
 }
 .category-tracker {
-  background: #e9c7d6;
+  background: var(--theme-rose-surface, #e9c7d6);
 }
 .consumer-columns {
   display: grid;
@@ -213,8 +213,8 @@
 }
 .opportunity-card {
   min-width: 0;
-  background: #fff;
-  border: 1px solid #e8ddec;
+  background: var(--theme-surface, #fff);
+  border: 1px solid var(--theme-line, #e8ddec);
   border-radius: 24px;
   overflow: hidden;
 }
@@ -233,7 +233,7 @@
 .opportunity-cover {
   position: relative;
   height: 155px;
-  background: #d8edf0;
+  background: var(--theme-teal-surface, #d8edf0);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -248,18 +248,18 @@
   bottom: 11px;
   left: 13px;
   max-width: calc(100% - 26px);
-  background: #fff9fd;
-  color: #402c75;
+  background: var(--theme-surface, #fff9fd);
+  color: var(--theme-purple-ink, #402c75);
   padding: 6px 9px;
   font-size: 10px;
   font-weight: 700;
   border-radius: 8px;
 }
 .cover-1 .opportunity-cover {
-  background: #eadff2;
+  background: var(--theme-soft, #eadff2);
 }
 .cover-2 .opportunity-cover {
-  background: #f3d7dc;
+  background: var(--theme-rose-surface, #f3d7dc);
 }
 .opportunity-card-copy {
   padding: 17px;
@@ -267,7 +267,7 @@
 .consumer-company {
   font-size: 11px;
   line-height: 1.5;
-  color: #786484;
+  color: var(--theme-muted, #786484);
   margin-bottom: 7px;
   overflow-wrap: anywhere;
 }
@@ -283,7 +283,7 @@
   align-items: flex-start;
   gap: 5px;
   font-size: 12px;
-  color: #786484;
+  color: var(--theme-muted, #786484);
   line-height: 1.5;
   margin: 0 0 12px;
 }
@@ -297,8 +297,8 @@
   margin-bottom: 16px;
 }
 .consumer-skills > span {
-  background: #f5eef8;
-  color: #6b507e;
+  background: var(--theme-soft, #f5eef8);
+  color: var(--theme-muted, #6b507e);
   padding: 5px 7px;
   border-radius: 7px;
   font-size: 10px;
@@ -311,7 +311,7 @@
   gap: 7px;
   font-size: 12px;
   font-weight: 700;
-  color: #402c75;
+  color: var(--theme-purple-ink, #402c75);
 }
 .learning-discovery {
   display: grid;
@@ -322,15 +322,15 @@
   grid-template-columns: 105px minmax(0, 1fr);
   gap: 17px;
   padding: 15px;
-  border: 1px solid #e8ddec;
+  border: 1px solid var(--theme-line, #e8ddec);
   border-radius: 21px;
-  background: #fff;
+  background: var(--theme-surface, #fff);
   text-decoration: none;
 }
 .learning-discovery-art {
   display: grid;
   place-items: center;
-  background: #e8f2ed;
+  background: var(--theme-olive-surface, #e8f2ed);
   border-radius: 17px;
   min-width: 0;
 }
@@ -339,10 +339,10 @@
   height: 120px;
 }
 .learning-color-1 .learning-discovery-art {
-  background: #eee1f2;
+  background: var(--theme-soft, #eee1f2);
 }
 .learning-color-2 .learning-discovery-art {
-  background: #fae4e6;
+  background: var(--theme-rose-surface, #fae4e6);
 }
 .learning-discovery-card h3 {
   margin: 6px 0 7px;
@@ -351,12 +351,12 @@
   overflow-wrap: anywhere;
 }
 .learning-discovery-card div > span {
-  color: #8b4166;
+  color: var(--theme-rose-ink, #8b4166);
   font-size: 10px;
   font-weight: 650;
 }
 .learning-discovery-card p {
-  color: #786484;
+  color: var(--theme-muted, #786484);
   font-size: 12px;
   line-height: 1.6;
   margin-bottom: 12px;
@@ -369,9 +369,9 @@
 }
 .application-pocket {
   padding: 23px;
-  border: 1px solid #e8ddec;
+  border: 1px solid var(--theme-line, #e8ddec);
   border-radius: 25px;
-  background: #fff;
+  background: var(--theme-surface, #fff);
   margin-bottom: 20px;
 }
 .application-pocket .discovery-section-heading h2 {
@@ -388,7 +388,7 @@
 }
 .application-pocket p {
   font-size: 13px;
-  color: #73617c;
+  color: var(--theme-muted, #73617c);
   line-height: 1.7;
 }
 .application-pocket .secondary {
@@ -406,9 +406,9 @@
   align-items: flex-start;
   gap: 13px;
   padding: 20px;
-  background: #ece9f4;
+  background: var(--theme-soft, #ece9f4);
   border-radius: 22px;
-  color: #402c75;
+  color: var(--theme-purple-ink, #402c75);
   text-decoration: none;
   margin-bottom: 20px;
 }
@@ -417,7 +417,7 @@
 }
 .profile-invitation p {
   font-size: 12px;
-  color: #695676;
+  color: var(--theme-muted, #695676);
   line-height: 1.65;
   margin: 7px 0 12px;
 }
@@ -431,7 +431,7 @@
 .guidance-invitation {
   display: block;
   padding: 22px;
-  background: #d9edf0;
+  background: var(--theme-teal-surface, #d9edf0);
   border-radius: 24px;
   text-decoration: none;
 }
@@ -447,7 +447,7 @@
 }
 .guidance-invitation p {
   font-size: 12px;
-  color: #5c5d75;
+  color: var(--theme-muted, #5c5d75);
   line-height: 1.65;
 }
 .guidance-invitation strong {
@@ -461,7 +461,7 @@
   align-items: center;
   gap: 20px;
   padding: 20px;
-  background: #f3ebf5;
+  background: var(--theme-soft, #f3ebf5);
   border-radius: 23px;
 }
 .discovery-empty > .product-artwork {
@@ -476,7 +476,7 @@
 .discovery-empty p {
   font-size: 13px;
   line-height: 1.6;
-  color: #73617c;
+  color: var(--theme-muted, #73617c);
 }
 .discovery-empty a {
   display: inline-flex;
@@ -498,7 +498,7 @@
 }
 .listing-artwork-cover {
   height: 165px;
-  background: #d9edf0;
+  background: var(--theme-teal-surface, #d9edf0);
   border-radius: 23px;
   display: grid;
   place-items: center;
@@ -513,7 +513,7 @@
   place-items: center;
   float: left;
   margin: 0 20px 15px 0;
-  background: #d9edf0;
+  background: var(--theme-teal-surface, #d9edf0);
   border-radius: 18px;
   width: 105px;
   height: 110px;
@@ -546,7 +546,7 @@
 }
 @media (max-width: 720px) {
   .workspace:has(.consumer-home) {
-    background: #fffbfd;
+    background: var(--theme-surface, #fffbfd);
   }
   .main-content:has(.consumer-home) {
     padding: 19px 20px 105px;
@@ -647,7 +647,7 @@
     padding: 2px 2px 12px;
     margin: -2px -2px 0;
     scrollbar-width: thin;
-    scrollbar-color: #b5a1c9 #f8f1f7;
+    scrollbar-color: var(--theme-control-line, #b5a1c9) var(--theme-canvas, #f8f1f7);
   }
   .opportunity-card {
     flex: 0 0 83%;
@@ -770,7 +770,7 @@
     box-shadow: 0 -4px 18px #402c7509;
   }
   .mobile-task-nav a.active {
-    background: #f2dbe8;
+    background: var(--theme-rose-surface, #f2dbe8);
   }
 }
 @media (prefers-reduced-motion: reduce) {

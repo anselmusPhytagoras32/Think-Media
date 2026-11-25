@@ -7,7 +7,7 @@
   gap: 20px;
   margin: 0 0 28px;
   padding: 0 0 22px;
-  border-bottom: 1px solid #e5deeb;
+  border-bottom: 1px solid var(--theme-line, #e5deeb);
 }
 .role-workspace .role-page-heading > div,
 .role-workspace .role-dashboard-heading > div { flex: 1; min-width: 0; }
@@ -41,10 +41,10 @@
 .role-workspace .company-row { gap: 16px; }
 .role-workspace .company-row > div { min-width: 0; overflow-wrap: anywhere; }
 .role-workspace .verification-row > div, .role-workspace .report-row > div { flex: 1; }
-.role-row-icon { display: grid; place-items: center; flex: 0 0 44px; width: 44px; height: 44px; border-radius: 12px; background: #f0e6f5; color: #402c75; }
+.role-row-icon { display: grid; place-items: center; flex: 0 0 44px; width: 44px; height: 44px; border-radius: 12px; background: var(--theme-soft, #f0e6f5); color: var(--theme-purple-ink, #402c75); }
 .role-workspace .application-row { gap: 16px; }
 .role-workspace .application-row > div { flex: 1; min-width: 0; overflow-wrap: anywhere; }
-.application-row-action { display: inline-flex; align-items: center; gap: 6px; color: #402c75; font-size: 13px; font-weight: 700; }
+.application-row-action { display: inline-flex; align-items: center; gap: 6px; color: var(--theme-purple-ink, #402c75); font-size: 13px; font-weight: 700; }
 .admin-role-guide { margin-top: 28px; }
 @media (max-width: 600px) {
   .role-workspace .role-page-heading,

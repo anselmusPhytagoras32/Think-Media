@@ -38,15 +38,15 @@
   height: 36px;
   min-height: 36px;
   padding: 0;
-  color: var(--purple);
-  background: #f3edf8;
+  color: var(--theme-purple-ink, var(--purple));
+  background: var(--theme-soft, #f3edf8);
   border-radius: 10px;
 }
 .sidebar-lock:hover {
-  background: #e9dff2;
+  background: var(--theme-soft, #e9dff2);
 }
 .sidebar-lock[aria-pressed="true"] {
-  background: #e7dcf0;
+  background: var(--theme-soft, #e7dcf0);
 }
 .sidebar-is-collapsed .sidebar .brand {
   margin-bottom: 16px;
@@ -86,7 +86,7 @@
   align-items: center;
   gap: 14px;
   padding: 20px;
-  background: #eee8f6;
+  background: var(--theme-soft, #eee8f6);
   border: 1px solid var(--line);
   border-radius: 20px;
   text-decoration: none;
@@ -120,7 +120,7 @@
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 18px;
-  background: white;
+  background: var(--theme-surface, white);
 }
 .more-menu-list > a,
 .more-menu-list > button {
@@ -132,9 +132,9 @@
   padding: 16px 18px;
   border: 0;
   border-radius: 0;
-  background: white;
+  background: var(--theme-surface, white);
   text-decoration: none;
-  color: var(--purple);
+  color: var(--theme-purple-ink, var(--purple));
   text-align: left;
   font-size: 15px;
 }
@@ -157,7 +157,7 @@
   margin-top: 28px;
 }
 .more-menu-list .more-sign-out {
-  color: #8a2445;
+  color: var(--theme-rose-ink, #8a2445);
 }
 @media (max-width: 720px) {
   .app-shell .mobile-header {

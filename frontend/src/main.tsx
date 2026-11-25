@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { api, ApiError, Account, manila } from "./api";
 import { useDataRevision } from "./live-data";
+import { ThemeProvider, ThemeToggle } from "./theme";
 import "@fontsource-variable/manrope";
 import "@fontsource-variable/dm-sans";
 import { Marketplace } from "./marketplace";
@@ -54,6 +55,7 @@ import "./suggestions.css";
 import "./guidance-bubble.css";
 import "./role-workspace.css";
 import "./role-dashboards.css";
+import "./theme.css";
 import {
   readSidebarPreference,
   saveSidebarPreference,
@@ -293,12 +295,15 @@ function Auth({
       </section>
       <main className="auth-main">
         <div className={register ? "auth-box is-register" : "auth-box"}>
+          <div className="signin-brand-row">
           <a className="auth-form-brand brand" href="#">
             <BrandMark size={32} />
             <span>
               ThinkMedia<span className="brand-dot">.</span>
             </span>
           </a>
+          <ThemeToggle />
+          </div>
           <div className="tabs">
             <button
               aria-pressed={!register}
@@ -1390,6 +1395,7 @@ function App() {
             </span>
             <UserRound size={17} />
           </a>
+          <ThemeToggle className="getting-started" />
           <button
             className="getting-started"
             aria-label="Getting started"
@@ -1478,6 +1484,7 @@ function App() {
               >
                 <h2 id="more-account-title">Account</h2>
                 <div className="more-menu-list">
+                  <ThemeToggle />
                   <button type="button" onClick={replayWelcome}>
                     <ThinkIcon name="guidance" size={24} />
                     <span>Getting started</span>
@@ -1596,6 +1603,8 @@ function App() {
 }
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
+    <ThemeProvider>
     <App />
+    </ThemeProvider>
   </React.StrictMode>,
 );

@@ -1,7 +1,7 @@
 /* FR01 / NFR05, NFR09: keep the real account form calm, direct and responsive. */
 .illustrated-signin.auth-layout {
-  --signin-ink: #402c75;
-  --signin-muted: #6b607c;
+  --signin-ink: var(--theme-purple-ink, #402c75);
+  --signin-muted: var(--theme-muted, #6b607c);
   display: grid;
   grid-template-columns: minmax(350px, 0.78fr) minmax(0, 1.22fr);
   width: 100%;
@@ -10,7 +10,7 @@
   padding: 2px;
   overflow: hidden;
   border-radius: 12px;
-  background: #fff;
+  background: var(--theme-surface, #fff);
 }
 
 .illustrated-signin .auth-story {
@@ -23,7 +23,7 @@
   overflow: hidden;
   padding: 0;
   border-radius: 0;
-  background: #d8eef0;
+  background: var(--theme-teal-surface, #d8eef0);
 }
 
 .illustrated-signin .auth-story .brand,
@@ -69,7 +69,7 @@
   padding: clamp(38px, 8vh, 76px) clamp(28px, 6.8vw, 96px) 28px;
   border: 0;
   border-radius: 0;
-  background: #fff;
+  background: var(--theme-surface, #fff);
   box-shadow: none;
   backdrop-filter: none;
 }
@@ -98,7 +98,7 @@
 }
 
 .illustrated-signin .auth-form-brand .brand-dot {
-  color: #ed4d6e;
+  color: var(--theme-rose-ink, #ed4d6e);
 }
 
 .illustrated-signin .tabs {
@@ -107,7 +107,7 @@
 
 .illustrated-signin .auth-title {
   margin: 0 0 27px;
-  color: #34244f;
+  color: var(--theme-ink, #34244f);
   font-size: clamp(23px, 2vw, 28px);
   font-weight: 750;
   line-height: 1.3;
@@ -134,7 +134,7 @@
 .illustrated-signin .field label {
   display: block;
   margin-bottom: 7px;
-  color: #514465;
+  color: var(--theme-muted, #514465);
   font-size: 13px;
   font-weight: 650;
 }
@@ -144,22 +144,22 @@
   width: 100%;
   min-height: 50px;
   padding: 12px 14px;
-  border: 1px solid #d8d2e0;
+  border: 1px solid var(--theme-line, #d8d2e0);
   border-radius: 9px;
-  background: #f6f8fb;
-  color: #34244f;
+  background: var(--theme-surface, #f6f8fb);
+  color: var(--theme-ink, #34244f);
   font-size: 14px;
 }
 
 .illustrated-signin .field input::placeholder {
-  color: #777184;
+  color: var(--theme-muted, #777184);
   opacity: 1;
 }
 
 .illustrated-signin .field input:focus,
 .illustrated-signin .field select:focus {
-  border-color: #402c75;
-  outline: 3px solid #402c7530;
+  border-color: var(--theme-control-line, #402c75);
+  outline: 3px solid var(--theme-focus, #402c7530);
   outline-offset: 2px;
 }
 
@@ -180,23 +180,23 @@
   min-height: 46px;
   margin-top: 8px;
   padding: 11px 23px;
-  border: 1px solid #402c75;
+  border: 1px solid var(--theme-control-line, #402c75);
   border-radius: 8px;
-  background: #402c75;
+  background: var(--theme-primary, #402c75);
   color: #fff;
   font-size: 14px;
   font-weight: 700;
 }
 
 .illustrated-signin .primary.wide:hover:not(:disabled) {
-  border-color: #57428b;
-  background: #57428b;
+  border-color: var(--theme-control-line, #57428b);
+  background: var(--theme-primary-hover, #57428b);
 }
 
 .illustrated-signin .primary.wide:focus-visible,
 .illustrated-signin .text-button:focus-visible,
 .illustrated-signin .intro-replay:focus-visible {
-  outline: 3px solid #ed4d6e;
+  outline: 3px solid var(--theme-focus, #ed4d6e);
   outline-offset: 3px;
 }
 
@@ -208,7 +208,7 @@
 }
 
 .illustrated-signin .text-button {
-  color: #402c75;
+  color: var(--theme-purple-ink, #402c75);
   font-size: inherit;
   font-weight: 700;
   text-decoration: underline;
@@ -219,7 +219,7 @@
   align-self: center;
   order: 1;
   margin: auto 0 10px;
-  color: #57428b;
+  color: var(--theme-purple-ink, #57428b);
   font-size: 12px;
 }
 
@@ -227,7 +227,7 @@
   align-self: center;
   order: 2;
   margin: 0;
-  color: #6b607c;
+  color: var(--theme-muted, #6b607c);
   font-size: 11px;
   text-align: center;
 }
@@ -241,14 +241,14 @@
     padding: 0;
     overflow: visible;
     border-radius: 0;
-    background: #fff;
+    background: var(--theme-surface, #fff);
   }
 
   .illustrated-signin .auth-story {
     grid-column: 1;
     grid-row: 1;
     min-height: 0;
-    background: #d8eef0;
+    background: var(--theme-teal-surface, #d8eef0);
   }
 
   .illustrated-signin .auth-illustration img {

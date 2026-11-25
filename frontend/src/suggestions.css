@@ -42,8 +42,8 @@
   background: transparent;
 }
 .suggestions-page .suggestions-view-switch > button[aria-pressed="true"] {
-  border-bottom-color: var(--purple);
-  color: var(--purple);
+  border-bottom-color: var(--theme-control-line, var(--purple));
+  color: var(--theme-purple-ink, var(--purple));
 }
 .suggestions-page .suggestion-mode {
   display: flex;
@@ -57,7 +57,7 @@
 .suggestions-page .suggestion-mode > svg {
   margin-top: 2px;
   flex-shrink: 0;
-  color: var(--purple);
+  color: var(--theme-purple-ink, var(--purple));
 }
 .suggestions-page .suggestions-section {
   margin-bottom: 32px;
@@ -100,7 +100,7 @@
   border: 1px solid var(--line);
   border-radius: 18px;
   overflow: clip;
-  background: white;
+  background: var(--theme-surface, white);
 }
 .suggestions-page .suggestion-content {
   display: flex;
@@ -116,7 +116,7 @@
   font-weight: 700;
   line-height: 1.5;
   overflow-wrap: anywhere;
-  color: var(--purple);
+  color: var(--theme-purple-ink, var(--purple));
 }
 .suggestions-page .suggestion-company {
   display: flex;
@@ -170,7 +170,7 @@
   border-radius: 7px;
   padding: 4px 9px;
   font-size: 11px;
-  background: #f3eef9;
+  background: var(--theme-soft, #f3eef9);
   color: var(--muted);
   overflow-wrap: anywhere;
 }
@@ -181,7 +181,7 @@
   margin: auto 0 8px;
   font-size: 12px;
   line-height: 1.65;
-  color: var(--purple);
+  color: var(--theme-purple-ink, var(--purple));
   width: fit-content;
   background: transparent;
   padding: 0;
@@ -203,20 +203,20 @@
   height: 136px;
   padding: 10px;
   border-radius: 0;
-  background: #eee7f5;
+  background: var(--theme-soft, #eee7f5);
 }
 .suggestions-page .suggestion-card-art:hover {
   filter: brightness(0.98);
 }
 /* Match the actual edge colors of each illustration without cropping its objects. */
 .suggestions-page .suggestion-card-art:has(> [data-artwork-topic="coding-data"]) {
-  background: #e9cded;
+  background: var(--theme-soft, #e9cded);
 }
 .suggestions-page .suggestion-card-art:has(> [data-artwork-topic="web-portfolio"]) {
-  background: #fdccba;
+  background: var(--theme-rose-surface, #fdccba);
 }
 .suggestions-page .suggestion-card-art:has(> [data-artwork-topic="application-prep"]) {
-  background: #99d3d2;
+  background: var(--theme-teal-surface, #99d3d2);
 }
 .suggestions-page .suggestion-card-art:focus-visible {
   outline-offset: -4px;
@@ -242,7 +242,7 @@
   font-size: 12px;
 }
 .suggestions-page .suggestion-rate-toggle:hover {
-  color: var(--purple);
+  color: var(--theme-purple-ink, var(--purple));
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -274,7 +274,7 @@
   min-height: 44px;
   padding: 9px 10px;
   font-size: 13px;
-  background: white;
+  background: var(--theme-surface, white);
 }
 .suggestions-page .rating-form > .secondary {
   min-height: 44px;
@@ -289,7 +289,7 @@
 }
 .suggestions-page .suggestions-profile {
   padding: 24px;
-  background: #f1edf7;
+  background: var(--theme-soft, #f1edf7);
   border: 1px solid var(--line);
   border-radius: 20px;
 }
@@ -300,8 +300,8 @@
   height: 44px;
   border-radius: 13px;
   margin-bottom: 16px;
-  background: white;
-  color: var(--purple);
+  background: var(--theme-surface, white);
+  color: var(--theme-purple-ink, var(--purple));
 }
 .suggestions-page .suggestions-profile h2 {
   margin: 0 0 10px;
@@ -321,8 +321,8 @@
 }
 .suggestions-page .suggestions-profile-skills > span {
   font-size: 11px;
-  color: var(--purple);
-  background: white;
+  color: var(--theme-purple-ink, var(--purple));
+  background: var(--theme-surface, white);
   border-radius: 7px;
   padding: 4px 9px;
 }
@@ -349,7 +349,7 @@
   color: var(--muted);
   border: 1px solid var(--line);
   border-radius: 18px;
-  background: white;
+  background: var(--theme-surface, white);
 }
 .suggestions-page .suggestions-state h2 {
   font-size: 19px;
@@ -365,7 +365,7 @@
   padding: 28px 24px;
   border: 1px solid var(--line);
   border-radius: 18px;
-  background: white;
+  background: var(--theme-surface, white);
 }
 .suggestions-page .suggestions-empty h3 {
   margin-top: 0;
