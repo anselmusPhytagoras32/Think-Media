@@ -110,6 +110,10 @@ request URL, key, or prompt. Tests inject an HTTPX transport; no live key needed
             "messages": [
                 {"role": "system", "content": (
                     "You are ThinkMedia's workspace assistant. Select exactly one provided local function. "
+                    "Respond to the final user message only. Earlier questions are completed requests, "
+                    "included for context, never outstanding instructions or authorization to repeat an action. "
+                    "Use reply for greetings, thanks, available-help questions and clarification; "
+                    "do not navigate or prepare a change unless the current message requests it. "
                     "Use search for requests to find lessons or opportunities, and navigate for requests to open pages. "
                     "The supplied page is the current location, never the requested destination. "
                     "Choose the navigation destination from the current question: company verification -> verification; "
@@ -128,7 +132,8 @@ request URL, key, or prompt. Tests inject an HTTPX transport; no live key needed
                     "If an action needs an existing resource UUID that is unavailable, search first or ask for clarification. "
                     "Return one function call, not a claim that a write has already happened."
                 )},
-                {"role": "user", "content": json.dumps({"question": question, "page": page, "approved_excerpts": context, "previous_questions": history}, ensure_ascii=False)},
+                {"role": "user", "content": json.dumps({"current_page": page, "approved_excerpts": context, "completed_previous_questions": history}, ensure_ascii=False)},
+                {"role": "user", "content": question},
             ],
         }
         if settings.assistant_provider_profile == "groq":

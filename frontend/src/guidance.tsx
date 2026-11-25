@@ -235,11 +235,13 @@ export function Assistant({ embedded = false }: { embedded?: boolean }) {
         old.map((item) => (item.id === id ? { ...item, answer } : item)),
       );
       setAnnouncement(
-        answer.proposal
-          ? "A proposed change is ready. Review it before confirming."
-          : answer.results?.length || answer.navigation
-            ? "The response is ready. Read it in the conversation."
-            : "Guidance is ready. Read the response and its sources in the conversation.",
+        answer.mode === "conversation"
+          ? "Reply is ready."
+          : answer.proposal
+            ? "A proposed change is ready. Review it before confirming."
+            : answer.results?.length || answer.navigation
+              ? "The response is ready. Read it in the conversation."
+              : "Guidance is ready. Read the response and its sources in the conversation.",
       );
       if (!retry)
         setQuestion((current) =>
@@ -477,16 +479,20 @@ export function Assistant({ embedded = false }: { embedded?: boolean }) {
                     {exchange.answer && (
                       <>
                         <span className="guidance-mode">
-                          {exchange.answer.mode === "retrieval"
-                            ? "Approved resource lookup"
-                            : exchange.answer.proposal ||
-                                exchange.answer.navigation ||
-                                exchange.answer.results?.length
-                              ? "Workspace help"
-                              : "Grounded guidance"}
+                          {exchange.answer.mode === "conversation"
+                            ? "Conversation"
+                            : exchange.answer.mode === "retrieval"
+                              ? "Approved resource lookup"
+                              : exchange.answer.proposal ||
+                                  exchange.answer.navigation ||
+                                  exchange.answer.results?.length
+                                ? "Workspace help"
+                                : "Grounded guidance"}
                         </span>
                         <h3 className="sr-only">
-                          Guidance from approved resources
+                          {exchange.answer.mode === "conversation"
+                            ? "Assistant reply"
+                            : "Guidance from approved resources"}
                         </h3>
                         <p className="preserve-lines guidance-answer-text">
                           {exchange.answer.answer}
@@ -609,58 +615,63 @@ export function Assistant({ embedded = false }: { embedded?: boolean }) {
                               : "The available resources may not fully answer your question."}
                           </p>
                         )}
-                        {((!exchange.answer.proposal &&
-                          !exchange.answer.navigation &&
-                          !exchange.answer.results?.length) ||
-                          exchange.answer.sources.length > 0) && (
-                          <div className="guidance-sources">
-                            <h4>Sources</h4>
-                            {exchange.answer.sources.length ? (
-                              exchange.answer.sources.map((citation) => (
-                                <button
-                                  key={citation.id}
-                                  type="button"
-                                  disabled={!!sourceBusy}
-                                  aria-expanded={
-                                    source?.exchangeId === exchange.id &&
-                                    source.content.id === citation.id
-                                  }
-                                  onClick={async (event) => {
-                                    sourceOpener.current = event.currentTarget;
-                                    setSourceBusy(citation.id);
-                                    setSourceError("");
-                                    try {
-                                      setSource({
-                                        content: await api<Source>(
-                                          citation.id.startsWith("guide:")
-                                            ? `/assistant/sources/${encodeURIComponent(citation.id.slice(6))}`
-                                            : `/content/${citation.id}`,
-                                        ),
-                                        exchangeId: exchange.id,
-                                      });
-                                    } catch (failure) {
-                                      setSourceError(
-                                        (failure as Error).message,
-                                      );
-                                    } finally {
-                                      setSourceBusy("");
+                        {exchange.answer.mode !== "conversation" &&
+                          ((!exchange.answer.proposal &&
+                            !exchange.answer.navigation &&
+                            !exchange.answer.results?.length) ||
+                            exchange.answer.sources.length > 0) && (
+                            <div className="guidance-sources">
+                              <h4>Sources</h4>
+                              {exchange.answer.sources.length ? (
+                                exchange.answer.sources.map((citation) => (
+                                  <button
+                                    key={citation.id}
+                                    type="button"
+                                    disabled={!!sourceBusy}
+                                    aria-expanded={
+                                      source?.exchangeId === exchange.id &&
+                                      source.content.id === citation.id
                                     }
-                                  }}
-                                >
-                                  <BookOpen size={14} aria-hidden="true" />
-                                  <span>
-                                    {sourceBusy === citation.id
-                                      ? "Opening resource…"
-                                      : citation.title}
-                                  </span>
-                                  <ArrowUpRight size={14} aria-hidden="true" />
-                                </button>
-                              ))
-                            ) : (
-                              <p>No matching approved sources were found.</p>
-                            )}
-                          </div>
-                        )}
+                                    onClick={async (event) => {
+                                      sourceOpener.current =
+                                        event.currentTarget;
+                                      setSourceBusy(citation.id);
+                                      setSourceError("");
+                                      try {
+                                        setSource({
+                                          content: await api<Source>(
+                                            citation.id.startsWith("guide:")
+                                              ? `/assistant/sources/${encodeURIComponent(citation.id.slice(6))}`
+                                              : `/content/${citation.id}`,
+                                          ),
+                                          exchangeId: exchange.id,
+                                        });
+                                      } catch (failure) {
+                                        setSourceError(
+                                          (failure as Error).message,
+                                        );
+                                      } finally {
+                                        setSourceBusy("");
+                                      }
+                                    }}
+                                  >
+                                    <BookOpen size={14} aria-hidden="true" />
+                                    <span>
+                                      {sourceBusy === citation.id
+                                        ? "Opening resource…"
+                                        : citation.title}
+                                    </span>
+                                    <ArrowUpRight
+                                      size={14}
+                                      aria-hidden="true"
+                                    />
+                                  </button>
+                                ))
+                              ) : (
+                                <p>No matching approved sources were found.</p>
+                              )}
+                            </div>
+                          )}
                         {source?.exchangeId === exchange.id && (
                           <section className="source-preview guidance-source-preview">
                             <div>
@@ -683,9 +694,10 @@ export function Assistant({ embedded = false }: { embedded?: boolean }) {
                             </p>
                           </section>
                         )}
-                        {index === exchanges.length - 1 && (
-                          <Satisfaction key={exchange.id} />
-                        )}
+                        {exchange.answer.mode !== "conversation" &&
+                          index === exchanges.length - 1 && (
+                            <Satisfaction key={exchange.id} />
+                          )}
                       </>
                     )}
                   </div>

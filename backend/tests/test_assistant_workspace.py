@@ -3,6 +3,8 @@
 from datetime import timedelta
 from uuid import UUID
 
+import pytest
+
 from fastapi.testclient import TestClient
 from sqlalchemy import select
 
@@ -44,6 +46,38 @@ def test_search_returns_published_results_without_private_provider_context(app):
     assert "PRIVATE_UNPUBLISHED_MARKER" not in str(planner.seen)
     assert "learner@example.test" not in str(planner.seen)
     assert all(set(source) == {"id", "title", "excerpt"} for source in planner.seen[0]["sources"])
+
+
+@pytest.mark.parametrize("message", ["Hi", "Hello!", "Hey there", "Thanks", "Thank you."])
+def test_greeting_and_thanks_never_repeat_a_previous_navigation(app, message):
+    actor = learner(app)
+    app.state.assistant_provider = Planner("navigate", {"page": "opportunities"})
+    response = ask(actor, message, previous_questions=["Open opportunities"])
+    assert response.status_code == 200, response.text
+    result = response.json()
+    assert result["answer"] and result["mode"] == "conversation"
+    assert result["sources"] == [] and result["uncertainty"] is False
+    assert not any(result.get(key) for key in ("navigation", "proposal", "results"))
+
+
+def test_greeting_with_an_explicit_request_still_opens_requested_page(app):
+    actor = learner(app)
+    app.state.assistant_provider = Planner("navigate", {"page": "opportunities"})
+    result = ask(actor, "Hi, open opportunities", previous_questions=["Find lessons"]).json()
+    assert result["navigation"]["href"] == "#/opportunities"
+
+
+def test_clarifying_reply_is_conversational_and_cannot_smuggle_an_action(app):
+    actor = learner(app)
+    app.state.assistant_provider = Planner("reply", {"message": "Would you like interview practice or help with your resume?"})
+    response = ask(actor, "Can you help me get ready?", previous_questions=["Open opportunities"])
+    assert response.status_code == 200, response.text
+    result = response.json()
+    assert result["mode"] == "conversation" and result["sources"] == []
+    assert "interview" in result["answer"]
+    assert not any(result.get(key) for key in ("navigation", "proposal", "results"))
+    app.state.assistant_provider = Planner("reply", {"message": "Done", "page": "applications"})
+    assert ask(actor, "Can you help?").status_code == 503
 
 
 def test_saving_requires_confirmation_and_cannot_be_replayed(app):
@@ -157,6 +191,7 @@ def test_model_planner_uses_one_bounded_groq_tool_call_with_no_structured_output
         assert payload['max_completion_tokens'] == 512
         assert 'page is the current location' in payload['messages'][0]['content']
         assert 'company verification -> verification' in payload['messages'][0]['content']
+        assert payload['messages'][-1] == {'role':'user','content':'Find resume lessons'}
         return httpx.Response(200, json={'choices':[{'finish_reason':'tool_calls','message':{'tool_calls':[{'type':'function','function':{'name':'find_lessons','arguments':'{"q":"resume"}'}}]}}]})
     settings = Settings(_env_file=None, assistant_mode='external', assistant_provider_profile='groq', groq_api_key='synthetic-key', assistant_call_budget=1)
     provider = RoutedProvider(settings, transport=httpx.MockTransport(respond))

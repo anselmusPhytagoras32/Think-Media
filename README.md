@@ -10,6 +10,8 @@ The [workspace assistant contract](docs/API_ASSISTANT_WORKSPACE.md) describes
 Groq tool use, confirmation and role boundaries added on November 24.
 See [November 24 verification](docs/QA_ASSISTANT_WORKSPACE_2026-11-24.md) for
 the new checks and their limits.
+The [November 25 conversation correction](docs/QA_CHAT_CONVERSATION_2026-11-25.md)
+addresses greetings repeating an earlier workspace action.
 
 React + FastAPI + PostgreSQL career and OJT workspace. Product requirements are in [PRODUCT.md](PRODUCT.md); verified progress and remaining work are in [implementation status](docs/IMPLEMENTATION_STATUS.md).
 

@@ -3,6 +3,7 @@
 from datetime import timedelta
 from hashlib import sha256
 import json
+import re
 from typing import Literal
 from uuid import UUID
 
@@ -69,6 +70,10 @@ class GroundedAnswer(ApiModel):
     uncertainty: bool
 
 
+class ConversationReply(ApiModel):
+    message: str = Field(min_length=1, max_length=2000)
+
+
 class NoArguments(ApiModel):
     pass
 
@@ -102,6 +107,7 @@ class WorkspaceAssistant:
 
     def tools(self):
         definitions = [
+            function("reply", "Reply conversationally to greetings, thanks, questions about available help, or ask a clarifying question. Never claim an action happened. Use answer_guidance for factual preparation advice requiring sources.", ConversationReply.model_json_schema()),
             function("answer_guidance", "Answer from approved excerpts with supporting source_ids; admit uncertainty when unsupported.", GroundedAnswer.model_json_schema()),
             function("navigate", "Open the destination requested in the question. Use existing screens for applications, verification, publication, and decisions.", {"type": "object", "additionalProperties": False, "properties": {"page": {"type": "string", "enum": PAGES[self.user.role], "description": "Requested destination, not the current location. " + "; ".join(f"{page}: {PAGE_PURPOSES[page]}" for page in PAGES[self.user.role])}}, "required": ["page"]}),
             function("find_lessons", "Find published learning resources by keyword or exact tag.", LessonSearch.model_json_schema()),
@@ -152,7 +158,7 @@ class WorkspaceAssistant:
                 raise ValueError("Unexpected kind")
             model = LessonDraft if name == "draft_lesson" else SkillDraft
             return model.model_validate({"kind": "lesson" if name == "draft_lesson" else "skill", **arguments}).model_dump(mode="json")
-        model = {"answer_guidance": GroundedAnswer, "find_lessons": LessonSearch, "find_opportunities": OpportunitySearch, "save_resource": SaveResource, "show_suggestions": NoArguments, "draft_listing": ListingInput}[name]
+        model = {"reply": ConversationReply, "answer_guidance": GroundedAnswer, "find_lessons": LessonSearch, "find_opportunities": OpportunitySearch, "save_resource": SaveResource, "show_suggestions": NoArguments, "draft_listing": ListingInput}[name]
         return model.model_validate(arguments).model_dump(mode="json")
 
     def answer(self, question, page, history, resource_id=None):
@@ -164,6 +170,13 @@ class WorkspaceAssistant:
         self.throttle.record_attempt(str(self.user.id))
         if not question.strip():
             raise ApiError(422, "VALIDATION_ERROR", "Enter a question.")
+        # A greeting or acknowledgement is never authorization to repeat a
+        # previous action. Match the entire message so "Hi, open ..." proceeds.
+        conversational = " ".join(re.sub(r"[^\w\s]", " ", question.casefold()).split())
+        if conversational in {"hi", "hello", "hey", "hi there", "hello there", "hey there", "good morning", "good afternoon", "good evening"}:
+            return dict(answer="Hi! How can I help you with ThinkMedia today?", sources=[], uncertainty=False, mode="conversation")
+        if conversational in {"thanks", "thank you", "thanks a lot", "thank you very much", "thx"}:
+            return dict(answer="You're welcome! What else would you like help with?", sources=[], uncertainty=False, mode="conversation")
         sources = retrieve_sources(self.db, question, history)
         if page == "learning" and resource_id is not None:
             resource = LearningService(self.db, self.user).content(resource_id, public_only=True)
@@ -178,6 +191,8 @@ class WorkspaceAssistant:
         except Exception:
             raise ApiError(503, "ASSISTANT_UNAVAILABLE", "The assistant could not prepare a supported action. Try again or use the page controls.") from None
         output = dict(answer="", sources=[], uncertainty=False, mode="external", results=[])
+        if name == "reply":
+            return dict(answer=args["message"], sources=[], uncertainty=False, mode="conversation")
         if name == "answer_guidance":
             approved = {source["id"]: source["title"] for source in sources}
             if any(id not in approved for id in args["source_ids"]) or len(set(args["source_ids"])) != len(args["source_ids"]):

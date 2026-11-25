@@ -3,6 +3,74 @@ import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { openApp } from "./open-app";
 
+test("a greeting after navigation stays conversational without another link or missing-source warning", async ({
+  page,
+}) => {
+  const { csrf_token } = await (
+    await page.request.get("/api/v1/auth/csrf")
+  ).json();
+  expect(
+    (
+      await page.request.post("/api/v1/auth/login", {
+        headers: { "X-CSRF-Token": csrf_token },
+        data: {
+          email: "student@example.test",
+          password: "ThinkMedia-Student-2026!",
+        },
+      })
+    ).ok(),
+  ).toBeTruthy();
+  await page.route("**/api/v1/assistant", (route) => {
+    const payload = route.request().postDataJSON();
+    if (payload.question === "Hi") {
+      expect(payload.previous_questions).toEqual(["Open opportunities"]);
+      return route.fulfill({
+        json: {
+          answer: "Hi! How can I help you with ThinkMedia today?",
+          sources: [],
+          uncertainty: false,
+          mode: "conversation",
+        },
+      });
+    }
+    return route.fulfill({
+      json: {
+        answer: "Open the requested workspace using the link below.",
+        sources: [],
+        uncertainty: false,
+        mode: "external",
+        navigation: { label: "Open opportunities", href: "#/opportunities" },
+      },
+    });
+  });
+  await openApp(page, "/#/assistant");
+  for (const message of ["Open opportunities", "Hi"]) {
+    await page
+      .getByRole("textbox", { name: "Your question", exact: true })
+      .fill(message);
+    await page
+      .getByRole("button", { name: "Ask for guidance", exact: true })
+      .click();
+    await expect(
+      page.getByRole("textbox", { name: "Your question", exact: true }),
+    ).toHaveValue("");
+  }
+  const reply = page.locator(".guidance-exchange").last();
+  await expect(
+    reply.getByText("Hi! How can I help you with ThinkMedia today?", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(reply.getByText("Conversation", { exact: true })).toBeVisible();
+  await expect(reply.getByRole("link")).toHaveCount(0);
+  await expect(
+    reply.getByText("No matching approved sources were found."),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("link", { name: "Open opportunities", exact: true }),
+  ).toHaveCount(1);
+});
+
 test("assistant previews a profile change and saves only after explicit confirmation", async ({
   page,
 }) => {

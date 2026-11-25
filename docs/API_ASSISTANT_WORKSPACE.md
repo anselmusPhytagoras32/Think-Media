@@ -9,6 +9,7 @@ only registered services. It does not execute model-supplied code or URLs.
 | Capability | Roles | Result |
 | --- | --- | --- |
 | Grounded guidance, lesson and opportunity search | All | Approved sources and public result cards |
+| Greetings, acknowledgements and clarification | All | Conversational reply; no application action or source claim |
 | Navigate | All | A permitted internal page; no arbitrary URL |
 | Suggestions | Student | Locally generated recommendations |
 | Save a resource | Student | Preview, then explicit confirmation |
@@ -40,3 +41,16 @@ Groq tool calling is requested separately from strict structured-answer mode;
 the two modes are not combined. Provider errors leave normal application
 workflows available. Retrieval-only development remains explicitly labeled and
 does not claim to be a live tool-using model.
+
+November 25 conversation correction: standalone English greetings and thanks
+receive a local, throttled reply before model planning. These replies use
+`mode: "conversation"` and do not consume provider calls. A greeting with an
+explicit task still reaches the planner. Model-generated clarification and
+available-help replies use a bounded, read-only `reply` function. The UI labels
+these as Conversation and omits unrelated citation and satisfaction controls.
+Factual preparation guidance retains its citation and uncertainty checks.
+
+The planner receives earlier questions as completed context in a separate user
+message, followed by the latest question as the final user message. Earlier
+requests cannot serve as fresh authorization to repeat an action. Role checks
+and write confirmation remain unchanged.
