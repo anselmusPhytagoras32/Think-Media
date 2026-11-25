@@ -1,5 +1,11 @@
 # ThinkMedia
 
+The [hybrid recommender](docs/HYBRID_RECOMMENDER.md) combines profile matching
+and eligible observed ratings, with MAE/RMSE and five-fold evaluation commands.
+Research results remain pending genuine data.
+Use the [appearance toggle](docs/ux/appearance.md) at sign-in, in the sidebar,
+or on the mobile More page to switch between light and dark mode.
+
 For hosted deployment settings, server-only AI provider configuration,
 and free-service limits, see [Render hosting](docs/RENDER_HOSTING.md).
 

@@ -325,19 +325,23 @@ Ranked entries include actual listing/content projections, normalized score and
 reason; unavailable/draft/closed/unverified items are excluded. Candidate pools
 are capped to500 recent eligible items per type. TF-IDF (scikit-learn, Unicode
 accent normalization, word1–2grams, maximum20000 features) compares program,
-skills, interests and location against listing/resource text. Stable ties follow
+background, skills, interests and location against listing/resource text, including
+listing requirements and the company's public description. Stable ties follow
 recent creation time then UUID. Missing/unmatched profiles fall back to actual
 recorded view/rating popularity; without activity they use recent publications.
 Reasons identify the actual fallback; suggestions are not hiring decisions.
 
-Optional hybrid input is limited to5000 latest **explicit** ratings of eligible
+Optional hybrid input is limited to5000 latest **explicit student** ratings of eligible
 items. At least5 distinct users,20 rating records and2 jointly rated items per
 neighbor are required. Similarity uses jointly observed ratings only; no missing
 rating is filled as numericzero. Neighbor predictions normalize observed1–5
 ratings to0–1. Eligible predictions combine with content cosine by configured
 alpha; items without neighbors use alpha 1. `APP_RECOMMENDER_ALPHA` is bounded0–1
-and defaults to1 until real held-out evaluation selects a weight. Synthetic
-functional test fixtures with a non1 weight do not establish effectiveness.
+and defaults to a provisional0.5 for the functional prototype. Cold-start items
+still use1; genuine held-out evaluation is required to select a validated weight.
+Synthetic functional fixtures do not establish effectiveness. The same scorer
+supports MAE/RMSE and chronological five-fold evaluation; see
+[the hybrid guide](../docs/HYBRID_RECOMMENDER.md).
 
 Student/instructor POST `/api/v1/interactions` records actual `view` events or
 optional explicit `rating`1–5 for a typed listing/content UUID. Numeric ratings

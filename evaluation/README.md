@@ -1,5 +1,10 @@
 # Offline evaluation — FR12 / NFR08
 
+**November 25:** [hybrid implementation and five-fold protocol](../docs/HYBRID_RECOMMENDER.md)
+documents the shared runtime/evaluation scorer and `--protocol hybrid_kfold`.
+The existing default `cold_start` evaluates unseen users; warm-user folds must
+remain separate from that result.
+
 Run from the repository root using the backend environment:
 
 ```bash
@@ -10,7 +15,7 @@ backend/.venv/bin/python evaluation/run.py --ratings /private/ratings.csv --fold
 
 No data is manufactured. Missing datasets produce `not_measured`, never numerical results. Tests generate explicitly synthetic fixtures only. Do not report their scores as pilot evidence.
 
-Ratings CSV: `user_id,item_id,rating,profile_text,item_text`. Use pseudonymous IDs, one latest explicit integer rating 1–5 per user/item, consistent item text. Split users before fitting. TF-IDF vocabulary fits training rows only; the same held-out observations evaluate profile-cosine, training item-mean and global-mean baselines. At least four users/eight observations are required. Five grouped folds require five users/ten observations. This offline profile reference model does not validate deployed hybrid weighting; alpha remains 1 pending a suitable genuine validation run. Reports include provenance hashes, counts, seed, configuration, holdout hashes, user separation and limitations.
+Ratings CSV: `user_id,item_id,rating,profile_text,item_text`. Use pseudonymous IDs, one latest explicit integer rating 1–5 per user/item, consistent item text. Split users before fitting. TF-IDF vocabulary fits training rows only; the same held-out observations evaluate profile-cosine, training item-mean and global-mean baselines. At least four users/eight observations are required. Five grouped folds require five users/ten observations. This cold-start protocol uses alpha 1 because held-out users have no training history. The prototype's configurable default hybrid blend is provisional; genuine validation is still required. Reports include provenance hashes, counts, seed, configuration, holdout hashes, user separation and limitations.
 
 CSAT CSV: `participant_id,rating`, one actual five-point response per pseudonymous participant. Reports include real supplied sample count, distribution, mean and sampling limitations. A proposed target of 4/5 is not a measured result. The application accepts optional authenticated guidance feedback through `/api/v1/feedback/csat`; no feedback is inferred from activity.
 

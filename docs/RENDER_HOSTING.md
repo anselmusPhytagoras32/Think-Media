@@ -6,6 +6,11 @@ applications, private PDF bytes, and review history. The service uses the free
 compute plan in Oregon.
 
 **Live demo:** https://thinkmedia-demo-m74t.onrender.com.
+The November 25 [hybrid recommender](HYBRID_RECOMMENDER.md) shares runtime and
+offline scoring. The provisional default blend is0.5, with profile-only cold
+starts. No genuine accuracy or satisfaction result is claimed. The appearance
+toggle in the sidebar, mobile More page and sign-in screen remembers a browser's
+light/dark preference locally.
 The November 24 refinement adds confirmed workspace assistance and a fictional
 opportunity catalog. See [assistant actions](API_ASSISTANT_WORKSPACE.md).
 The first successful deployment used commit `f6ed08e`, on November 23, 2026

@@ -25,6 +25,12 @@ class EvaluationTests(unittest.TestCase):
         fitted=fit_text([{'profile_text':'python','item_text':'communication'}])
         self.assertNotIn('holdoutsecret',fitted.vocabulary_)
         self.assertEqual(fitted.transform(['holdoutsecret']).nnz,0)
+    def test_empty_profile_and_item_text_preserve_statistical_baseline_evaluation(self):
+        with tempfile.TemporaryDirectory() as root:
+            rows=[dict(user_id=f'synthetic-{u}',item_id=f'item-{i}',rating=1+(u+i)%5,profile_text='',item_text='') for u in range(6) for i in range(2)]
+            report=recommender(self.file(root,'empty-features.csv',rows),folds=5)
+            self.assertEqual(report['comparison']['vocabulary_size'],0)
+            self.assertGreaterEqual(report['comparison']['model']['rmse'],0)
     def test_missing_ratings_are_rejected_not_converted_to_zero(self):
         for rating in ('',0,6,'NaN'):
             with self.assertRaises((ValueError,TypeError)):validate_ratings([dict(user_id='synthetic',item_id='item',rating=rating,profile_text='x',item_text='y')])
@@ -32,6 +38,36 @@ class EvaluationTests(unittest.TestCase):
         self.assertEqual(recommender(None)['status'],'not_measured')
         self.assertIsNone(recommender(None)['metrics'])
         self.assertIsNone(csat(None)['sample_count'])
+    def test_hybrid_five_folds_are_chronological_and_use_common_holdouts(self):
+        from evaluation.run import hybrid_cross_validation
+        with tempfile.TemporaryDirectory() as root:
+            rows=[dict(user_id=f'synthetic-{u}',item_id=f'item-{(i if i<2 else 2+(i-2+3*u)%26)}',rating=1+(u+i)%5,
+                       profile_text='python communication',item_text=f'python topic{(i if i<2 else 2+(i-2+3*u)%26)}',
+                       occurred_at=f'2026-10-{i+1:02d}T00:00:00+00:00') for u in range(6) for i in range(28)]
+            report=hybrid_cross_validation(self.file(root,'synthetic-folds.csv',rows),folds=5)
+            self.assertEqual(report['status'],'measured_offline')
+            self.assertEqual(len(report['folds']),5)
+            for fold in report['folds']:
+                self.assertLess(fold['train_end'],fold['validation_start'])
+                self.assertLess(fold['validation_end'],fold['test_start'])
+                self.assertEqual(fold['test_count'],len(fold['comparison']['holdout_hashes']))
+                self.assertGreater(fold['comparison']['collaborative_covered_test_count'],0)
+                self.assertEqual(set(fold['comparison']['model']),{'mae','rmse'})
+            self.assertEqual(report['model_version'],'hybrid-v2')
+            self.assertIsNone(hybrid_cross_validation(None)['metrics'])
+    def test_hybrid_evaluation_selection_and_vocabulary_do_not_see_future_labels_or_text(self):
+        from evaluation.run import hybrid_cross_validation
+        with tempfile.TemporaryDirectory() as root:
+            rows=[dict(user_id=f'synthetic-{u}',item_id=f'item-{(i if i<2 else 2+(i-2+3*u)%26)}',rating=1+(u+i)%5,
+                       profile_text='python',item_text='python communication',occurred_at=f'2026-10-{i+1:02d}T00:00:00+00:00')
+                  for u in range(6) for i in range(28)]
+            first=hybrid_cross_validation(self.file(root,'base.csv',rows))
+            for row in rows:
+                if row['occurred_at']>='2026-10-09':
+                    row['rating']=6-row['rating'];row['profile_text']='futuresecret'
+            changed=hybrid_cross_validation(self.file(root,'changed.csv',rows))
+            self.assertEqual(first['folds'][0]['selected_alpha'],changed['folds'][0]['selected_alpha'])
+            self.assertEqual(first['folds'][0]['validation_metrics'],changed['folds'][0]['validation_metrics'])
     def test_synthetic_csat_distribution_and_duplicate_rejection(self):
         with tempfile.TemporaryDirectory() as root:
             rows=[dict(participant_id='synthetic-a',rating=4),dict(participant_id='synthetic-b',rating=2)]

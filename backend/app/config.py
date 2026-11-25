@@ -39,7 +39,7 @@ class Settings(BaseSettings):
     )
 
     recommender_alpha: float = Field(
-        default=1.0,
+        default=0.5,
         ge=0,
         le=1,
         allow_inf_nan=False,

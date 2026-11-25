@@ -9,6 +9,9 @@ import math
 import os
 from pathlib import Path
 import statistics
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from backend.app.recommender import HybridScorer, MODEL_VERSION, content_scores, fit_text as shared_fit_text
 
 
 def pending(reason):
@@ -47,10 +50,8 @@ def validate_ratings(rows):
 def fingerprint(value):return hashlib.sha256(str(value).encode()).hexdigest()
 
 def fit_text(train):
-    from sklearn.feature_extraction.text import TfidfVectorizer
-    vectorizer=TfidfVectorizer(max_features=5000,ngram_range=(1,2))
-    vectorizer.fit([str(row[field]) for row in train for field in ('profile_text','item_text')])
-    return vectorizer
+    return shared_fit_text([str(row[field]) for row in train for field in ('profile_text','item_text')])
+
 
 def metrics(actual,predicted):
     if len(actual)!=len(predicted) or not actual:raise ValueError('Predictions must use the same nonempty holdout.')
@@ -61,8 +62,7 @@ def evaluate_split(rows,train_indices,test_indices):
     train_users={r['user_id'] for r in train};test_users={r['user_id'] for r in test}
     if train_users&test_users:raise ValueError('User leakage detected.')
     vectorizer=fit_text(train)
-    profiles=vectorizer.transform([r['profile_text'] for r in test]);items=vectorizer.transform([r['item_text'] for r in test])
-    cosine=profiles.multiply(items).sum(axis=1).A1
+    cosine=content_scores(vectorizer,[r['profile_text'] for r in test],[r['item_text'] for r in test])
     predicted=[1+4*min(1,max(0,float(score))) for score in cosine]
     observed=[r['rating'] for r in test]
     global_mean=statistics.mean(r['rating'] for r in train)
@@ -70,7 +70,7 @@ def evaluate_split(rows,train_indices,test_indices):
     for row in train:item_ratings.setdefault(row['item_id'],[]).append(row['rating'])
     popularity=[statistics.mean(item_ratings[r['item_id']]) if r['item_id'] in item_ratings else global_mean for r in test]
     holdout=[fingerprint((r['user_id'],r['item_id'])) for r in test]
-    return {'train_count':len(train),'test_count':len(test),'train_users':sorted(fingerprint(u) for u in train_users),'test_users':sorted(fingerprint(u) for u in test_users),'holdout_hashes':holdout,'model':metrics(observed,predicted),'item_mean_baseline':metrics(observed,popularity),'global_mean_baseline':metrics(observed,[global_mean]*len(test)),'vocabulary_size':len(vectorizer.vocabulary_)}
+    return {'train_count':len(train),'test_count':len(test),'train_users':sorted(fingerprint(u) for u in train_users),'test_users':sorted(fingerprint(u) for u in test_users),'holdout_hashes':holdout,'model':metrics(observed,predicted),'item_mean_baseline':metrics(observed,popularity),'global_mean_baseline':metrics(observed,[global_mean]*len(test)),'vocabulary_size':len(vectorizer.vocabulary_) if vectorizer is not None else 0}
 
 def recommender(path,seed=42,folds=0):
     if path is None:return pending('No genuine explicit-rating dataset supplied.')
@@ -80,7 +80,7 @@ def recommender(path,seed=42,folds=0):
     from sklearn.model_selection import GroupShuffleSplit,GroupKFold
     splitter=GroupShuffleSplit(n_splits=1,test_size=.25,random_state=seed)
     train,test=next(splitter.split(rows,groups=users))
-    report={'status':'measured_offline','sample_count':len(rows),'distinct_users':len(set(users)),'provenance':provenance(path),'configuration':{'seed':seed,'split':'user-disjoint GroupShuffleSplit; 25% of users held out','model':'profile-only TF-IDF cosine; predicted rating = 1 + 4*cosine','max_features':5000,'ngram_range':[1,2],'alpha':1,'text_fit':'training rows only'},'comparison':evaluate_split(rows,train,test),'cross_validation':pending('Five-fold evaluation not requested.'),'limitations':['Offline profile-only reference evaluator, not validation of deployed hybrid weighting.','Numerical cosine-to-rating mapping is uncalibrated; compare against the same-holdout baselines.','These values characterize only the supplied dataset, not a pilot unless its provenance establishes that.','No missing interaction is converted into a numerical rating.']}
+    report={'status':'measured_offline','sample_count':len(rows),'distinct_users':len(set(users)),'provenance':provenance(path),'configuration':{'seed':seed,'split':'user-disjoint GroupShuffleSplit; 25% of users held out','model':'profile-only TF-IDF cosine; predicted rating = 1 + 4*cosine','max_features':20000,'ngram_range':[1,2],'alpha':1,'text_fit':'training rows only'},'comparison':evaluate_split(rows,train,test),'cross_validation':pending('Five-fold evaluation not requested.'),'limitations':['Offline profile-only reference evaluator, not validation of deployed hybrid weighting.','Numerical cosine-to-rating mapping is uncalibrated; compare against the same-holdout baselines.','These values characterize only the supplied dataset, not a pilot unless its provenance establishes that.','No missing interaction is converted into a numerical rating.']}
     if folds:
         if folds!=5:raise ValueError('This documented protocol supports five grouped folds only.')
         if len(set(users))<5 or len(rows)<10:report['cross_validation']=pending('Insufficient users or observations for five grouped folds.')
@@ -105,22 +105,12 @@ def warm_hybrid(path):
         train.extend(group[:a]);validation.extend(group[a:b]);test.extend(group[b:])
     if len(train)<20:return {**pending('Insufficient training-only observations for the documented hybrid threshold.'),'sample_count':len(rows),'provenance':provenance(path)}
     vectorizer=fit_text(train)
-    observed={}
-    for row in train:observed.setdefault(row['user_id'],{})[row['item_id']]=row['rating']
+    model=HybridScorer([dict(user_id=r['user_id'],item_id=r['item_id'],rating=r['rating']) for r in train])
     global_mean=statistics.mean(r['rating'] for r in train);item_ratings={}
     for row in train:item_ratings.setdefault(row['item_id'],[]).append(row['rating'])
     def features(target):
-        profiles=vectorizer.transform([r['profile_text'] for r in target]);items=vectorizer.transform([r['item_text'] for r in target]);content=[min(1,max(0,float(c))) for c in profiles.multiply(items).sum(axis=1).A1];collaborative=[]
-        for row in target:
-            current=observed[row['user_id']];votes=[]
-            for other,values in observed.items():
-                if other==row['user_id'] or row['item_id'] not in values:continue
-                common=set(current)&set(values)
-                if len(common)<2:continue
-                denominator=math.sqrt(sum(current[k]**2 for k in common)*sum(values[k]**2 for k in common))
-                similarity=sum(current[k]*values[k] for k in common)/denominator
-                if similarity>0:votes.append((similarity,(values[row['item_id']]-1)/4))
-            collaborative.append(sum(w*v for w,v in votes)/sum(w for w,_ in votes) if votes else None)
+        content=content_scores(vectorizer,[r['profile_text'] for r in target],[r['item_text'] for r in target])
+        collaborative=[model.predict(r['user_id'],[r['item_id']],[score],alpha=0.5)[0]['collaborative_score'] for r,score in zip(target,content)]
         return content,collaborative
     validation_content,validation_collab=features(validation);test_content,test_collab=features(test)
     def predictions(content,collaborative,alpha):return [1+4*(c if value is None else alpha*c+(1-alpha)*value) for c,value in zip(content,collaborative)]
@@ -128,7 +118,75 @@ def warm_hybrid(path):
     validation_scores={str(alpha):metrics([r['rating'] for r in validation],predictions(validation_content,validation_collab,alpha)) for alpha in grid}
     alpha=min(grid,key=lambda a:(validation_scores[str(a)]['mae'],-a))
     actual=[r['rating'] for r in test]
-    return {'status':'measured_offline','sample_count':len(rows),'distinct_users':len(groups),'provenance':provenance(path),'configuration':{'protocol':'within-user chronological 60/20/20; warm users, not unseen users','fit':'training text and ratings only; validation selects alpha; test is untouched','hybrid':'cosine similarity on at least two jointly observed ratings; weighted neighbor ratings; absent neighbors use content only','alpha_grid':grid,'selected_alpha':alpha,'thresholds':{'users':5,'training_ratings':20}},'train_count':len(train),'validation_count':len(validation),'test_count':len(test),'validation_metrics':validation_scores,'comparison':{'holdout_hashes':[fingerprint((r['user_id'],r['item_id'])) for r in test],'model':metrics(actual,predictions(test_content,test_collab,alpha)),'profile_only':metrics(actual,predictions(test_content,test_collab,1)),'item_mean_baseline':metrics(actual,[statistics.mean(item_ratings[r['item_id']]) if r['item_id'] in item_ratings else global_mean for r in test]),'global_mean_baseline':metrics(actual,[global_mean]*len(test)),'collaborative_covered_test_count':sum(v is not None for v in test_collab)},'limitations':['Offline reference estimator; not a pilot claim without genuine provenance.','Validation observations are not folded back into training histories.','Current runtime candidate eligibility and recommendation ranking require separate integration checks.','Do not reuse warm-user results as unseen-user accuracy.']}
+    return {'status':'measured_offline','sample_count':len(rows),'distinct_users':len(groups),'provenance':provenance(path),'configuration':{'protocol':'within-user chronological 60/20/20; warm users, not unseen users','fit':'training text and ratings only; validation selects alpha; test is untouched','hybrid':'cosine similarity on at least two jointly observed ratings; weighted neighbor ratings; absent neighbors use content only','alpha_grid':grid,'selected_alpha':alpha,'thresholds':{'users':5,'training_ratings':20}},'train_count':len(train),'validation_count':len(validation),'test_count':len(test),'validation_metrics':validation_scores,'comparison':{'holdout_hashes':[fingerprint((r['user_id'],r['item_id'])) for r in test],'model':metrics(actual,predictions(test_content,test_collab,alpha)),'profile_only':metrics(actual,predictions(test_content,test_collab,1)),'item_mean_baseline':metrics(actual,[statistics.mean(item_ratings[r['item_id']]) if r['item_id'] in item_ratings else global_mean for r in test]),'global_mean_baseline':metrics(actual,[global_mean]*len(test)),'collaborative_covered_test_count':sum(v is not None for v in test_collab)},'limitations':['Shared hybrid-v2 scoring core; not a pilot claim without genuine provenance.','Validation observations are not folded back into training histories.','Current runtime candidate eligibility and recommendation ranking require separate integration checks.','Do not reuse warm-user results as unseen-user accuracy.']}
+
+
+def hybrid_cross_validation(path, folds=5):
+    """Forward k-fold validation for warm users, with separate weight selection.
+
+    Train < validation < test globally, not only within each user's history.
+    Later folds may train on observations that were tests in earlier folds.
+    """
+    if path is None:
+        return pending('No timestamped explicit-rating dataset supplied for hybrid cross-validation.')
+    if folds < 2 or folds > 10:
+        raise ValueError('Choose between two and ten chronological folds.')
+    rows=validate_ratings(read_rows(path,['user_id','item_id','rating','profile_text','item_text','occurred_at']))
+    for row in rows:
+        row['_time']=datetime.fromisoformat(row['occurred_at'].replace('Z','+00:00'))
+        if row['_time'].tzinfo is None or row['_time'].utcoffset() is None:
+            raise ValueError('Hybrid timestamps must include a timezone.')
+    timestamps=sorted({r['_time'] for r in rows})
+    if len(timestamps)<folds+2:
+        return {**pending('Insufficient distinct timestamps for training, validation and all test folds.'),'sample_count':len(rows),'provenance':provenance(path)}
+    # Split unique timestamps, never rows: simultaneous feedback cannot leak
+    # across a partition boundary.
+    blocks=[timestamps[i*len(timestamps)//(folds+2):(i+1)*len(timestamps)//(folds+2)] for i in range(folds+2)]
+    reports=[];pooled={name:[] for name in ('model','profile_only','item_mean_baseline','global_mean_baseline')};actual=[]
+    grid=[0,0.25,0.5,0.75,1]
+    for fold in range(folds):
+        train=[r for r in rows if r['_time']<=blocks[fold][-1]]
+        validation=[r for r in rows if blocks[fold+1][0]<=r['_time']<=blocks[fold+1][-1]]
+        test=[r for r in rows if blocks[fold+2][0]<=r['_time']<=blocks[fold+2][-1]]
+        model=HybridScorer([dict(user_id=r['user_id'],item_id=r['item_id'],rating=r['rating']) for r in train])
+        if not model.ready:
+            return {**pending('Each hybrid fold needs at least 20 training ratings from five users.'),'sample_count':len(rows),'provenance':provenance(path)}
+        vectorizer=fit_text(train)
+        def projections(target):
+            scores=content_scores(vectorizer,[r['profile_text'] for r in target],[r['item_text'] for r in target])
+            return [model.predict(r['user_id'],[r['item_id']],[score],alpha=0.5)[0] for r,score in zip(target,scores)]
+        val=projections(validation);held=projections(test)
+        def predict(projected, alpha):
+            return [1+4*(p['content_score'] if p['collaborative_score'] is None else alpha*p['content_score']+(1-alpha)*p['collaborative_score']) for p in projected]
+        validation_metrics={str(a):metrics([r['rating'] for r in validation],predict(val,a)) for a in grid}
+        selected=min(grid,key=lambda a:(validation_metrics[str(a)]['mae'],-a))
+        means={};global_mean=statistics.mean(r['rating'] for r in train)
+        for row in train:means.setdefault(row['item_id'],[]).append(row['rating'])
+        predictions={'model':predict(held,selected),'profile_only':predict(held,1),
+                     'item_mean_baseline':[statistics.mean(means[r['item_id']]) if r['item_id'] in means else global_mean for r in test],
+                     'global_mean_baseline':[global_mean]*len(test)}
+        observed=[r['rating'] for r in test]
+        comparison={name:metrics(observed,values) for name,values in predictions.items()}
+        comparison.update(holdout_hashes=[fingerprint((r['user_id'],r['item_id'])) for r in test],
+                          collaborative_covered_test_count=sum(p['collaborative_score'] is not None for p in held))
+        reports.append(dict(fold=fold+1,train_count=len(train),validation_count=len(validation),test_count=len(test),
+                            train_end=max(r['_time'] for r in train).isoformat(),validation_start=min(r['_time'] for r in validation).isoformat(),
+                            validation_end=max(r['_time'] for r in validation).isoformat(),test_start=min(r['_time'] for r in test).isoformat(),
+                            selected_alpha=selected,validation_metrics=validation_metrics,comparison=comparison,
+                            vocabulary_size=len(vectorizer.vocabulary_) if vectorizer is not None else 0))
+        actual.extend(observed)
+        for name,values in predictions.items():pooled[name].extend(values)
+    return dict(status='measured_offline',sample_count=len(rows),distinct_users=len({r['user_id'] for r in rows}),
+                provenance=provenance(path),model_version=MODEL_VERSION,
+                configuration=dict(protocol='expanding-window chronological k-fold; warm-user target',folds=folds,
+                                   alpha_grid=grid,alpha_selection='validation MAE only; ties prefer profile-only',
+                                   fit='training-only text and explicit ratings; same scoring module as runtime',
+                                   rating_mapping='predicted rating = 1 + 4 * normalized score; uncalibrated'),
+                folds=reports,test_observation_count=len(actual),aggregate={name:metrics(actual,values) for name,values in pooled.items()},
+                limitations=['Forward time folds evaluate returning users; use grouped cold-start folds for unseen users.',
+                             'The selected weights apply to their fold training snapshots; no automatic runtime deployment or optimal-weight claim.',
+                             'Current profile/item text must be a valid historical snapshot; later edits require versioned research exports.',
+                             'Synthetic inputs are functional demonstrations, not research findings.'])
 
 
 def csat(path):
@@ -156,13 +214,13 @@ def bertscore(path,model=None,layers=12):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--protocol',choices=['cold_start','warm_temporal'],default='cold_start');parser.add_argument('--ratings',type=Path);parser.add_argument('--csat',type=Path);parser.add_argument('--answers',type=Path);parser.add_argument('--bert-model',type=Path);parser.add_argument('--bert-layers',type=int,default=12);parser.add_argument('--folds',type=int,default=0);parser.add_argument('--seed',type=int,default=42);parser.add_argument('--output',type=Path,required=True)
+    parser.add_argument('--protocol',choices=['cold_start','warm_temporal','hybrid_kfold'],default='cold_start');parser.add_argument('--ratings',type=Path);parser.add_argument('--csat',type=Path);parser.add_argument('--answers',type=Path);parser.add_argument('--bert-model',type=Path);parser.add_argument('--bert-layers',type=int,default=12);parser.add_argument('--folds',type=int,default=0);parser.add_argument('--seed',type=int,default=42);parser.add_argument('--output',type=Path,required=True)
     args=parser.parse_args()
     if args.protocol=='warm_temporal' and args.folds:parser.error('Use cold_start for grouped unseen-user folds; warm_temporal uses chronological validation instead.')
     if args.bert_layers<1:parser.error('bert-layers must be positive.')
     report={'requirement':'FR12/NFR08','generated_at':datetime.now(timezone.utc).isoformat(),'recommender':None,'csat':None,'assistant':None}
     failed=False
-    for name,action in [('recommender',lambda:recommender(args.ratings,args.seed,args.folds) if args.protocol=='cold_start' else warm_hybrid(args.ratings)),('csat',lambda:csat(args.csat)),('assistant',lambda:bertscore(args.answers,args.bert_model,args.bert_layers))]:
+    for name,action in [('recommender',lambda:recommender(args.ratings,args.seed,args.folds) if args.protocol=='cold_start' else hybrid_cross_validation(args.ratings,args.folds or 5) if args.protocol=='hybrid_kfold' else warm_hybrid(args.ratings)),('csat',lambda:csat(args.csat)),('assistant',lambda:bertscore(args.answers,args.bert_model,args.bert_layers))]:
         try:report[name]=action()
         except (ValueError,OSError) as error:report[name]={'status':'invalid_input','reason':str(error),'metrics':None};failed=True
     args.output.parent.mkdir(parents=True,exist_ok=True);args.output.write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8');print(json.dumps(report,indent=2));return int(failed)

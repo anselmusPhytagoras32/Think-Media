@@ -1,0 +1,449 @@
+{
+  "status": "measured_offline",
+  "sample_count": 168,
+  "distinct_users": 6,
+  "provenance": {
+    "input_file": "synthetic-hybrid-ratings.csv",
+    "sha256": "d21dc5108f2e9f9875895a9e4f4bfbe51bb2e784ec07ddba734b9b1741b58d67",
+    "origin": "deterministically generated synthetic functional fixture; no participants or pilot observations"
+  },
+  "model_version": "hybrid-v2",
+  "configuration": {
+    "protocol": "expanding-window chronological k-fold; warm-user target",
+    "folds": 5,
+    "alpha_grid": [
+      0,
+      0.25,
+      0.5,
+      0.75,
+      1
+    ],
+    "alpha_selection": "validation MAE only; ties prefer profile-only",
+    "fit": "training-only text and explicit ratings; same scoring module as runtime",
+    "rating_mapping": "predicted rating = 1 + 4 * normalized score; uncalibrated"
+  },
+  "folds": [
+    {
+      "fold": 1,
+      "train_count": 24,
+      "validation_count": 24,
+      "test_count": 24,
+      "train_end": "2026-10-04T00:00:00+00:00",
+      "validation_start": "2026-10-05T00:00:00+00:00",
+      "validation_end": "2026-10-08T00:00:00+00:00",
+      "test_start": "2026-10-09T00:00:00+00:00",
+      "selected_alpha": 0.75,
+      "validation_metrics": {
+        "0": {
+          "mae": 1.9763520017022145,
+          "rmse": 2.2333005183649433
+        },
+        "0.25": {
+          "mae": 1.8893301357094616,
+          "rmse": 2.121616095909626
+        },
+        "0.5": {
+          "mae": 1.8023082697167083,
+          "rmse": 2.071744631392546
+        },
+        "0.75": {
+          "mae": 1.7152864037239555,
+          "rmse": 2.088119748283662
+        },
+        "1": {
+          "mae": 1.765422943122511,
+          "rmse": 2.169241723466513
+        }
+      },
+      "comparison": {
+        "model": {
+          "mae": 1.7062034085655307,
+          "rmse": 2.1182095001895296
+        },
+        "profile_only": {
+          "mae": 1.8182935442575614,
+          "rmse": 2.211833827048189
+        },
+        "item_mean_baseline": {
+          "mae": 1.4270833333333333,
+          "rmse": 1.7109566578920652
+        },
+        "global_mean_baseline": {
+          "mae": 1.2638888888888888,
+          "rmse": 1.445779297741456
+        },
+        "holdout_hashes": [
+          "10e12003a9d8a5f10101a980e5868109e87c46418e7afe3178c0f339773fca6a",
+          "cb5b82b3a44048c33ba50a9655b88cf2600a096738214f2240eaf8f5839983a4",
+          "d71c6525cfe3c71a16dd1d7ffe319a2e9d4499ae0685a2ee1e7f2c6ba19a5cef",
+          "b43a1a64379df5bfced2eb09a9ea75e0eab04472aa95e465f4fd1724dfdf7cb0",
+          "302d2c82586171271fb1d2f5705701f91e6f98f232c5ee72c3b88b4c6f179883",
+          "a16265c57eea88ca53ad76cf25b95f9f834773d354f4a35be6c9f0b4ba486dda",
+          "9c4f51e0512f9785e9d8f308e1f2e1f010d6c3f2b37b8ee9048b65201da0aeba",
+          "a4a5031e31931b4c00eb594c7e5b5c54b1d62220bde8bd016b774634c321142d",
+          "31d30361b5f9fed9a38357ade173925d333530e3ca8e224d31e1c8fcbd902851",
+          "236a7ec9221c8066d2a81016efcc5faedab260f8b0f8cad689a1e6aa43df9d5a",
+          "8e434aeea47c71fc761b7c7569f02c2a481d5b6930feab84af29b7ea55c350f9",
+          "89720a5633d580899e1a43cf29c1967e84e0e3a73f2ea40ceacea17a45441491",
+          "47570ea32088ec6711a38a397ff38f208e7e8f87f7e75afa1a266d5e48eb1d29",
+          "a68ef88844770aa73e7579fbe3c9b810966b9d32acb4c334c16d514cd5f96cfd",
+          "7534dcfd4a4c2bdbc7b82cdff0626ae1161f3d1450ca0fc3d4504612892df451",
+          "aa7b21999ce1d5d3890742719cce388dd2943e620f3cac4f1197f1687a7a3018",
+          "772ebfaa487f777bc06dda9920820dd981b65a492c5b714d62ca0a68bdeb166d",
+          "831aa5b1e14d9f56a6d287fc7aa006b0255cf54be8f943106b808228b789a323",
+          "d9e9427e2e6ba8696fc8dd107f00e9d0ae86858b4fa836be5cb1d12d1a1b369f",
+          "f826efd0ff17470d1341b9906ab38e14ab20533ba8e65efd4887c04bc3c13c56",
+          "1fe2e14f4232f18f5a0810253512434078b60a0b78d1cb9acea9455db5577555",
+          "739b29e43aa6bc30535e7102f75e7355e546ac8d619a8cf011a3ae69537d8b74",
+          "04d23c2a16bcf8cdc695a334013825f92c55362b5f275bd51c816f5668f03c83",
+          "e06d17065e1d525351a869c7fc9b0e4b4f473b449dc31e9d9223e0a533e737c3"
+        ],
+        "collaborative_covered_test_count": 11
+      },
+      "vocabulary_size": 35
+    },
+    {
+      "fold": 2,
+      "train_count": 48,
+      "validation_count": 24,
+      "test_count": 24,
+      "train_end": "2026-10-08T00:00:00+00:00",
+      "validation_start": "2026-10-09T00:00:00+00:00",
+      "validation_end": "2026-10-12T00:00:00+00:00",
+      "test_start": "2026-10-13T00:00:00+00:00",
+      "selected_alpha": 0,
+      "validation_metrics": {
+        "0": {
+          "mae": 1.5602590701702055,
+          "rmse": 1.9483040166658825
+        },
+        "0.25": {
+          "mae": 1.5806473739462565,
+          "rmse": 1.9115305351888412
+        },
+        "0.5": {
+          "mae": 1.615438802588227,
+          "rmse": 1.9643736252722306
+        },
+        "0.75": {
+          "mae": 1.6841018592469654,
+          "rmse": 2.100079236475113
+        },
+        "1": {
+          "mae": 1.8933612740868448,
+          "rmse": 2.304052118851812
+        }
+      },
+      "comparison": {
+        "model": {
+          "mae": 1.6843908767707232,
+          "rmse": 2.0177304330774453
+        },
+        "profile_only": {
+          "mae": 1.8658611913684138,
+          "rmse": 2.2858686369565193
+        },
+        "item_mean_baseline": {
+          "mae": 1.3046875,
+          "rmse": 1.7127261864008891
+        },
+        "global_mean_baseline": {
+          "mae": 1.2239583333333333,
+          "rmse": 1.4320549046737
+        },
+        "holdout_hashes": [
+          "fa0b441252a127ea67a959783212f2ef3c4f1983eeb91bf9f28c56da87410d82",
+          "ae2c605888d762bbb0bcc28d97c1c58b83fccbddf328f8a709e017dd8233ce01",
+          "da4f8609d797d9d1c28fdc1478d81304a513cab13436470a7a412d3f1c0898b6",
+          "55d36601d120c0cdeb2513c9a4f83792c1e824b5d0f1fe58d3cc5f0f2910dd26",
+          "1518001596add72d18a34f061041188564dae01e05923d87a1ca05fcfbc3d26f",
+          "0a896227911caf2dafff9a27314cd072bd27b3fc9ce7b7a349244fecf0bf127f",
+          "de58e52648b725cdb2170572e02b44004541d789a36dde5c570c4be623bd07a3",
+          "060536529529f1f8b4385b5376d529f002859b68a73a0c56c98af6eb4f3843d5",
+          "445a3be526ac8c1988fe40f63c952b4db804c27ede74c2a8442b42dfce3814a2",
+          "43566e006e28f0ab968885bb171a1e1eca854edfe76925946d538ab1200225bc",
+          "7f9c492cb893309ee6e5a993f43d8af989501c59a97c5f954e6205e8b76267f2",
+          "5b681bd202707fdd47807dbbad9c8182777123293e900c31be6d37e2e0efedb9",
+          "47133bce4f9a68daaa837d95918b86e1730fe28bbb5790db4422c36e601b282e",
+          "8c760172d4d13c5e30316b1a468f2dd124e439916a3b78af150ee69dbd4c6d2f",
+          "a6de7c80a4200f8636a2a11470e37a9e1a9b7b97d036a8f3c704fcf6c23a1fe6",
+          "730d567de9578cc2ab4fbfb8f440327e47b052bb368bbb5ac9107b19b859dba8",
+          "85ba8cb41683cceabddfa7b6e1c8af09cc475a7e6a1a8b7e89d79c7464e28a9b",
+          "3b2b65b9e32012fb3473ebee0c729aef9d3c5300b6f1ae70c79dcb4096532b96",
+          "5d51f69a91711e9d9be7029d97676341e5c4ed9baa70bd13482566b02e14ed8d",
+          "f9d6bfeaf676e87092f5c1fd30fbb1ebac07a46f7eb1f9d4953b149f0aa86e8e",
+          "dd41c66992b4f36f3062c65fce9b107ccc2b2127f98db5e619432752ea19c567",
+          "03621e7152a7df45aa0a02c9a542742e2512e2d3d693f7c9bc17757aeb95e1aa",
+          "86b977980dbb10cb934c4ff170880d2874f345e022092c7fd94ee6b36008d464",
+          "784a45073bb8e30d4a0defe45aec4f77a0eb3e0467378e4b509fb8cf3edc2e07"
+        ],
+        "collaborative_covered_test_count": 17
+      },
+      "vocabulary_size": 53
+    },
+    {
+      "fold": 3,
+      "train_count": 72,
+      "validation_count": 24,
+      "test_count": 24,
+      "train_end": "2026-10-12T00:00:00+00:00",
+      "validation_start": "2026-10-13T00:00:00+00:00",
+      "validation_end": "2026-10-16T00:00:00+00:00",
+      "test_start": "2026-10-17T00:00:00+00:00",
+      "selected_alpha": 0.5,
+      "validation_metrics": {
+        "0": {
+          "mae": 1.7478915349752946,
+          "rmse": 2.0199882153140947
+        },
+        "0.25": {
+          "mae": 1.6631478414169216,
+          "rmse": 1.882583688703275
+        },
+        "0.5": {
+          "mae": 1.6570093903543999,
+          "rmse": 1.8965792088250386
+        },
+        "0.75": {
+          "mae": 1.7320380277215632,
+          "rmse": 2.058889613635263
+        },
+        "1": {
+          "mae": 1.9282986710699237,
+          "rmse": 2.338837870040352
+        }
+      },
+      "comparison": {
+        "model": {
+          "mae": 1.4827942478132317,
+          "rmse": 1.814546637357844
+        },
+        "profile_only": {
+          "mae": 1.9666838650537828,
+          "rmse": 2.3681545100913626
+        },
+        "item_mean_baseline": {
+          "mae": 1.4913194444444444,
+          "rmse": 1.8301938080432902
+        },
+        "global_mean_baseline": {
+          "mae": 1.1770833333333333,
+          "rmse": 1.387568817112226
+        },
+        "holdout_hashes": [
+          "b70ae30b3abe699aa5993d8834ba0514b7e81790456c2387e6b38ea70b7ee7c9",
+          "73409ce604c2050cf4f1d871e7d181bd58e23000efc4b8fc3a96a2ab7776d273",
+          "19890ebcf4e10bce9cbf5b84b65d6393c0ab02a719b54d83e3f9c53dec9daf49",
+          "97c755ecddb27eb4e0d96626f9dc41a3e3066f76ac14df58c0ae41713e34b74b",
+          "a3c0acb1faede78b1f82b83c40a653b931070ec7a32765bdbe841ada31971544",
+          "4d0534cf35643df3ac290a357d8f6451a03d5cb1313b1135683f163a99cd94eb",
+          "b817ee95788b922c49ebcbb1fc87e2b6ebdf3d79637a5c7649b4c5a8495c87d7",
+          "18bd58d80128cd2a807a01c9bfd36e520dd6414173070a1e781e539b293d45a4",
+          "e8f178880e46cd8c555b06487201ee8b3cc19bd6b82f27b42b828cd1d1b5a255",
+          "3c97f8f5fdb37d880d4699a1f299f45daed8ddccc89131f399d3f113af4d5b65",
+          "3240827da9afa7dc51efadf5f3838ce3e0406ada15c87c15cdfffeaa4590a822",
+          "305bd8d10b7b9cb49f6b9154b78b6459b01610fa94a2df5a037fe104805fc7d7",
+          "f052a1f0026a7a87117d6357dc6648590382fbadba8e5a3f0deaad0ec4eeefba",
+          "568b0c9a83ff925fd5ce6696f31a2b23364fb96043fd25147ff16200e03a0f59",
+          "f33f37d4137461a0fa603741b71fb7f9384984f0e749d3eb537d057b49605188",
+          "5486f0139207620cdedb82aa81d243ee3aa59f3ff994ecef93923748bacec37c",
+          "2cea0c1beb8095ff600d54019fa608f015c719f8fc494e5cd1349e73f6d03b27",
+          "ff842c8d54b859c2cb62a8357aa782576aa797bc4effd1baf008e26f2ec53fc0",
+          "2748bb55c92f90ab27ed23b74096efc6bca4b2f9cd379ca36d211b90b4a27f11",
+          "2214abd0a15f8739112d405e6e27c96f2a039cc1b0501950db725a24a24c4aeb",
+          "d43fbc45702fd1872aa50b6bd083ccb5b42002e79eb0b0df56d5a3f074d1f078",
+          "61dd8143d44b1a198191b90e806d743edba85903dd185133f4229e0bae762edc",
+          "b3a181eeb4674211be970bc1b8e4012a843f9e78ed72815665e625b0824d0319",
+          "32590b6b225373e0709960a73aa5035eec9036e5cfed9f8de6fb4e0314c1a5be"
+        ],
+        "collaborative_covered_test_count": 23
+      },
+      "vocabulary_size": 61
+    },
+    {
+      "fold": 4,
+      "train_count": 96,
+      "validation_count": 24,
+      "test_count": 24,
+      "train_end": "2026-10-16T00:00:00+00:00",
+      "validation_start": "2026-10-17T00:00:00+00:00",
+      "validation_end": "2026-10-20T00:00:00+00:00",
+      "test_start": "2026-10-21T00:00:00+00:00",
+      "selected_alpha": 0,
+      "validation_metrics": {
+        "0": {
+          "mae": 1.4242642076182261,
+          "rmse": 1.7096607741183272
+        },
+        "0.25": {
+          "mae": 1.4265199120970034,
+          "rmse": 1.689197875732506
+        },
+        "0.5": {
+          "mae": 1.5318638003606453,
+          "rmse": 1.8115009968507831
+        },
+        "0.75": {
+          "mae": 1.6913213644984924,
+          "rmse": 2.051189693128207
+        },
+        "1": {
+          "mae": 1.9807057889188202,
+          "rmse": 2.372955825587833
+        }
+      },
+      "comparison": {
+        "model": {
+          "mae": 1.1481356261460505,
+          "rmse": 1.425085464050722
+        },
+        "profile_only": {
+          "mae": 1.828065164768892,
+          "rmse": 2.2426845846684706
+        },
+        "item_mean_baseline": {
+          "mae": 1.1666666666666667,
+          "rmse": 1.4403655014536336
+        },
+        "global_mean_baseline": {
+          "mae": 1.1701388888888888,
+          "rmse": 1.3833396084195024
+        },
+        "holdout_hashes": [
+          "d19f6519a5715953945d0aa4f2ba6a79e7d38f9c4e7b33e2b11cde9c2f195b5e",
+          "0874ddea1c80b45e346600e33b94dd0f4bfd92892e1945e8800da005b6d648ee",
+          "44e496488bbab124c63ad623ef82803f77ed1221980297ce4fcfbbf304da1c3a",
+          "e25913e7edd57eb38d069afec938466ad440e1f8e0dea5861f750e4d4b1757bf",
+          "bd2cfc232e595c4b54ebd35cf03816f92b64a81cac07a9e08d5a3af2533b4b2d",
+          "def3498c5f7edf9db78efa14103a6f493175de899ab2aff2d825efd58a37a255",
+          "dc25104d1c4290528dd93c8972d69c876036a601f639b91851a97bad8cc0941f",
+          "3ae54bc79c90839fabebc7bde0ee3fb46200f91d9f07f01927113911565f5333",
+          "1a05daa899046d6646746b40f88f5945396e60a1f5456ee84817976a815e3245",
+          "84200ce1236a8d7ad56de0b43ae6e63b4362ad06144b3d3092d0eeb41d6bd1d1",
+          "d7f843987613dcd31626d53b4dc8276dbee3e805f3e781fb3861bcfc29bfb295",
+          "40c26251ec92125dc802eb1aad9e23832fa68c75e24b0a148b9418014140a517",
+          "75b1c2ad90333bc315b7b4b6fabd392c053caf2b633da5f10f4752908c34ab62",
+          "6a130426b364588e0e4172b1a5e8653200f164713c841c6c371fc60b5928e0a3",
+          "8146f0299413ddc4480ecd8c610787d113758a8cf5ebf34b0e8cca7c53f195c3",
+          "9de3c9677dbf9815d3bfe48a4f401f26866733966b68d7c5553a24de535a4b65",
+          "7231e67416a9237588634c95b9045201e414e21960df15d996ddbf4dcda14f01",
+          "c281b0b29f4c3183abb109b92e87afeda302c25bb267500a33567973db0cea08",
+          "6eef7631023dc2bb533990629761feb1f466b8e344b2b2ee8d61d631b9eff8af",
+          "cf265f74a46b15aaf65ea7d7006b595dd1813728a888cfc70ad921acfd22d707",
+          "35f2571a171d58dc0000b3bcfb91d785e2ae40a91abcfebacd4bf46ad2ab7f02",
+          "5132fa84256b83d7ec823e1a08df6a5d8771c228b84fe41ce3963222e820b764",
+          "7a0066f5c03f0824ae2cec3c10eea798126d662a59f04725a6903b1596d765ed",
+          "a6ecc7958c2a50494113ce0fc9b83fd52c1e29fa63c8629944aa3c1e64a48385"
+        ],
+        "collaborative_covered_test_count": 24
+      },
+      "vocabulary_size": 63
+    },
+    {
+      "fold": 5,
+      "train_count": 120,
+      "validation_count": 24,
+      "test_count": 24,
+      "train_end": "2026-10-20T00:00:00+00:00",
+      "validation_start": "2026-10-21T00:00:00+00:00",
+      "validation_end": "2026-10-24T00:00:00+00:00",
+      "test_start": "2026-10-25T00:00:00+00:00",
+      "selected_alpha": 0,
+      "validation_metrics": {
+        "0": {
+          "mae": 1.2210186368951397,
+          "rmse": 1.468531823476922
+        },
+        "0.25": {
+          "mae": 1.2883922475688263,
+          "rmse": 1.4847236192783717
+        },
+        "0.5": {
+          "mae": 1.3742624921841382,
+          "rmse": 1.642738433365287
+        },
+        "0.75": {
+          "mae": 1.5602305669521181,
+          "rmse": 1.9076534593582681
+        },
+        "1": {
+          "mae": 1.828010894088477,
+          "rmse": 2.2418877552815735
+        }
+      },
+      "comparison": {
+        "model": {
+          "mae": 1.1562652850974973,
+          "rmse": 1.3713808883662795
+        },
+        "profile_only": {
+          "mae": 1.8701742976749887,
+          "rmse": 2.3033404285859196
+        },
+        "item_mean_baseline": {
+          "mae": 1.1875,
+          "rmse": 1.4018836534383936
+        },
+        "global_mean_baseline": {
+          "mae": 1.2083333333333333,
+          "rmse": 1.4288690166235205
+        },
+        "holdout_hashes": [
+          "c9996dc8d4b0dec6aad0507e09b7a3e69b6fc9fb91380cb61b8b5b3f738864f8",
+          "37d6e2f89ca7645afc29b82dd4aa31f1bcf57469cf876b2a63781fe8b56e38c4",
+          "7f81d51a23e0305b4af034c93a6a43063a858d77c426e2ebcedbb8797ef75489",
+          "4888867f00ab43c633648536d3127b598968cc62908a4ed713b77f0751a5544b",
+          "3e8ab141a6fc2eec9c5b7f771bfa796a5859df2d58e63a0e130ef25ce25c1a62",
+          "1b156b35b4e09c23b1d8ff9406327c25714c27500f78dd722db22373b93353bd",
+          "7416e367c16e53f167e46d9b2565fca8513a915ad94bc10ce6d31bcf999c9dee",
+          "6dabac3415802ed70d72cc58de604ba2422fb16db79747dd0cbb46b0dc8332f6",
+          "6ff1ff83e266520745a496206f4004f809fabfe63dc389bfe2a5ab98e69b69b5",
+          "a67d8eab194abf8632b81c3a0705413600fa42bdf1bf55e5bd027befdc8b4935",
+          "54507b4ffd8a859db1aab97a767803807514ea03c73a5533026a26f6c092365f",
+          "03c0c3a82df69eef88711efad028cb55c1f85cc0702b88a99c5971bb4dbab40d",
+          "6b3dc40f8f2f550c256946b1c9b63eb823acb1027b029799e10b628e46e0d887",
+          "b95605bcdabb809f4aa5c8c6cee3e8da4dcf821d998fde713230b58c39d9ddb8",
+          "30caa1fa0f97956b10c8a3d2e800dcc065e6ebc6b88becba6c2988c438e9fbf4",
+          "5b02f92b2ebaa0b8a74cf7b7f247ecc3370fc0e2faa138bd134c701dc3ef6e54",
+          "ae7ef22e2ad14dd6444617f34589ae15f35d7c7425b0b44e9a4ab3dffb59b94d",
+          "7073b5444b36969dea9033012197f126d19d114194dbf8f9a721d0deeea24b92",
+          "7feb69bcb3dea08ff4fb5c09dcfc38087f04b8eff7a2977e3777ae6013085754",
+          "efddff8a499a803f6bfb900600c75e91d90f7eea4e7bca9192907856990c5fce",
+          "793f4e66f53a69eee8ea2a499c51f828240fa5cfd1852b75d24fd6ad79936eb5",
+          "277c556440b0d758bcb1e0a90d1d630737947789b93a14b9e16c9bc9802c81f4",
+          "1debd58e56e5e3633afab1e88e765e78c856cc1b7c690aef7aa4660eff322f77",
+          "da92210c0c77105bd4f35fcea6d0e9c36320c2fed9e28ad425ff3bef4d0e25e2"
+        ],
+        "collaborative_covered_test_count": 24
+      },
+      "vocabulary_size": 63
+    }
+  ],
+  "test_observation_count": 120,
+  "aggregate": {
+    "model": {
+      "mae": 1.4355578888786067,
+      "rmse": 1.7755101355515648
+    },
+    "profile_only": {
+      "mae": 1.8698156126247276,
+      "rmse": 2.283005534983659
+    },
+    "item_mean_baseline": {
+      "mae": 1.3154513888888888,
+      "rmse": 1.6279031669803996
+    },
+    "global_mean_baseline": {
+      "mae": 1.2086805555555555,
+      "rmse": 1.4157472506693338
+    }
+  },
+  "limitations": [
+    "Forward time folds evaluate returning users; use grouped cold-start folds for unseen users.",
+    "The selected weights apply to their fold training snapshots; no automatic runtime deployment or optimal-weight claim.",
+    "Current profile/item text must be a valid historical snapshot; later edits require versioned research exports.",
+    "Synthetic inputs are functional demonstrations, not research findings."
+  ],
+  "synthetic_only": true,
+  "research_findings": false
+}

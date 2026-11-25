@@ -2,7 +2,7 @@
 
 from sqlalchemy import func, select
 
-from app.models import CompanyProfile, Interaction, LearningContent, Listing
+from app.models import CompanyProfile, Interaction, LearningContent, Listing, User
 
 CANDIDATE_CAP = 500
 RATING_CAP = 5000
@@ -36,7 +36,8 @@ class RecommendationRepository:
         return list(
             self.db.scalars(
                 select(Interaction)
-                .where(Interaction.event_type == "rating")
+                .join(User, User.id == Interaction.user_id)
+                .where(Interaction.event_type == "rating", User.role == "student")
                 .order_by(Interaction.created_at.desc(), Interaction.id)
                 .limit(RATING_CAP)
             )

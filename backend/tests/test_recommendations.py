@@ -338,6 +338,57 @@ def test_unmatched_profile_uses_truthful_general_fallback(app):
     assert "recent" in result["listings"][0]["reason"].lower()
 
 
+def test_background_and_employer_requirements_are_used_for_matching(app):
+    owner = company(app)
+    response = post_json(owner, "/api/v1/company/listings", dict(
+        title="Fictional placement", description="Practice tasks", requirements="Kubernetes Terraform automation",
+        location="Legazpi", type="ojt", skills=[],
+    ))
+    assert response.status_code == 201, response.text
+    matching = response.json()
+    assert post_json(owner, f"/api/v1/company/listings/{matching['id']}/publish", {}).status_code == 200
+    opportunity(owner, "Bookkeeping", ["Accounting"])
+    actor = student(app)
+    assert patch_json(actor, "/api/v1/profiles/me", {"background": "Kubernetes Terraform automation"}).status_code == 200
+    result = actor.get("/api/v1/recommendations").json()
+    assert result["mode"] == "profile"
+    top = result["listings"][0]
+    assert top["item"]["id"] == matching["id"]
+    assert top["content_score"] > 0 and top["collaborative_score"] is None
+    assert top["effective_alpha"] == 1 and top["strategy"] == "profile"
+    assert result["method"]["configured_alpha"] == app.state.settings.recommender_alpha
+    from app.config import Settings
+    assert Settings(_env_file=None).recommender_alpha == 0.5
+    assert result["method"]["weight_status"] == "provisional_not_validated"
+
+
+def test_shared_collaborative_engine_uses_observed_overlap_and_keeps_missing_ratings_missing():
+    from app.recommender import HybridScorer
+    ratings = [dict(user_id="target", item_id="a", rating=5), dict(user_id="target", item_id="b", rating=1)]
+    for peer in range(4):
+        ratings += [dict(user_id=f"peer-{peer}", item_id=item, rating=value)
+                    for item, value in [("a", 5), ("b", 1), ("strong", 5), ("weak", 1), ("other", 3)]]
+    model = HybridScorer(ratings)
+    scores = model.predict("target", ["strong", "weak", "missing"], [0.2, 0.2, 0.2], alpha=0.5)
+    assert scores[0]["score"] == 0.6 and scores[1]["score"] == 0.1
+    assert scores[0]["strategy"] == "hybrid" and scores[0]["neighbor_count"] == 4
+    assert scores[2]["collaborative_score"] is None and scores[2]["effective_alpha"] == 1
+    cold = model.predict("new-user", ["strong"], [0.2], alpha=0.5)[0]
+    assert cold["score"] == 0.2 and cold["strategy"] == "profile"
+
+
+def test_employer_background_participates_without_using_private_contact_details(app):
+    owner = company(app)
+    row = opportunity(owner, "Fictional technical placement")
+    assert patch_json(owner, "/api/v1/profiles/me", {"description": "Kubernetes automation", "contact_email": "private@example.test"}).status_code == 200
+    actor = student(app)
+    assert patch_json(actor, "/api/v1/profiles/me", {"background": "Kubernetes automation"}).status_code == 200
+    data = actor.get("/api/v1/recommendations").json()
+    assert data["mode"] == "profile" and data["listings"][0]["item"]["id"] == row["id"]
+    assert data["listings"][0]["content_score"] > 0
+    assert "private@example.test" not in str(data)
+
+
 def test_feedback_rate_limit_and_alpha_bounds(app):
     from app.security.throttle import Throttle
     from app.config import Settings
