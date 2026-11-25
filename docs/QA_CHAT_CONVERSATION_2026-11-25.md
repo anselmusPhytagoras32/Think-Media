@@ -48,6 +48,21 @@ operations. Two further direct Groq requests correctly selected a conversational
 reply for a help question after navigation and application navigation for an
 explicit new request beginning with “Hi”.
 
+Render marked application commit `4e65524` Live. The original hosted API
+reproduction then passed both cases: “Hi” with no history and “Hi” after
+“Open opportunities” each returned a conversational greeting without navigation.
+
+A real Edge browser verified the floating chat on the hosted opportunities page:
+“Open opportunities” produced its requested link; “Hi”, “Thanks” and “What can
+you help me with?” produced conversational replies without another navigation
+link or missing-source warning. “Hi, open my applications” still produced the
+correct applications link. No browser runtime errors were observed. Desktop
+and 360-pixel screenshots were visually inspected; horizontal containment passed.
+These checks did not submit applications or confirm changes to user records.
+
+The [sanitized verification receipt](../backend/reports/chat-conversation-2026-11-25.json)
+records the tested application revision and aggregate results.
+
 Commands use private, explicitly selected disposable databases, never the hosted
 database:
 

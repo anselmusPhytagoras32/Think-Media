@@ -1,0 +1,52 @@
+{
+  "verified_on": "2026-11-25",
+  "timezone": "Asia/Manila",
+  "application_commit": "4e6552439f266a08c3ba48256f077a426c8952f5",
+  "base_url": "https://thinkmedia-demo-m74t.onrender.com",
+  "backend": {
+    "passed": 286,
+    "failed": 0,
+    "pytest_summary_seconds": 482.47,
+    "migration_drift": false
+  },
+  "browser": {
+    "passed": 54,
+    "failed": 0,
+    "seconds": 315.89,
+    "engine": "Microsoft Edge"
+  },
+  "production_build": "passed",
+  "native_groq_planner_cases": 4,
+  "hosted_api_greeting_cases": 2,
+  "hosted_browser_cases": [
+    {
+      "question": "Open opportunities",
+      "mode": "external",
+      "navigation": "#/opportunities"
+    },
+    {
+      "question": "Hi",
+      "mode": "conversation",
+      "navigation": null
+    },
+    {
+      "question": "Thanks",
+      "mode": "conversation",
+      "navigation": null
+    },
+    {
+      "question": "What can you help me with?",
+      "mode": "conversation",
+      "navigation": null
+    },
+    {
+      "question": "Hi, open my applications",
+      "mode": "external",
+      "navigation": "#/applications"
+    }
+  ],
+  "hosted_browser_runtime_errors": 0,
+  "minimum_width_px": 360,
+  "screenshots_visually_inspected": true,
+  "scope": "Functional conversation regression with fictional demo access. Plain greetings and acknowledgements use local replies; model-backed help and explicit navigation remain supported. No research findings claimed."
+}
